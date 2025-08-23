@@ -1,0 +1,104 @@
+using System.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
+using InmobiliariaGutierrezManuel.Models;
+using InmobiliariaGutierrezManuel.Repositories;
+using System.Text.Json;
+
+namespace InmobiliariaGutierrezManuel.Controllers;
+
+public class InquilinoController : Controller
+{
+    private readonly ILogger<InquilinoController> _logger;
+    private readonly InquilinoRepository repo;
+
+    public InquilinoController(ILogger<InquilinoController> logger)
+    {
+        _logger = logger;
+        repo = new InquilinoRepository();
+    }
+
+    public IActionResult Index(string? nomApe, string? orderBy, string? order, int? offset = 1, int? limit = 10)
+    {
+        IList<Inquilino> inquilinos = repo.ListarInquilinos(nomApe, orderBy, order, offset, limit);
+        int cantidadInquilinos = repo.ContarInquilinos();
+        
+        ViewBag.cantPag = Math.Ceiling( cantidadInquilinos / 10.0 );
+        ViewBag.offsetSiguiente = offset.HasValue ? offset.Value + 1 : 2;
+        ViewBag.offsetAnterior = offset.HasValue ? offset.Value - 1 : 0;
+
+        InquilinoViewModel ivm = new InquilinoViewModel
+        {
+            Inquilinos = inquilinos,
+            Inquilino = new Inquilino(),
+            MensajeError = TempData["MensajeError"] as string
+        };
+
+        return View(ivm);
+    }
+
+    // public IActionResult Listar(string? nomApe, string? orderBy, string? order, int? offset = 1, int? limit = 10)
+    // {
+    //     IList<Inquilino> inquilinos = repo.ListarInquilinos(nomApe, orderBy, order, offset, limit);
+    //     return View(inquilinos);
+    // }
+
+    // public IActionResult Buscar(int id = 0, string? dni = null)
+    // {
+    //     Inquilino? inquilino = repo.ObtenerInquilino(id, dni);
+    //     return View(inquilino);
+    // }
+
+    [HttpPost]
+    public IActionResult Guardar(Inquilino inquilino)
+    {
+        if (repo.ObtenerInquilino(null, inquilino.Dni) != null)
+            ModelState.AddModelError("Dni", "El DNI ya está registrado.");
+        if (repo.BuscarPorEmail(inquilino.Email))
+            ModelState.AddModelError("Email", "El E-Mail ya está registrado.");
+        if (repo.BuscarPorTelefono(inquilino.Telefono))
+            ModelState.AddModelError("Telefono", "El teléfono ya está registrado.");
+
+        if (ModelState.IsValid)
+        {
+            if (inquilino.Id > 0)
+            {
+                repo.ActualizarInquilino(inquilino);
+            }
+            else
+            {
+                repo.InsertarInquilino(inquilino);
+            }
+            return RedirectToAction(nameof(Index));
+        }
+        else
+        {
+            string errorMsg = "<ul>";
+            foreach (var estado in ModelState)
+            {
+                var campo = estado.Key;
+                foreach (var error in estado.Value.Errors)
+                {
+                    errorMsg += $"<li class=\"text-danger fs-5\"><strong>{error.ErrorMessage}</strong></li>";
+                }
+            }
+            TempData["MensajeError"] = errorMsg + "</ul>";
+
+            return RedirectToAction(nameof(Index));
+        }
+
+
+        
+    }
+
+    public IActionResult Eliminar(int id)
+    {
+        repo.EliminarInquilino(id);
+        return RedirectToAction(nameof(Index));
+    }
+
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    public IActionResult Error()
+    {
+        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+    }
+}

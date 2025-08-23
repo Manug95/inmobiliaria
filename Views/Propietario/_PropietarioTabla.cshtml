@@ -1,0 +1,115 @@
+@using Microsoft.VisualBasic
+
+@model IEnumerable<Propietario>
+
+<div class="container-fluid shadow border rounded-4 mt-4 bg-light-subtle position-relative">
+    <div class="row my-2">
+        <div class="col-12 col-md-6 col-lg-4">
+            <label for="input-filtro" class="form-label fw-bold">Escriba un nombre o apellido</label>
+            <input type="text" id="input-filtro" class="form-control" placeholder="todavia no implementado">
+        </div>
+        <div class="col-12 col-md-6 col-lg-2">
+            <label for="orden" class="form-label fw-bold">Ordenar por</label>
+            <select name="orden" id="orden" class="form-select">
+                <option value="" selected>Ninguno</option>
+                <option value="@nameof(Propietario.Nombre)" >Nombre</option>
+                <option value="@nameof(Propietario.Apellido)" >Apellido</option>
+                <option value="@nameof(Propietario.Dni)" >DNI</option>
+            </select>
+        </div>
+        <div class="col-12 col-md-6 col-lg-2">
+            <label for="tipo-orden" class="form-label fw-bold">Tipo orden</label>
+            <select name="tipoOrden" id="tipo-orden" class="form-select">
+                <option value="ASC" selected>Ascendente</option>
+                <option value="DESC">Descendente</option>
+            </select>
+        </div>
+        <div class="col-12 col-md-6 col-lg-2">
+            <label for="cantidad-resultados" class="form-label fw-bold">Cant. Resultados</label>
+            <select name="CantidadResultados" id="cantidad-resultados" class="form-select">
+                <option value="5">5</option>
+                <option value="10" selected>10</option>
+                <option value="15">15</option>
+                <option value="20">20</option>
+                <option value="25">25</option>
+            </select>
+        </div>
+        <div class="col-12 col-lg-2 d-flex justify-content-center align-items-end mt-3 mt-lg-0">
+            <span class="w-50 d-flex justify-content-center">
+                <button id="consultar-btn" class="btn btn-primary">Consultar</button>
+            </span>
+        </div>
+    </div>
+
+    <div class="table-responsive my-4 rounded-3 fixed-height-table-container">
+        <table class="table table-striped table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Apellido).ToUpper()
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Nombre).ToUpper()
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Dni).ToUpper()
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Telefono).ToUpper()
+                    </th>
+                    <th colspan="2">
+                        @Html.DisplayNameFor(model => model.Email).ToUpper()
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="cuerpo">
+                @foreach (var item in Model)
+                {
+                    <tr id="@item.Id">
+                        <td class="align-middle py-0 ps-2">
+                            @Html.DisplayFor(modelItem => item.Apellido)
+                        </td>
+                        <td class="align-middle py-0 ps-2">
+                            @Html.DisplayFor(modelItem => item.Nombre)
+                        </td>
+                        <td class="align-middle py-0 ps-2">
+                            @Html.DisplayFor(modelItem => item.Dni)
+                        </td>
+                        <td class="align-middle py-0 ps-2">
+                            @Html.DisplayFor(modelItem => item.Telefono)
+                        </td>
+                        <td class="align-middle py-0 ps-2" colspan="2">
+                            @Html.DisplayFor(modelItem => item.Email)
+                        </td>
+                        <td>
+                            <div class="d-flex justify-content-evenly align-items-center">
+                                @* <a asp-action="PropietarioForm" asp-route-id="@item.Id" title="Editar"><i class="bi bi-pencil-square fs-3"></i></a> *@
+                                <i id="edit-@item.Id" class="bi bi-pencil-square fs-3 text-primary" style="cursor: pointer;"></i>
+                                <a asp-action="Eliminar" asp-route-id="@item.Id" title="Eliminar"><i class="bi bi-trash fs-3 text-danger"></i></a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <nav>
+        <ul id="paginador" class="pagination justify-content-center">
+            <li id="flecha-pag-izq" class="page-item @(ViewBag.offsetAnterior == 0 ? "disabled" : "")">
+                <a asp-action="Index" asp-route-limit="10" asp-route-offset="@ViewBag.offsetAnterior" class="page-link"><span>&laquo;</span></a>
+            </li>
+            @for (int i = 1; i <= ViewBag.cantPag; i++) {
+                <li class="page-item">
+                    <a asp-action="Index" asp-route-limit="10" asp-route-offset="@i" class="page-link @(i > ViewBag.offsetAnterior && i < ViewBag.offsetSiguiente ? "active" : "")">@i</a>
+                </li>
+            }
+            <li id="flecha-pag-der" class="page-item @(ViewBag.offsetSiguiente > ViewBag.cantPag ? "disabled" : "")">
+                <a asp-action="Index" asp-route-limit="10" asp-route-offset="@ViewBag.offsetSiguiente" class="page-link"><span>&raquo;</span></a>
+            </li>
+        </ul>
+    </nav>
+    <div id="btn_add" class="position-absolute bottom-0 end-0 me-4 mb-2" style="cursor: pointer;">
+        <i class="bi bi-plus-square fs-1 text-primary"></i>
+    </div>
+</div>

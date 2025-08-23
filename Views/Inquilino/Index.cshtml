@@ -1,0 +1,23 @@
+@using Microsoft.VisualBasic
+@model InquilinoViewModel
+@{
+    ViewData["Title"] = "Inquilinos";
+}
+
+<link rel="stylesheet" href="~/css/tablas.css">
+
+<h1 id="titulo" data-modelo="@nameof(Inquilino)" class="text-center mt-2">Inquilinos</h1>
+
+@*aca va la tabla*@
+@* @Html.Partial("PropietarioTabla", Model.Propietarios) *@
+<partial name="_InquilinoTabla" model="Model.Inquilinos"/>
+@* @Html.Partial("PropietarioFormModal", Model.Propietario) *@
+<partial name="_InquilinoFormModal" model="Model.Inquilino"/>
+<partial name="_ModalPregunta"/>
+@if(!string.IsNullOrEmpty(Model.MensajeError)) {
+    <partial name="_MensajeError" model="Model.MensajeError"/>
+}
+
+
+
+<script type="module" src="~/js/inquilinos.js"></script>
