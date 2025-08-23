@@ -1,4 +1,4 @@
-import { getElementById, getFormInputValue, mostrarMensaje, mostrarPregunta } from "./frontUtils.js";
+import { agregarClases, getElementById, getFormInputValue, mostrarMensaje, mostrarPregunta, removerClases } from "./frontUtils.js";
 import { 
   setInvalidInputStyle, 
   setValidInputStyle, 
@@ -31,9 +31,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.querySelectorAll("td .bi-pencil-square").forEach(i => {
     i.addEventListener("click", e => {
-      // const idFIla = e.target.id.split("-")[1];
-      // const fila = getElementById(idFIla);
-      const fila = e.target.parentElement.parentElement.parentElement;
+      const idFIla = e.target.id.split("-")[1];
+      const fila = getElementById(idFIla);
       const datosFila = getRawValues(fila);
 
       getElementById("nombre").value = datosFila.nombre;
@@ -47,22 +46,33 @@ document.addEventListener("DOMContentLoaded", () => {
       
       const myModal = new bootstrap.Modal(getElementById('modal_formulario_inquilino'), {});
       myModal.show();
-      // console.log(fila);
+    });
+    i.addEventListener("mouseover", e => {
+      removerClases(i, "fs-3");
+      agregarClases(i, "fs-2");
+    });
+    i.addEventListener("mouseleave", e => {
+      removerClases(i, "fs-2");
+      agregarClases(i, "fs-3");
     });
   });
 
   document.querySelectorAll("td .bi-trash").forEach(i => {
     i.addEventListener("click", e => {
-      const fila = e.target.parentElement.parentElement.parentElement;
-      const idFila = fila.id;
+      const idFila = e.target.id.split("-")[1];
 
       getElementById("btn_si").href = `/Inquilino/Eliminar/${idFila}`;
 
       mostrarPregunta(null);
-      // const modalPregunta = getElementById('modal-pregunta');
-      // const myModal = new bootstrap.Modal(modalPregunta, {});
-      // myModal.show();
-    })
+    });
+    i.addEventListener("mouseover", e => {
+      removerClases(i, "fs-3");
+      agregarClases(i, "fs-2");
+    });
+    i.addEventListener("mouseleave", e => {
+      removerClases(i, "fs-2");
+      agregarClases(i, "fs-3");
+    });
   });
 
   mostrarMensaje(false, null);
@@ -74,18 +84,32 @@ document.addEventListener("DOMContentLoaded", () => {
     const formValues = getFormValues();
     
     if (validarFormulario(formValues)) {
-      form.submit();
+      setTimeout((form) => { form.submit(); }, 500, form);
     }
 
     return;
 
   });
 
+  const btnAdd = document.querySelector("#btn_add i");
+  if (btnAdd !== null) {
+    btnAdd.addEventListener("mouseover", e => {
+      removerClases(btnAdd, "fs-1");
+      removerClases(btnAdd.parentElement, "me-4", "mb-2")
+      agregarClases(btnAdd.parentElement, "me-3", "mb-1");
+      btnAdd.style = "font-size: 3rem;";
+    });
+    btnAdd.addEventListener("mouseleave", e => {
+      removerClases(btnAdd.parentElement, "me-3", "mb-1");
+      agregarClases(btnAdd.parentElement, "me-4", "mb-2");
+      agregarClases(btnAdd, "fs-1");
+      btnAdd.style = "";
+    });
+  }
+
 });
 
-//
 
-//para cuando explique como recibir peticioens ajax
 // async function enviar(formValues) {
 //   const respuesta = await enviarPOST("/vacunacion", formValues);
 //   mostrarMensaje(respuesta.ok, respuesta.mensaje ?? "Vacunación Registrada");

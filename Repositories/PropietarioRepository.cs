@@ -7,20 +7,18 @@ namespace InmobiliariaGutierrezManuel.Repositories;
 
 public class PropietarioRepository : BaseRepository, IPropietarioRepository
 {
-    // readonly string connectionString = "server=127.0.0.1;uid=root;pwd=root;database=inmobiliaria";
     private readonly string[] campos = ["Id", "Nombre", "Apellido", "Dni", "Telefono", "Email"];
 
     public PropietarioRepository() : base()
     {
-
     }
 
     public IList<Propietario> ListarPropietarios(
         string? nomApe = null,
         string? orderBy = null,
         string? order = "ASC",
-        int? offset = 1,
-        int? limit = 10
+        int? offset = 1, //n° de l pagina actual
+        int? limit = 10  //cantidad de resultados por pagina
     )
     {
         var propietarios = new List<Propietario>();
@@ -34,7 +32,8 @@ public class PropietarioRepository : BaseRepository, IPropietarioRepository
                     {nameof(Propietario.Apellido)}, 
                     {nameof(Propietario.Dni)}, 
                     {nameof(Propietario.Telefono)}, 
-                    {nameof(Propietario.Email)} 
+                    {nameof(Propietario.Email)}, 
+                    {nameof(Propietario.Activo)}
                 FROM propietarios 
                 WHERE {nameof(Propietario.Activo)} = 1"
             ;
@@ -69,7 +68,8 @@ public class PropietarioRepository : BaseRepository, IPropietarioRepository
                             Apellido = reader.GetString(nameof(Propietario.Apellido)),
                             Dni = reader.GetString(nameof(Propietario.Dni)),
                             Telefono = reader.GetString(nameof(Propietario.Telefono)),
-                            Email = reader.GetString(nameof(Propietario.Email))
+                            Email = reader.GetString(nameof(Propietario.Email)),
+                            Activo = reader.GetBoolean(nameof(Propietario.Activo))
                         });
                     }
                 }
@@ -93,7 +93,8 @@ public class PropietarioRepository : BaseRepository, IPropietarioRepository
                     {nameof(Propietario.Apellido)}, 
                     {nameof(Propietario.Dni)}, 
                     {nameof(Propietario.Telefono)}, 
-                    {nameof(Propietario.Email)} 
+                    {nameof(Propietario.Email)}, 
+                    {nameof(Propietario.Activo)}
                 FROM propietarios 
                 WHERE {nameof(Propietario.Activo)} = 1"
             ;
@@ -120,6 +121,7 @@ public class PropietarioRepository : BaseRepository, IPropietarioRepository
                             Dni = reader.GetString(nameof(Propietario.Dni)),
                             Telefono = reader.GetString(nameof(Propietario.Telefono)),
                             Email = reader.GetString(nameof(Propietario.Email)),
+                            Activo = reader.GetBoolean(nameof(Propietario.Activo))
                         };
                     }
                 }
@@ -233,13 +235,12 @@ public class PropietarioRepository : BaseRepository, IPropietarioRepository
         {
             string sql = @$"
                 UPDATE propietarios 
-                SET {nameof(Propietario.Activo)} = @{nameof(Propietario.Activo)} 
+                SET {nameof(Propietario.Activo)} = 0 
                 WHERE {nameof(Propietario.Id)} = @{nameof(Propietario.Id)};"
             ;
 
             using (var command = new MySqlCommand(sql, connection))
             {
-                command.Parameters.AddWithValue($"{nameof(Propietario.Activo)}", 0);
                 command.Parameters.AddWithValue($"{nameof(Propietario.Id)}", id);
 
                 connection.Open();

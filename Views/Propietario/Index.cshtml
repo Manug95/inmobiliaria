@@ -13,6 +13,7 @@
 <partial name="_PropietarioTabla" model="Model.Propietarios"/>
 @* @Html.Partial("PropietarioFormModal", Model.Propietario) *@
 <partial name="_PropietarioFormModal" model="Model.Propietario"/>
+<partial name="_ModalPregunta"/>
 @if(!string.IsNullOrEmpty(Model.MensajeError)) {
     <partial name="_MensajeError" model="Model.MensajeError"/>
 }
@@ -20,4 +21,3 @@
 
 
 <script type="module" src="~/js/propietarios.js"></script>
-<script type="module" src="~/js/propietarioForm.js" defer></script>

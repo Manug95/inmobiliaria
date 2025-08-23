@@ -4,12 +4,14 @@ export function setValidInputStyle(id) {
   const input = getElementById(id);
   removerClases(input, "is-invalid");
   agregarClases(input, "is-valid");
+  // input.dispatchEvent(new Event("change", { bubbles: true }));
 }
 
 export function setInvalidInputStyle(id) {
   const input = getElementById(id);
   removerClases(input, "is-valid");
   agregarClases(input, "is-invalid");
+  // input.dispatchEvent(new Event("change", { bubbles: true }));
 }
 
 export function resetValidationInputStyle(id) {
@@ -48,27 +50,6 @@ export function validarFecha(fecha) {
   return true;
 }
 
-export function validarInputNumberPositivo(value) {
-  if (!value) return false;
-  value += "";
-
-  if (value.includes(".") || value.includes("+") || value.includes("e") || value.includes("-")) return false;
-
-  const num = Number.parseInt(value);
-  if (!num) return false
-  if (num < 0) return false
-
-  return true;
-}
-
-function validarMotivo(motivo) {
-  // if (!motivo) return false;
-  // if (motivo.length > 100) return false;
-
-  // return true;
-  return validarFormSelect(motivo);
-}
-
 // export function validarDNI(dni) {
 //   if (!dni) return false;
 
@@ -81,9 +62,9 @@ function validarMotivo(motivo) {
 export function validarDNI(dni) {
   if (dni === null) return { errorMessage: "El DNI es requerido." };
 
-  if (typeof dni !== "string") return { errorMessage: "El DNI debe ser un número de 8 dígitos numéricos." };
+  if (typeof dni !== "string") return { errorMessage: "Debe ser un número de 8 dígitos numéricos." };
 
-  if (dni.length < 8 || dni.length > 8) return { errorMessage: "El DNI debe ser un número de 8 dígitos." };
+  if (dni.length !== 8) return { errorMessage: "Debe ser un número de 8 dígitos." };
 
   const regex = /^\d{8}$/;
   if (!regex.test(dni)) return { errorMessage: "El DNI ingresado NO es valido." };

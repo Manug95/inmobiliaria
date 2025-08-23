@@ -8,23 +8,21 @@ namespace InmobiliariaGutierrezManuel.Controllers;
 
 public class InquilinoController : Controller
 {
-    private readonly ILogger<InquilinoController> _logger;
     private readonly InquilinoRepository repo;
 
-    public InquilinoController(ILogger<InquilinoController> logger)
+    public InquilinoController()
     {
-        _logger = logger;
         repo = new InquilinoRepository();
     }
 
-    public IActionResult Index(string? nomApe, string? orderBy, string? order, int? offset = 1, int? limit = 10)
+    public IActionResult Index(string? nomApe, string? orderBy, string? order, int offset = 1, int limit = 10)
     {
         IList<Inquilino> inquilinos = repo.ListarInquilinos(nomApe, orderBy, order, offset, limit);
         int cantidadInquilinos = repo.ContarInquilinos();
         
-        ViewBag.cantPag = Math.Ceiling( cantidadInquilinos / 10.0 );
-        ViewBag.offsetSiguiente = offset.HasValue ? offset.Value + 1 : 2;
-        ViewBag.offsetAnterior = offset.HasValue ? offset.Value - 1 : 0;
+        ViewBag.cantPag = Math.Ceiling( (decimal)cantidadInquilinos / limit);
+        ViewBag.offsetSiguiente = offset + 1;
+        ViewBag.offsetAnterior = offset - 1;
 
         InquilinoViewModel ivm = new InquilinoViewModel
         {
@@ -51,12 +49,12 @@ public class InquilinoController : Controller
     [HttpPost]
     public IActionResult Guardar(Inquilino inquilino)
     {
-        if (repo.ObtenerInquilino(null, inquilino.Dni) != null)
-            ModelState.AddModelError("Dni", "El DNI ya está registrado.");
-        if (repo.BuscarPorEmail(inquilino.Email))
-            ModelState.AddModelError("Email", "El E-Mail ya está registrado.");
-        if (repo.BuscarPorTelefono(inquilino.Telefono))
-            ModelState.AddModelError("Telefono", "El teléfono ya está registrado.");
+        // if (repo.ObtenerInquilino(null, inquilino.Dni) != null)
+        //     ModelState.AddModelError("Dni", "El DNI ya está registrado.");
+        // if (repo.BuscarPorEmail(inquilino.Email))
+        //     ModelState.AddModelError("Email", "El E-Mail ya está registrado.");
+        // if (repo.BuscarPorTelefono(inquilino.Telefono))
+        //     ModelState.AddModelError("Telefono", "El teléfono ya está registrado.");
 
         if (ModelState.IsValid)
         {

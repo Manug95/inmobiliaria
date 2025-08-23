@@ -3,7 +3,7 @@
 @model IEnumerable<Propietario>
 
 <div class="container-fluid shadow border rounded-4 mt-4 bg-light-subtle position-relative">
-    <div class="row my-2">
+    @* <div class="row my-2">
         <div class="col-12 col-md-6 col-lg-4">
             <label for="input-filtro" class="form-label fw-bold">Escriba un nombre o apellido</label>
             <input type="text" id="input-filtro" class="form-control" placeholder="todavia no implementado">
@@ -39,7 +39,7 @@
                 <button id="consultar-btn" class="btn btn-primary">Consultar</button>
             </span>
         </div>
-    </div>
+    </div> *@
 
     <div class="table-responsive my-4 rounded-3 fixed-height-table-container">
         <table class="table table-striped table-hover mb-0">
@@ -85,8 +85,9 @@
                         <td>
                             <div class="d-flex justify-content-evenly align-items-center">
                                 @* <a asp-action="PropietarioForm" asp-route-id="@item.Id" title="Editar"><i class="bi bi-pencil-square fs-3"></i></a> *@
-                                <i id="edit-@item.Id" class="bi bi-pencil-square fs-3 text-primary" style="cursor: pointer;"></i>
-                                <a asp-action="Eliminar" asp-route-id="@item.Id" title="Eliminar"><i class="bi bi-trash fs-3 text-danger"></i></a>
+                                <i id="edit-@item.Id" class="bi bi-pencil-square fs-3 text-primary" style="cursor: pointer;" title="Editar"></i>
+                                @* <a asp-action="Eliminar" asp-route-id="@item.Id" title="Eliminar"><i class="bi bi-trash fs-3 text-danger"></i></a> *@
+                                <i id="del-@item.Id" class="bi bi-trash fs-3 text-danger" style="cursor: pointer;" title="Eliminar"></i>
                             </div>
                         </td>
                     </tr>
@@ -110,6 +111,6 @@
         </ul>
     </nav>
     <div id="btn_add" class="position-absolute bottom-0 end-0 me-4 mb-2" style="cursor: pointer;">
-        <i class="bi bi-plus-square fs-1 text-primary"></i>
+        <i class="bi bi-plus-square fs-1 text-primary" title="Nuevo Propietario"></i>
     </div>
 </div>

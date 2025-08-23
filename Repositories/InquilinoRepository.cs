@@ -1,4 +1,3 @@
-using System.Data;
 using MySql.Data.MySqlClient;
 using InmobiliariaGutierrezManuel.Models;
 using InmobiliariaGutierrezManuel.Interfaces;
@@ -7,20 +6,18 @@ namespace InmobiliariaGutierrezManuel.Repositories;
 
 public class InquilinoRepository : BaseRepository, IInquilinoRepository
 {
-    // readonly string connectionString = "server=127.0.0.1;uid=root;pwd=root;database=inmobiliaria";
     private readonly string[] campos = ["Id", "Nombre", "Apellido", "Dni", "Telefono", "Email"];
 
     public InquilinoRepository() : base()
     {
-
     }
 
     public IList<Inquilino> ListarInquilinos(
         string? nomApe = null,
         string? orderBy = null,
         string? order = "ASC",
-        int? offset = 1,
-        int? limit = 10
+        int? offset = 1, //n° de l pagina actual
+        int? limit = 10  //cantidad de resultados por pagina
     )
     {
         var inquilinos = new List<Inquilino>();
@@ -237,13 +234,12 @@ public class InquilinoRepository : BaseRepository, IInquilinoRepository
         {
             string sql = @$"
                 UPDATE inquilinos 
-                SET {nameof(Inquilino.Activo)} = @{nameof(Inquilino.Activo)} 
+                SET {nameof(Inquilino.Activo)} = 0 
                 WHERE {nameof(Inquilino.Id)} = @{nameof(Inquilino.Id)};"
             ;
 
             using (var command = new MySqlCommand(sql, connection))
             {
-                command.Parameters.AddWithValue($"{nameof(Inquilino.Activo)}", 0);
                 command.Parameters.AddWithValue($"{nameof(Inquilino.Id)}", id);
 
                 connection.Open();
@@ -328,36 +324,5 @@ public class InquilinoRepository : BaseRepository, IInquilinoRepository
         }
 
         return esta;
-    }
-
-    public bool Verificar(string dni, string email, string telefono)
-    {
-        bool hay = false;
-
-        using (var connection = new MySqlConnection(connectionString))
-        {
-            string sql = @$"
-                SELECT COUNT(*) AS c 
-                FROM inquilinos 
-                WHERE {nameof(Inquilino.Dni)} = @{nameof(Inquilino.Dni)}
-                    OR {nameof(Inquilino.Email)} = @{nameof(Inquilino.Email)}
-                    OR {nameof(Inquilino.Telefono)} = @{nameof(Inquilino.Telefono)};"
-            ;
-
-            using (var command = new MySqlCommand(sql, connection))
-            {
-                command.Parameters.AddWithValue($"{nameof(Inquilino.Dni)}", dni);
-                command.Parameters.AddWithValue($"{nameof(Inquilino.Email)}", email);
-                command.Parameters.AddWithValue($"{nameof(Inquilino.Telefono)}", telefono);
-
-                connection.Open();
-
-                hay = Convert.ToInt32(command.ExecuteScalar()) > 0;
-
-                connection.Close();
-            }
-        }
-
-        return hay;
     }
 }
