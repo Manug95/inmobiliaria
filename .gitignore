@@ -1,0 +1,58 @@
+# Build results
+bin/
+obj/
+out/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Visual Studio Code
+.vscode/
+
+# Rider
+.idea/
+
+# ASP.NET Core secrets
+**/secrets.json
+*.db
+
+# Entity Framework Core
+Migrations/
+
+# NuGet packages
+*.nupkg
+*.snupkg
+packages/
+.nuget/
+
+# Logs
+*.log
+
+# Configuration transforms
+*.config
+*.config.transform
+
+# Publish output
+publish/
+wwwroot/dist/
+wwwroot/node_modules/
+
+# Node.js dependencies (if using frontend tooling)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Environment files
+.env
+.env.*
+
+# OS-specific
+Thumbs.db
+.DS_Store
+
+# Others
+*.vspscc
+.vs/
