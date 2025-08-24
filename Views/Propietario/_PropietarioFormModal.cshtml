@@ -31,7 +31,7 @@
                             <div class="row mb-md-4">
                                 <div class="col-12 col-md-6 mt-5 mt-md-3 mb-md-0">
                                     <div class="position-relative">
-                                        <label asp-for="Dni" class="form-label fw-bold">DNI</label>
+                                        <label asp-for="Dni" class="form-label"><span class="fw-bold">DNI</span><span class="small">(sin puntos)</span></label>
                                         <input type="text" asp-for="Dni" class="form-control" id="dni">
                                         <div id="tpe_dni" class="invalid-tooltip">Falta el DNI o es incorrecto</div>
                                     </div>
@@ -39,7 +39,7 @@
                                 <div class="col-12 col-md-6 mt-5 mt-md-3 mb-md-0">
                                     <div class="position-relative">
                                         <label asp-for="Telefono" class="form-label fw-bold">Teléfono</label>
-                                        <input type="text" asp-for="Telefono" class="form-control" id="telefono" placeholder="1111-111111">
+                                        <input type="text" asp-for="Telefono" class="form-control" id="telefono">
                                         <div id="tpe_telefono" class="invalid-tooltip">Falta el teléfono o es incorrecto</div>
                                     </div>
                                 </div>

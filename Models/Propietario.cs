@@ -19,7 +19,7 @@ public class Propietario
     [Required(ErrorMessage = "El DNI es requerido")]
     public string? Dni { get; set; }
 
-    [StringLength(15, ErrorMessage = "El maximo de caracteres es 15")]
+    [StringLength(20, ErrorMessage = "El maximo de caracteres es 15")]
     [Required(ErrorMessage = "El teléfono es requerido")]
     [Display(Name = "Teléfono")]
     public string? Telefono { get; set; }
