@@ -1,0 +1,154 @@
+import { agregarClases, getElementById, getFormInputValue, mostrarMensaje, mostrarPregunta, removerClases } from "./frontUtils.js";
+import { 
+  setInvalidInputStyle, 
+  setValidInputStyle,
+  resetValidationInputStyle ,
+  setValidationErrorMessage,
+  resetValidationErrorMessage,
+  validarNombreTipoInmueble,
+  validarDescripcionTipoInmueble
+} from "./validaciones.js";
+
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  getElementById("btn_add").addEventListener("click", e => {
+    getElementById("tipo").value = "";
+    getElementById("descripcion").value = "";
+    getElementById("Id").value = 0;
+
+    resetValidationStatus();
+
+    const modalForm = getElementById('modal_formulario_tipoInmueble');
+    const myModal = new bootstrap.Modal(modalForm, {});
+    myModal.show();
+  });
+
+  document.querySelectorAll("td .bi-pencil-square").forEach(i => {
+    i.addEventListener("click", e => {
+      const idFIla = e.target.id.split("-")[1];
+      const fila = getElementById(idFIla);
+      const datosFila = getRawValues(fila);
+
+      getElementById("tipo").value = datosFila.tipo;
+      getElementById("Id").value = datosFila.id;
+
+      resetValidationStatus();
+      
+      const myModal = new bootstrap.Modal(getElementById('modal_formulario_tipoInmueble'), {});
+      myModal.show();
+    });
+    i.addEventListener("mouseover", e => {
+      removerClases(i, "fs-3");
+      agregarClases(i, "fs-2");
+    });
+    i.addEventListener("mouseleave", e => {
+      removerClases(i, "fs-2");
+      agregarClases(i, "fs-3");
+    });
+  });
+
+  document.querySelectorAll("td .bi-trash").forEach(i => {
+    i.addEventListener("click", e => {
+      const idFila = e.target.id.split("-")[1];
+
+      getElementById("btn_si").href = `/TipoInmueble/Eliminar/${idFila}`;
+
+      mostrarPregunta(null);
+    });
+    i.addEventListener("mouseover", e => {
+      removerClases(i, "fs-3");
+      agregarClases(i, "fs-2");
+    });
+    i.addEventListener("mouseleave", e => {
+      removerClases(i, "fs-2");
+      agregarClases(i, "fs-3");
+    });
+  });
+
+  mostrarMensaje(false, null);
+
+  const form = getElementById("form-tipoInmueble");
+
+  form?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const formValues = getFormValues();
+    
+    if (validarFormulario(formValues)) {
+      setTimeout((form) => { form.submit(); }, 500, form);
+    }
+
+    return;
+
+  });
+
+  const btnAdd = document.querySelector("#btn_add i");
+  if (btnAdd !== null) {
+    btnAdd.addEventListener("mouseover", e => {
+      removerClases(btnAdd, "fs-1");
+      removerClases(btnAdd.parentElement, "me-4", "mb-2")
+      agregarClases(btnAdd.parentElement, "me-3", "mb-1");
+      btnAdd.style = "font-size: 3rem;";
+    });
+    btnAdd.addEventListener("mouseleave", e => {
+      removerClases(btnAdd.parentElement, "me-3", "mb-1");
+      agregarClases(btnAdd.parentElement, "me-4", "mb-2");
+      agregarClases(btnAdd, "fs-1");
+      btnAdd.style = "";
+    });
+  }
+
+});
+
+
+// async function enviar(formValues) {
+//   const respuesta = await enviarPOST("/vacunacion", formValues);
+//   mostrarMensaje(respuesta.ok, respuesta.mensaje ?? "Vacunación Registrada");
+// }
+
+function getFormValues() {
+  return {
+    tipo: getFormInputValue("tipo"),
+    descripcion: getFormInputValue("descripcion")
+  };
+}
+
+/**
+ * @param {HTMLTableRowElement} raw 
+ */
+function getRawValues(raw) {
+  const datos = raw.children;
+  return {
+    tipo: datos.item(0).innerText.trim(),
+    descripcion: datos.item(1).innerText.trim(),
+    id: raw.id
+  };
+}
+
+/**
+ * @param {*} values 
+ * @returns {Boolean}
+ */
+function validarFormulario(values) {
+  const mapaValidador = new Map([
+    ["tipo", validarNombreTipoInmueble],
+    ["descripcion", validarDescripcionTipoInmueble]
+  ]);
+
+  return Object.keys(values)
+  .map(v => {
+    const result = mapaValidador.get(v)(values[v]);
+    if (result !== undefined) { setInvalidInputStyle(v); setValidationErrorMessage(`tpe_${v}`, result.errorMessage); } 
+    else { setValidInputStyle(v); resetValidationErrorMessage(`tpe_${v}`); }
+    return result === undefined;
+  })
+  .every(v => v);
+}
+
+function resetValidationStatus() {
+    resetValidationInputStyle("tipo");
+    resetValidationInputStyle("descripcion");
+
+    resetValidationErrorMessage("tpe_tipo");
+    resetValidationErrorMessage("tpe_descripcion");
+}

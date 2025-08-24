@@ -60,14 +60,14 @@ export function validarFecha(fecha) {
 // }
 
 export function validarDNI(dni) {
-  if (dni === null) return { errorMessage: "El DNI es requerido." };
+  if (dni === null) return { errorMessage: "El DNI es requerido" };
 
-  if (typeof dni !== "string") return { errorMessage: "Debe ser un número de 8 dígitos numéricos." };
+  if (typeof dni !== "string") return { errorMessage: "Debe ser un número de 7 u 8 dígitos numéricos" };
 
-  if (dni.length < 7 || dni.length > 8) return { errorMessage: "Debe ser un número de 8 dígitos." };
+  if (dni.length < 7 || dni.length > 8) return { errorMessage: "Debe ser un número de 7 u 8 dígitos" };
 
   const regex = /^\d{7,8}$/;
-  if (!regex.test(dni)) return { errorMessage: "El DNI ingresado NO es valido." };
+  if (!regex.test(dni)) return { errorMessage: "El DNI ingresado NO es valido" };
 
   return;
 }
@@ -76,10 +76,10 @@ export function validarDNI(dni) {
  * @param {string} cadena 
  */
 export function validarNombreApellido(cadena) {
-  if (cadena === undefined || cadena === null) return { errorMessage: "El campo es requerido." };
-  if (typeof cadena !== "string") return { errorMessage: "El campo de ser de texto." };
-  if (cadena.trim() === "") return { errorMessage: "El campo es requerido." };
-  if (cadena.length > 25) return { errorMessage: "El máximo de caracteres de de 25." };
+  if (cadena === undefined || cadena === null) return { errorMessage: "El campo es requerido" };
+  if (typeof cadena !== "string") return { errorMessage: "El campo de ser de texto" };
+  if (cadena.trim() === "") return { errorMessage: "El campo es requerido" };
+  if (cadena.length > 25) return { errorMessage: "El máximo de caracteres de de 25" };
   return;
 }
 
@@ -95,16 +95,35 @@ export function validarTelefono(cadena) {
   // const regExp = /^(?:\+54)?\s*(?:\(?(?:11|2\d{2,3}|3\d{2,3}|6\d{2}|8\d{2})\)?)\s*(?:15\s*)?\d{4}[-\s.]?\d{4}$/;
   const regExp = /^(\+54\s)?0?(\d{2,4})\s(15\s)?(\d{4}-?\d{4})|(\d{3}-?\d{4})|(\d{2}-?\d{4})$/;
   // /(\d{4}-?\d{4})|(\d{3}-?\d{4})|(\d{2}-?\d{4})/ //1234–5678 o 123–4567 o 12-3456
-  if (!regExp.test(cadena)) return { errorMessage: "El teléfono ingresado NO es valido." };
+  if (!regExp.test(cadena)) return { errorMessage: "El teléfono ingresado NO es valido" };
   return;
 }
 
 export function validarEmail(cadena) {
-  if (cadena === undefined || cadena === null) return { errorMessage: "El campo es requerido." };
-  if (typeof cadena !== "string") return { errorMessage: "El campo de ser de texto." };
-  if (cadena.trim() === "") return { errorMessage: "El campo es requerido." };
-  if (cadena.length > 50) return { errorMessage: "El máximo de caracteres de de 50." };
+  if (cadena === undefined || cadena === null) return { errorMessage: "El campo es requerido" };
+  if (typeof cadena !== "string") return { errorMessage: "El campo de ser de texto" };
+  if (cadena.trim() === "") return { errorMessage: "El campo es requerido" };
+  if (cadena.length > 50) return { errorMessage: "El máximo de caracteres de de 50" };
   const regExp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-  if (!regExp.test(cadena)) return { errorMessage: "El EMAIL ingresado NO es valido." };
+  if (!regExp.test(cadena)) return { errorMessage: "El EMAIL ingresado NO es valido" };
+  return;
+}
+
+/**
+ * @param {string} cadena 
+ */
+export function validarNombreTipoInmueble(cadena) {
+  if (cadena === undefined || cadena === null) return { errorMessage: "El campo es requerido" };
+  if (typeof cadena !== "string") return { errorMessage: "El campo de ser de texto" };
+  if (cadena.trim() === "") return { errorMessage: "El campo es requerido" };
+  if (cadena.length > 25) return { errorMessage: "El máximo de caracteres de de 25" };
+  return;
+}
+
+export function validarDescripcionTipoInmueble(cadena) {
+  if (cadena !== undefined && cadena !== null) {
+    if (typeof cadena !== "string") return { errorMessage: "El campo de ser de texto" };
+  }
+  if (cadena.length > 255) return { errorMessage: "El máximo de caracteres de de 255" };
   return;
 }
