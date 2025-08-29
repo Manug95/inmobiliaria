@@ -1,0 +1,167 @@
+using System.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
+using InmobiliariaGutierrezManuel.Models;
+using InmobiliariaGutierrezManuel.Models.ViewModels;
+using InmobiliariaGutierrezManuel.Repositories;
+
+namespace InmobiliariaGutierrezManuel.Controllers;
+
+public class InmuebleController : Controller
+{
+    private readonly InmuebleRepository repo;
+    private readonly TipoInmuebleRepository repoTipoInmueble;
+    private readonly PropietarioRepository repoPropietario;
+
+    public InmuebleController()
+    {
+        repo = new InmuebleRepository();
+        repoTipoInmueble = new TipoInmuebleRepository();
+        repoPropietario = new PropietarioRepository();
+    }
+
+    public IActionResult Index(int offset = 1, int limit = 10)
+    {
+        IList<Inmueble> inmuebles = repo.ListarInmuebles(offset, limit);
+        int cantidadInmuebles = repo.ContarInmuebles();
+        IList<TipoInmueble> tiposInmuebles = repoTipoInmueble.ListarTiposInmueble();
+        
+        ViewBag.cantPag = Math.Ceiling( (decimal)cantidadInmuebles / limit);
+        ViewBag.offsetSiguiente = offset + 1;
+        ViewBag.offsetAnterior = offset - 1;
+
+        InmuebleViewModel ivm = new InmuebleViewModel
+        {
+            Inmuebles = inmuebles,
+            Inmueble = new Inmueble(),
+            TiposInmuebles = tiposInmuebles,
+            MensajeError = TempData["MensajeError"] as string
+        };
+
+        return View(ivm);
+    }
+
+    /*
+        [Bind(Prefix = "InmuebleFormData")] es porque
+        el InmuebleViewModel que le paso a la vista tiene como atributo un InmuebleFormData
+        y al generar el HTML, los atributos name de los inputs se crean con este formato "InmuebleFormData.nombredelcampo"
+        entoces con este Bind le digo al framework que tenga en cuenta eso para poder mapear los campos del formulario correctamente
+    */
+    [HttpPost]
+    public IActionResult Guardar([Bind(Prefix = "InmuebleFormData")] InmuebleFormData inmuebleForm)
+    {
+        if (inmuebleForm.IdTipoInmueble == 0)
+        {
+            int idTipoInmuebleNuevo = repoTipoInmueble.InsertarTipoInmueble(
+                new TipoInmueble
+                {
+                    Tipo = inmuebleForm.NuevoTipo,
+                    Descripcion = inmuebleForm.NuevoTipoDescripcion
+                }
+            );
+            inmuebleForm.IdTipoInmueble = idTipoInmuebleNuevo;
+        }
+
+        if (ModelState.IsValid)
+        {
+            Inmueble inmueble = new Inmueble
+            {
+                Calle = inmuebleForm.Calle,
+                CantidadAmbientes = (int)inmuebleForm.CantidadAmbientes!,
+                IdPropietario = inmuebleForm.IdPropietario,
+                IdTipoInmueble = inmuebleForm.IdTipoInmueble,
+                Latitud = (decimal)inmuebleForm.Latitud!,
+                Longitud = (decimal)inmuebleForm.Longitud!,
+                NroCalle = (uint)inmuebleForm.NroCalle!,
+                Precio = (decimal)inmuebleForm.Precio!,
+                Uso = inmuebleForm.Uso
+            };
+
+            if (inmuebleForm.Id > 0)
+            {
+                inmueble.Id = inmuebleForm.Id;
+                repo.ActualizarInmueble(inmueble);
+            }
+            else
+            {
+                repo.InsertarInmueble(inmueble);
+            }
+            return RedirectToAction(nameof(Index));
+        }
+        else
+        {
+            string errorMsg = "<ul>";
+            foreach (var estado in ModelState)
+            {
+                var campo = estado.Key;
+                foreach (var error in estado.Value.Errors)
+                {
+                    errorMsg += $"<li class=\"text-danger fs-5\"><strong>{error.ErrorMessage}</strong></li>";
+                }
+            }
+            TempData["MensajeError"] = errorMsg + "</ul>";
+
+            return RedirectToAction(nameof(Index));
+        }
+
+    }
+
+    public IActionResult FormularioInmueble(int id = 0, int idProp = 0)
+    {
+        IList<TipoInmueble> tiposInmuebles = repoTipoInmueble.ListarTiposInmueble();
+        IList<Propietario> propietarios = [];
+        if (idProp > 0)
+        {
+            Propietario? prop = repoPropietario.ObtenerPropietario(idProp, null);
+            propietarios.Add(prop!);
+        }
+        else
+        {
+            // propietarios = repoPropietario.ListarPropietarios();
+        }
+        InmuebleFormData? inmuebleFormData = null;
+        if (id > 0)
+        {
+            Inmueble? inmueble = repo.ObtenerInmueble(id);
+            if (inmueble != null)
+            {
+                inmuebleFormData = new InmuebleFormData
+                {
+                    Id = inmueble.Id,
+                    Calle = inmueble.Calle,
+                    CantidadAmbientes = inmueble.CantidadAmbientes,
+                    IdPropietario = inmueble.IdPropietario,
+                    IdTipoInmueble = inmueble.IdTipoInmueble,
+                    Latitud = inmueble.Latitud,
+                    Longitud = inmueble.Longitud,
+                    NroCalle = inmueble.NroCalle,
+                    Precio = inmueble.Precio,
+                    Uso = inmueble.Uso,
+                    Disponible = inmueble.Disponible
+                };
+            }
+            
+        }
+
+        InmuebleViewModel ivm = new InmuebleViewModel
+        {
+            Inmueble = new Inmueble(),
+            TiposInmuebles = tiposInmuebles,
+            Propietarios = propietarios,
+            InmuebleFormData = inmuebleFormData ?? new InmuebleFormData()
+        };
+
+        return View(ivm);
+    }
+
+    public IActionResult Eliminar(int id)
+    {
+        repo.EliminarInmueble(id);
+        return RedirectToAction(nameof(Index));
+    }
+
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    public IActionResult Error()
+    {
+        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+    }
+}

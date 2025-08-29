@@ -35,11 +35,11 @@ public class PropietarioController : Controller
         return View(pvm);
     }
 
-    // public IActionResult Listar(string? nomApe, string? orderBy, string? order, int? offset = 1, int? limit = 10)
-    // {
-    //     IList<Propietario> propietarios = repo.ListarPropietarios(nomApe, orderBy, order, offset, limit);
-    //     return View(propietarios);
-    // }
+    public IActionResult Listar(string? nomApe, string? orderBy, string? order, int? offset = 1, int? limit = 10)
+    {
+        IList<Propietario> propietarios = repo.ListarPropietarios(nomApe, orderBy, order, offset, limit);
+        return Json(new { datos = propietarios } );
+    }
 
     // public IActionResult Buscar(int id = 0, string? dni = null)
     // {

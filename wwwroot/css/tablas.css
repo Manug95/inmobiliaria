@@ -25,8 +25,11 @@ thead th {
     max-height: 55px !important;
 }
 
-/*#cuerpo tr td > div {
-    height: 100% !important; /* Asegura que el contenido interno se extienda a la altura de la celda 
-    display: flex !important;
-    align-items: center !important; /* Centra verticalmente el contenido dentro de las celdas 
-}*/
+.icon-hover, .icon-enlace {
+    transition: transform 0.2s ease-in-out;
+    cursor: pointer; 
+}
+
+.icon-hover:hover, .icon-enlace:hover {
+    transform: scale(1.2);
+}

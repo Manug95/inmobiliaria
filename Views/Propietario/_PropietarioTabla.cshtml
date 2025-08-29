@@ -85,9 +85,12 @@
                         <td>
                             <div class="d-flex justify-content-evenly align-items-center">
                                 @* <a asp-action="PropietarioForm" asp-route-id="@item.Id" title="Editar"><i class="bi bi-pencil-square fs-3"></i></a> *@
-                                <i id="edit-@item.Id" class="bi bi-pencil-square fs-3 text-primary" style="cursor: pointer;" title="Editar"></i>
+                                <i id="edit-@item.Id" class="bi bi-pencil-square fs-3 text-primary icon-hover" style="cursor: pointer;" data-bs-toggle="tooltip" data-bs-title="Editar"></i>
                                 @* <a asp-action="Eliminar" asp-route-id="@item.Id" title="Eliminar"><i class="bi bi-trash fs-3 text-danger"></i></a> *@
-                                <i id="del-@item.Id" class="bi bi-trash fs-3 text-danger" style="cursor: pointer;" title="Eliminar"></i>
+                                <i id="del-@item.Id" class="bi bi-trash fs-3 text-danger icon-hover" style="cursor: pointer;" data-bs-toggle="tooltip" data-bs-title="Eliminar"></i>
+                                <a class="icon-enlace" asp-action="FormularioInmueble" asp-controller="Inmueble" asp-route-idProp="@item.Id" data-bs-toggle="tooltip" data-bs-title="Registrar Inmueble">
+                                    <i class="bi bi-building-add fs-3 text-success"></i>
+                                </a>
                             </div>
                         </td>
                     </tr>
@@ -111,6 +114,6 @@
         </ul>
     </nav>
     <div id="btn_add" class="position-absolute bottom-0 end-0 me-4 mb-2" style="cursor: pointer;">
-        <i class="bi bi-plus-square fs-1 text-primary" title="Nuevo Propietario"></i>
+        <i class="bi bi-plus-square fs-1 text-primary icon-hover d-inline-block" data-bs-toggle="tooltip" data-bs-title="Registrar Nuevo"></i>
     </div>
 </div>

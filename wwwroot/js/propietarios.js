@@ -1,4 +1,4 @@
-import { getElementById, mostrarMensaje, mostrarPregunta, agregarClases, removerClases, getFormInputValue } from "./frontUtils.js";
+import { getElementById, mostrarMensaje, mostrarPregunta, getFormInputValue } from "./frontUtils.js";
 import { 
   resetValidationInputStyle, 
   resetValidationErrorMessage,
@@ -15,6 +15,9 @@ import {
 document.addEventListener("DOMContentLoaded", () => {
 
   mostrarMensaje(false, null);
+
+  const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+  const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
 
   getElementById("btn_add").addEventListener("click", e => {
     getElementById("nombre").value = "";
@@ -57,14 +60,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
       mostrarPregunta(null);
     });
-    i.addEventListener("mouseover", e => {
-      removerClases(i, "fs-3");
-      agregarClases(i, "fs-2");
-    });
-    i.addEventListener("mouseleave", e => {
-      removerClases(i, "fs-2");
-      agregarClases(i, "fs-3");
-    });
   });
 
   document.querySelectorAll("td .bi-pencil-square").forEach(i => {
@@ -86,31 +81,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const myModal = new bootstrap.Modal(getElementById('modal_formulario_propietario'), {});
       myModal.show();
     });
-    i.addEventListener("mouseover", e => {
-      removerClases(i, "fs-3");
-      agregarClases(i, "fs-2");
-    });
-    i.addEventListener("mouseleave", e => {
-      removerClases(i, "fs-2");
-      agregarClases(i, "fs-3");
-    });
   });
-
-  const btnAdd = document.querySelector("#btn_add i");
-  if (btnAdd !== null) {
-    btnAdd.addEventListener("mouseover", e => {
-      removerClases(btnAdd, "fs-1");
-      removerClases(btnAdd.parentElement, "me-4", "mb-2")
-      agregarClases(btnAdd.parentElement, "me-3", "mb-1");
-      btnAdd.style = "font-size: 3rem;";
-    });
-    btnAdd.addEventListener("mouseleave", e => {
-      removerClases(btnAdd.parentElement, "me-3", "mb-1");
-      agregarClases(btnAdd.parentElement, "me-4", "mb-2");
-      agregarClases(btnAdd, "fs-1");
-      btnAdd.style = "";
-    });
-  }
 
 });
 

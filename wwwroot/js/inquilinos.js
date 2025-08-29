@@ -13,6 +13,8 @@ import {
 
 
 document.addEventListener("DOMContentLoaded", () => {
+  const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+  const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
 
   getElementById("btn_add").addEventListener("click", e => {
     getElementById("nombre").value = "";
@@ -47,14 +49,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const myModal = new bootstrap.Modal(getElementById('modal_formulario_inquilino'), {});
       myModal.show();
     });
-    i.addEventListener("mouseover", e => {
-      removerClases(i, "fs-3");
-      agregarClases(i, "fs-2");
-    });
-    i.addEventListener("mouseleave", e => {
-      removerClases(i, "fs-2");
-      agregarClases(i, "fs-3");
-    });
   });
 
   document.querySelectorAll("td .bi-trash").forEach(i => {
@@ -64,14 +58,6 @@ document.addEventListener("DOMContentLoaded", () => {
       getElementById("btn_si").href = `/Inquilino/Eliminar/${idFila}`;
 
       mostrarPregunta(null);
-    });
-    i.addEventListener("mouseover", e => {
-      removerClases(i, "fs-3");
-      agregarClases(i, "fs-2");
-    });
-    i.addEventListener("mouseleave", e => {
-      removerClases(i, "fs-2");
-      agregarClases(i, "fs-3");
     });
   });
 
@@ -90,22 +76,6 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
 
   });
-
-  const btnAdd = document.querySelector("#btn_add i");
-  if (btnAdd !== null) {
-    btnAdd.addEventListener("mouseover", e => {
-      removerClases(btnAdd, "fs-1");
-      removerClases(btnAdd.parentElement, "me-4", "mb-2")
-      agregarClases(btnAdd.parentElement, "me-3", "mb-1");
-      btnAdd.style = "font-size: 3rem;";
-    });
-    btnAdd.addEventListener("mouseleave", e => {
-      removerClases(btnAdd.parentElement, "me-3", "mb-1");
-      agregarClases(btnAdd.parentElement, "me-4", "mb-2");
-      agregarClases(btnAdd, "fs-1");
-      btnAdd.style = "";
-    });
-  }
 
 });
 

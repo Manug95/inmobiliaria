@@ -31,8 +31,11 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     color: black !important;
 }
 
-/* #cuerpo tr td a {
-    text-decoration: none;
-    color: inherit;
-    cursor: inherit;
-} */
+.icon-hover {
+    transition: transform 0.2s ease-in-out;
+    cursor: pointer; 
+}
+
+.icon-hover:hover {
+    transform: scale(1.2);
+}

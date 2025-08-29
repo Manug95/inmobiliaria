@@ -62,7 +62,7 @@ public class Propietario
 
     public override string ToString()
     {
-        return $"{Apellido}, {Nombre} - {Dni} - {Telefono} - {Email}";
+        return $"{Apellido}, {Nombre} - {Dni}";
     }
 
 }

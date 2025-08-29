@@ -159,15 +159,15 @@ function removerClases(el, ...clases) {
 function createElement( el, { id, value, name, selected, disabled, content, type, href, src, colSpan }, ...classes ) {
   const elemento = document.createElement(el);
 
-  if (id) elemento.id = id;
-  if (value) elemento.value = value;
-  if (name) elemento.name = name;
-  if (type) elemento.type = type;
-  if (href) elemento.href = href;
-  if (src) elemento.href = src;
+  if (id !== undefined) elemento.id = id;
+  if (value !== undefined) elemento.value = value;
+  if (name !== undefined) elemento.name = name;
+  if (type !== undefined) elemento.type = type;
+  if (href !== undefined) elemento.href = href;
+  if (src !== undefined) elemento.href = src;
   if (selected) elemento.selected = selected;
   if (disabled) elemento.disabled = disabled;
-  if (colSpan) elemento.colSpan = colSpan;
+  if (colSpan !== undefined) elemento.colSpan = colSpan;
   if (content instanceof HTMLElement) {
     elemento.appendChild(content);
   } else if (typeof content === "string") {

@@ -56,3 +56,5 @@ Thumbs.db
 # Others
 *.vspscc
 .vs/
+
+wwwroot/js/animaciones.js

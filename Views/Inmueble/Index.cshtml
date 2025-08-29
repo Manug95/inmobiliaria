@@ -1,0 +1,26 @@
+@using Microsoft.VisualBasic
+@using InmobiliariaGutierrezManuel.Models.ViewModels;
+
+@model InmuebleViewModel
+@{
+    ViewData["Title"] = "Inmuebles";
+}
+
+<link rel="stylesheet" href="~/css/tablas.css">
+
+<h1 id="titulo" data-modelo="@nameof(Inmueble)" class="text-center mt-2">Inmuebles</h1>
+
+@*aca va la tabla*@
+@* @Html.Partial("PropietarioTabla", Model.Propietarios) *@
+<partial name="_InmuebleTabla" model="Model.Inmuebles"/>
+@* @Html.Partial("PropietarioFormModal", Model.Propietario) *@
+@* <partial name="_InmuebleFormModal" model="Model"/> *@
+<partial name="_ModalPregunta"/>
+@if(!string.IsNullOrEmpty(Model.MensajeError)) {
+    <partial name="_MensajeError" model="Model.MensajeError"/>
+}
+
+
+
+<script type="module" src="~/js/inmuebles.js"></script>
+@* <script type="module" src="~/js/animaciones.js"></script> *@

@@ -32,9 +32,9 @@ export function resetValidationErrorMessage(tooltipId) {
 
 export function validarFormSelect(value) {
   if (value === "") {
-    return false;
+    return { errorMessage: "El campo es requerido" };
   }
-  return true;
+  return;
 }
 
 export function validarFecha(fecha) {
@@ -125,5 +125,115 @@ export function validarDescripcionTipoInmueble(cadena) {
     if (typeof cadena !== "string") return { errorMessage: "El campo de ser de texto" };
   }
   if (cadena.length > 255) return { errorMessage: "El máximo de caracteres de de 255" };
+  return;
+}
+
+export function validarNroCalle(cadena) {
+  // const reNroCalle = /^\d{1,5}[A-Za-z]?$/;
+  if (cadena.length === 0) {
+    return { errorMessage: "El número de calle esta vacío o es incorrecto" };
+  }
+  if (isNaN(parseInt(cadena[0]))) {
+    return { errorMessage: "El número de calle debe comenzar con un número" };
+  }
+  const num = parseInt(cadena);
+  if (isNaN(num)) return { errorMessage: "No es un número" };
+  if (num <= 0) {
+    return { errorMessage: "El número de calle debe ser mayor a 0" };
+  }
+  if (num > 99999) {
+    return { errorMessage: "El número de calle es demasiado grande" };
+  }
+  if (cadena.length > 1) {
+    const ultimo = cadena[cadena.length - 1];
+    if (isNaN(ultimo) && !(/[a-zA-Z]/.test(ultimo))) {
+      return { errorMessage: "El número de calle solo puede terminar en una letra opcional" };
+    }
+  }
+  return;
+}
+
+export function validarCalle(cadena) {
+  // const reCalle = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s\.\-]{3,100}$/;
+  if (cadena.length === 0) {
+    return { errorMessage: "La calle es obligatoria" };
+  }
+  // if (cadena.length < 3) {
+  //   return { errorMessage: "La calle debe tener al menos 3 caracteres" };
+  // }
+  if (cadena.length > 50) {
+    return { errorMessage: "La calle no puede superar los 50 caracteres" };
+  }
+  for (let c of cadena) {
+    if (!(/[1-9a-zA-ZáéíóúÁÉÍÓÚñÑ\s\.\-°]/.test(c))) {
+      return { errorMessage: "La calle contiene caracteres inválidos" };
+    }
+  }
+  return;
+}
+
+export function validarCantidadAmbientes(cadena) {
+  if (cadena.length === 0) {
+    return { errorMessage: "La cantidad de ambientes es obligatoria" };
+  }
+  if (isNaN(cadena)) {
+    return { errorMessage: "La cantidad de ambientes debe ser un número" };
+  }
+  const cantidad = parseInt(cadena, 10);
+
+  if (!Number.isInteger(cantidad) || (cantidad < Number.parseFloat(cadena))) {
+    return { errorMessage: "La cantidad de ambientes debe ser un número entero" };
+  }
+  if (cantidad <= 0) {
+    return { errorMessage: "La cantidad de ambientes debe ser mayor que 0" };
+  }
+  if (cantidad > 100) {
+    return { errorMessage: "La cantidad de ambientes no puede superar los 100" };
+  }
+  return;
+}
+
+export function validarPrecio(cadena) {
+  // const rePrecio = /^\d+([.,]\d{1,2})?$/;
+  if (cadena.length === 0) {
+    return { errorMessage: "El precio es obligatorio" };
+  }
+  let precioNum = parseFloat(cadena.replace(",", "."));
+  if (isNaN(precioNum)) {
+    return { errorMessage: "El precio debe ser un número" };
+  }
+  if (precioNum <= 0) {
+    return { errorMessage: "El precio debe ser mayor que 0" };
+  }
+  return;
+}
+
+export function validarLatitud(cadena) {
+  // const reLat = /^-?([0-8]?\d(\.\d+)?|90(\.0+)?)$/;
+  if (cadena.length === 0) {
+    return { errorMessage: "La latitud es obligatoria" };
+  }
+  let latNum = parseFloat(cadena);
+  if (isNaN(latNum)) {
+    return { errorMessage: "La latitud debe ser un número" };
+  }
+  if (latNum < -90 || latNum > 90) {
+    return { errorMessage: "La latitud debe estar entre -90 y 90" };
+  }
+  return;
+}
+
+export function validarLongitud(cadena) {
+  // const reLng = /^-?(1[0-7]\d(\.\d+)?|180(\.0+)?|\d{1,2}(\.\d+)?)$/;
+  if (cadena.length === 0) {
+    return { errorMessage: "La longitud es obligatoria" };
+  }
+  let lngNum = parseFloat(cadena);
+  if (isNaN(lngNum)) {
+    return { errorMessage: "La longitud debe ser un número" };
+  }
+  if (lngNum < -180 || lngNum > 180) {
+    return { errorMessage: "La longitud debe estar entre -180 y 180" };
+  }
   return;
 }
