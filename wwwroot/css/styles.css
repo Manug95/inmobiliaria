@@ -39,3 +39,9 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .icon-hover:hover {
     transform: scale(1.2);
 }
+
+.custom-tooltip-disabled {
+  --bs-tooltip-bg: rgb(214, 51, 51);
+  /* --bs-tooltip-color: var(--bs-white); */
+  /* background-color: red; */
+}

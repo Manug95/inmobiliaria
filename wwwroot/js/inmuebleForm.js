@@ -192,7 +192,7 @@ async function buscar(valor) {
     select.innerHTML = "";
 
     data.datos.forEach(item => {
-      const option = createElement("option", { value: item.Id, content: `${item.apellido}, ${item.nombre} - ${item.dni}` });
+      const option = createElement("option", { value: item.id, content: `${item.apellido}, ${item.nombre} - ${item.dni}` });
       select.appendChild(option);
     });
 

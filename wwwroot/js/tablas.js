@@ -7,30 +7,50 @@ export function renderizarTabla(datos, rutas) {
 
   datos.forEach(d => {
     const fila = createElement("tr", { id: d.id !== undefined ? d.id : d.Id });
+    const columnas = {};
 
     Object.keys(d).forEach(key => {
       if (key !== "id" && key !== "Id") {
-        fila.appendChild(createElement("td", { content: d[key].toString() }, "align-middle", "text-center", "text-break"));
+        columnas[key] = createElement("td", { content: d[key].toString() }, "align-middle", "text-center", "text-break");
+        // fila.appendChild(createElement("td", { content: d[key].toString() }, "align-middle", "text-center", "text-break"));
       }
     });
+    const direccion = createElement("td", { content: columnas.calle.toString() + columnas.nroCalle.toString() }, "align-middle", "text-center", "text-break");
+    const duenio = createElement("td", { content: columnas.duenio.apellido.toString() + ", " + columnas.duenio.nombre.toString() }, "align-middle", "text-center", "text-break");
+    //direccion, tipo, cant amb, dueño disp, precio
+    fila.appendChild(direccion);
+    fila.appendChild(columnas.tipo);
+    fila.appendChild(columnas.cantidadAmbientes);
+    fila.appendChild(duenio);
+    fila.appendChild(columnas.precio);
 
-    const tdAcciones = createElement("td", { colSpan: "2" }, "ps-3", "align-middle", "text-center");
-    const iconoActualizar = createElement(
+    const divIconos = createElement("div", {}, "d-flex", "justify-content-evenly", "align-items-center", "contenedor-iconos");
+
+    const iconoActualizar = createElement("i", {}, "bi", "bi-pencil-square", "fs-3", "icon-hover");//data-bs-toggle="tooltip" data-bs-title="Editar"
+    iconoActualizar.setAttribute("data-bs-toggle", "tooltip");
+    iconoActualizar.setAttribute("data-bs-title", "Editar");
+    const anchorDelIconoActualizar = createElement(
       "a", 
       { 
-        content: createElement("i", {}, "bi", "bi-pencil-square", "fs-3"), 
-        href: rutas.actualizacion + d.id 
-      }
+        content: iconoActualizar,
+        href: `${rutas.actualizar}/${d.id}` 
+      },
+      "icon-enlace"
     );
     const iconoBorrar = createElement(
-      "a", 
-      { 
-        content: createElement("i", {}, "bi", "bi-trash", "fs-3"), 
-        href: rutas.eliminacion + d.id 
-      }
+      "i", 
+      {
+        id: `del-${d.id}`
+      },
+      "bi", "bi-trash", "fs-3", "text-danger", "icon-hover"
     );
-    tdAcciones.appendChild(iconoActualizar);
-    tdAcciones.appendChild(iconoBorrar);
+    iconoBorrar.setAttribute("data-bs-toggle", "tooltip");
+    iconoBorrar.setAttribute("data-bs-title", "Eliminar");
+
+    const tdAcciones = createElement("td", { }, "ps-3", "align-middle", "text-center");
+    divIconos.appendChild(anchorDelIconoActualizar);
+    divIconos.appendChild(iconoBorrar);
+    tdAcciones.appendChild(divIconos);
     fila.appendChild(tdAcciones);
 
     tabla.appendChild(fila);

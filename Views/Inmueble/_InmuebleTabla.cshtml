@@ -1,12 +1,34 @@
 @using Microsoft.VisualBasic
+@using InmobiliariaGutierrezManuel.Models;
 
 @model IEnumerable<Inmueble>
 
 @{
-    string disp = "";
+    @* string disp = ""; *@
+    string dir = "";
 }
 
-<div class="container-fluid shadow border rounded-4 mt-4 bg-light-subtle position-relative">
+<div class="container-fluid shadow border rounded-4 mt-3 bg-light-subtle position-relative">
+    <div class="row my-2">
+        <div class="col-12 col-md-6 col-lg-4">
+            <label for="propietario" class="form-label fw-bold">Por Propietario</label>
+            <input type="text" id="propietario" class="form-control" placeholder="nombre o apellido del propietario" value="@ViewBag.propietario">
+        </div>
+        <div class="col-12 col-md-6 col-lg-2">
+            <label for="filtro-disponible" class="form-label fw-bold">Filtrar por Disponibilidad</label>
+            <select name="disp" id="filtro-disponible" class="form-select">
+                <option value="@((int)Disponiblilidad.TODOS)" selected="@(ViewBag.disponible == (int)Disponiblilidad.TODOS)">Todos</option>
+                <option value="@((int)Disponiblilidad.HABILITADOS)" selected="@(ViewBag.disponible == (int)Disponiblilidad.HABILITADOS)">Habilitados</option>
+                <option value="@((int)Disponiblilidad.NO_HABILITADOS)" selected="@(ViewBag.disponible == (int)Disponiblilidad.NO_HABILITADOS)">No Habilitados</option>
+            </select>
+        </div>
+        <div class="col-12 col-lg-2 d-flex justify-content-center align-items-end mt-3 mt-lg-0">
+            <span class="w-50 d-flex justify-content-center">
+                @* <button id="consultar-btn" class="btn btn-primary">Consultar</button> *@
+                <a id="consultar-btn" class="btn btn-primary" asp-action="Index" asp-route-disp="@ViewBag.disponible" asp-route-limit="10" asp-route-offset="1">Consultar</a>
+            </span>
+        </div>
+    </div>
     <div class="table-responsive my-4 rounded-3 fixed-height-table-container">
         <table class="table table-striped table-hover mb-0">
             <thead class="table-light">
@@ -23,9 +45,9 @@
                     <th>
                         @Html.DisplayNameFor(model => model.Duenio).ToUpper()
                     </th>
-                    <th>
+                    @* <th>
                         @Html.DisplayNameFor(model => model.Disponible).ToUpper()
-                    </th>
+                    </th> *@
                     <th>
                         @Html.DisplayNameFor(model => model.Precio).ToUpper()
                     </th>
@@ -36,7 +58,8 @@
                 @foreach (var item in Model) {
                     <tr id="@item.Id">
                         <td class="align-middle py-0 ps-2">
-                            @Html.DisplayFor(modelItem => item.Calle)
+                            @{dir = item.Calle + " " + item.NroCalle;}
+                            @dir
                         </td>
                         <td class="align-middle py-0 ps-2">
                             @Html.DisplayFor(modelItem => item.Tipo!.Tipo)
@@ -47,10 +70,10 @@
                         <td class="align-middle py-0 ps-2">
                             @(item.Duenio != null ? item.Duenio.ToString().Split('-').ElementAt(0) : "Sin Dueño")
                         </td>
-                        <td class="align-middle py-0 ps-2">
+                        @* <td class="align-middle py-0 ps-2">
                             @{disp = item.Disponible ? "Disponible" : "No Disponible";}
                             @disp
-                        </td>
+                        </td> *@
                         <td class="align-middle py-0 ps-2">
                             @Html.DisplayFor(modelItem => item.Precio)
                         </td>
@@ -68,15 +91,15 @@
     <nav>
         <ul id="paginador" class="pagination justify-content-center">
             <li id="flecha-pag-izq" class="page-item @(ViewBag.offsetAnterior == 0 ? "disabled" : "")">
-                <a asp-action="Index" asp-route-limit="10" asp-route-offset="@ViewBag.offsetAnterior" class="page-link"><span>&laquo;</span></a>
+                <a asp-action="Index" asp-route-limit="10" asp-route-offset="@ViewBag.offsetAnterior" asp-route-disp="@ViewBag.disponible" class="page-link"><span>&laquo;</span></a>
             </li>
             @for (int i = 1; i <= ViewBag.cantPag; i++) {
                 <li class="page-item">
-                    <a asp-action="Index" asp-route-limit="10" asp-route-offset="@i" class="page-link @(i > ViewBag.offsetAnterior && i < ViewBag.offsetSiguiente ? "active" : "")">@i</a>
+                    <a asp-action="Index" asp-route-limit="10" asp-route-offset="@i" asp-route-disp="@ViewBag.disponible" class="page-link @(i > ViewBag.offsetAnterior && i < ViewBag.offsetSiguiente ? "active" : "")">@i</a>
                 </li>
             }
             <li id="flecha-pag-der" class="page-item @(ViewBag.offsetSiguiente > ViewBag.cantPag ? "disabled" : "")">
-                <a asp-action="Index" asp-route-limit="10" asp-route-offset="@ViewBag.offsetSiguiente" class="page-link"><span>&raquo;</span></a>
+                <a asp-action="Index" asp-route-limit="10" asp-route-offset="@ViewBag.offsetSiguiente" asp-route-disp="@ViewBag.disponible" class="page-link"><span>&raquo;</span></a>
             </li>
         </ul>
     </nav>
@@ -87,4 +110,4 @@
     </div>
 </div>
 
-<script type="module" src="~/js/inmuebles.js"></script>
+@* <script type="module" src="~/js/inmuebles.js"></script> *@

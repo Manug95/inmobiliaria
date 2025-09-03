@@ -2,32 +2,38 @@ import { agregarClases, removerClases, getElementById } from "./frontUtils.js";
 
 export function setValidInputStyle(id) {
   const input = getElementById(id);
-  removerClases(input, "is-invalid");
-  agregarClases(input, "is-valid");
+  if (input !== null) {
+    removerClases(input, "is-invalid");
+    agregarClases(input, "is-valid");
+  }
   // input.dispatchEvent(new Event("change", { bubbles: true }));
 }
 
 export function setInvalidInputStyle(id) {
   const input = getElementById(id);
-  removerClases(input, "is-valid");
-  agregarClases(input, "is-invalid");
+  if (input !== null) {
+    removerClases(input, "is-valid");
+    agregarClases(input, "is-invalid");
+  }
   // input.dispatchEvent(new Event("change", { bubbles: true }));
 }
 
 export function resetValidationInputStyle(id) {
   const input = getElementById(id);
-  removerClases(input, "is-valid");
-  removerClases(input, "is-invalid");
+  if (input !== null) {
+    removerClases(input, "is-valid");
+    removerClases(input, "is-invalid");
+  }
 }
 
 export function setValidationErrorMessage(tooltipId, message) {
   const tooltip = getElementById(tooltipId);
-  tooltip.innerText = message;
+  if (tooltip !== null) tooltip.innerText = message;
 }
 
 export function resetValidationErrorMessage(tooltipId) {
   const tooltip = getElementById(tooltipId);
-  tooltip.innerText = "";
+  if (tooltip !== null) tooltip.innerText = "";
 }
 
 export function validarFormSelect(value) {
@@ -235,5 +241,55 @@ export function validarLongitud(cadena) {
   if (lngNum < -180 || lngNum > 180) {
     return { errorMessage: "La longitud debe estar entre -180 y 180" };
   }
+  return;
+}
+
+export function validarFechaDeInputDate(cadena) {
+  if (!cadena) return { errorMessage: "Fecha incompleta o incorrecta" };
+  return;
+}
+
+export function validarFechaInicioDelContrato(inico, fin, terminacion) {
+  const fechaIni = new Date(inico);
+  const fechaAct = new Date();
+  
+  if (fechaIni.getFullYear() < fechaAct.getFullYear()) return { errorMessage: "Fecha inicio no puede ser menor a la fecha actual" };
+  else if (fechaIni.getMonth() < fechaAct.getMonth()) return { errorMessage: "Fecha inicio no puede ser menor a la fecha actual" };
+  else if (fechaIni.getDate() < fechaAct.getDate()) return { errorMessage: "Fecha inicio no puede ser menor a la fecha actual" };
+    
+  const msFechaIni = fechaIni.getTime();
+  const msFechaFIn = new Date(fin).getTime();
+
+  if (msFechaIni > msFechaFIn) return { errorMessage: "Fecha inicio no puede ser mayor a fecha fin del contrato" };
+  if (terminacion) {
+    const fechaTerm = new Date(terminacion).getTime();
+    if (msFechaIni > fechaTerm) return { errorMessage: "Fecha inicio no puede ser mayor a fecha terminacion del contrato" };
+  }
+
+  return;
+}
+
+export function validarFechaFinDelContrato(inico, fin, terminacion) {
+  const fechaIni = new Date(inico).getTime();
+  const fechaFIn = new Date(fin).getTime();
+
+  if (fechaFIn < fechaIni) return { errorMessage: "Fecha fin no puede ser menor a fecha incio del contrato" };
+  if (terminacion) {
+    const fechaTerm = new Date(terminacion).getTime();
+    if (fechaFIn > fechaTerm) return { errorMessage: "Fecha fin no puede ser mayor a fecha terminacion del contrato" };
+  }
+
+  return;
+}
+
+export function validarFechaTerminacionDelContrato(inico, fin, terminacion) {
+  if (terminacion) {
+    const fechaIni = new Date(inico).getTime();
+    const fechaFIn = new Date(fin).getTime();
+    const fechaTerm = new Date(terminacion).getTime();
+
+    if (fechaTerm < fechaIni || fechaTerm < fechaFIn) return { errorMessage: "Fecha terminacion no puede ser menor a las fechas de inicio o fin del contrato" };
+  }
+
   return;
 }

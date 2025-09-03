@@ -1,12 +1,16 @@
-import { getElementById, agregarClases, removerClases, createElement } from "./frontUtils.js";
+import { getElementById, agregarClases, removerClases, createElement, mostrarMensaje } from "./frontUtils.js";
+import { enviarGET } from "./httpRequests.js";
+import { renderizarTabla } from "./tablas.js";
 
 export default class Paginador {
   #paginaActual;
   #cantidadPaginadores;
   #resultadosPorPagina;
   #eventoClicksEnLasPaginasDelPaginador;
+  #url;
 
-  constructor({cantidadPaginadores = 1, paginaActual = 1, resultadosPorPagina = 10} = {}) {
+  constructor(url, {cantidadPaginadores = 1, paginaActual = 1, resultadosPorPagina = 10} = {}) {
+    this.#url = url;
     this.#paginaActual = paginaActual;
     this.#cantidadPaginadores = cantidadPaginadores;
     this.#resultadosPorPagina = resultadosPorPagina;
@@ -110,6 +114,18 @@ export default class Paginador {
     return;
   }
 
+  async enviarPeticion({ id, offset, limit, order, orderType, otherParams }) {
+    //LA URL VIENE POR EL CONSTRUCTOR DEL PAGINADOR
+    let urlPeticion = this.url;
+
+    if (id !== undefined) urlPeticion += `/${id}`;
+
+    const queryParams = formarQueryParams({ offset, limit, order, orderType, otherParams });
+    if (queryParams) url += `?${queryParams}`;
+
+    return await enviarGET(url);
+  }
+
   setFuncionEnviarPeticionPaginador(funcionDelEvento) {
     this.#eventoClicksEnLasPaginasDelPaginador = funcionDelEvento;
   }
@@ -134,6 +150,10 @@ export default class Paginador {
     return this.#resultadosPorPagina;
   }
 
+  get url() {
+    return this.#url;
+  }
+
   set cantidadPaginadores(cantidad) {
     this.#cantidadPaginadores = cantidad;
   }
@@ -145,4 +165,32 @@ export default class Paginador {
   set resultadosPorPagina(resultadosPorPagina) {
     this.#resultadosPorPagina = resultadosPorPagina;
   }
+
+  set url(url) {
+    this.#url = url;
+  }
+
+}
+
+// async function enviarPeticion(id, { offset, limit, order, orderType }) {
+//   let url = `/lotes/listado/${id}`;
+
+//   const queryParams = formarQueryParams({ offset, limit, order, orderType });
+//   if (queryParams) url += `?${queryParams}`;
+
+//   return await enviarGET(url);
+// }
+
+function formarQueryParams({ offset, limit, order, orderType, otherParams }) {
+  const op = [];
+
+  if (offset || limit || order || orderType || otherParams) {
+    if (otherParams.length > 0) op.push(otherParams);
+    if (offset && offset >= 0) op.push(`offset=${offset}`);
+    if (limit) op.push(`limit=${limit}`);
+    if (order) op.push(`order=${order}`);
+    if (orderType) op.push(`orderType=${orderType}`);
+  }
+
+  return op.join("&");
 }

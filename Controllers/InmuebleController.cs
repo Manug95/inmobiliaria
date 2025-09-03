@@ -19,15 +19,17 @@ public class InmuebleController : Controller
         repoPropietario = new PropietarioRepository();
     }
 
-    public IActionResult Index(int offset = 1, int limit = 10)
+    public IActionResult Index(string? prop, int offset = 1, int limit = 10, int disp = (int)Disponiblilidad.TODOS)
     {
-        IList<Inmueble> inmuebles = repo.ListarInmuebles(offset, limit);
-        int cantidadInmuebles = repo.ContarInmuebles();
+        IList<Inmueble>? inmuebles = repo.ListarInmuebles(disp, offset, limit, prop);
+        int cantidadInmuebles = repo.ContarInmuebles(disp);
         IList<TipoInmueble> tiposInmuebles = repoTipoInmueble.ListarTiposInmueble();
         
         ViewBag.cantPag = Math.Ceiling( (decimal)cantidadInmuebles / limit);
         ViewBag.offsetSiguiente = offset + 1;
         ViewBag.offsetAnterior = offset - 1;
+        ViewBag.disponible = disp;
+        ViewBag.propietario = prop;
 
         InmuebleViewModel ivm = new InmuebleViewModel
         {
@@ -73,11 +75,13 @@ public class InmuebleController : Controller
                 Longitud = (decimal)inmuebleForm.Longitud!,
                 NroCalle = (uint)inmuebleForm.NroCalle!,
                 Precio = (decimal)inmuebleForm.Precio!,
-                Uso = inmuebleForm.Uso
+                Uso = inmuebleForm.Uso,
+                Disponible = inmuebleForm.Disponible
             };
 
             if (inmuebleForm.Id > 0)
             {
+                Console.WriteLine("Actualizando");
                 inmueble.Id = inmuebleForm.Id;
                 repo.ActualizarInmueble(inmueble);
             }
@@ -109,16 +113,15 @@ public class InmuebleController : Controller
     {
         IList<TipoInmueble> tiposInmuebles = repoTipoInmueble.ListarTiposInmueble();
         IList<Propietario> propietarios = [];
+        
         if (idProp > 0)
         {
             Propietario? prop = repoPropietario.ObtenerPropietario(idProp, null);
             propietarios.Add(prop!);
         }
-        else
-        {
-            // propietarios = repoPropietario.ListarPropietarios();
-        }
+
         InmuebleFormData? inmuebleFormData = null;
+        
         if (id > 0)
         {
             Inmueble? inmueble = repo.ObtenerInmueble(id);
@@ -139,7 +142,7 @@ public class InmuebleController : Controller
                     Disponible = inmueble.Disponible
                 };
             }
-            
+
         }
 
         InmuebleViewModel ivm = new InmuebleViewModel
@@ -158,6 +161,40 @@ public class InmuebleController : Controller
         repo.EliminarInmueble(id);
         return RedirectToAction(nameof(Index));
     }
+
+    public IActionResult Alquilar(string? desde, string? hasta, string? Uso, int? IdTipoInmueble, int? CantidadAmbientes, decimal? Precio, int idInq = 0, int offset = 1, int limit = 10)
+    {
+        IList<Inmueble> inmuebles = [];
+        if (desde != null && hasta != null && Uso != null && IdTipoInmueble != null && CantidadAmbientes != null && Precio != null)
+        {
+            inmuebles = repo.ListarInmueblesParaAlquilar(desde, hasta, Uso, (int)IdTipoInmueble, (int)CantidadAmbientes, (decimal)Precio, offset, limit);
+        }
+        IList<TipoInmueble>? tipoInmuebles = repoTipoInmueble.ListarTiposInmueble();
+
+        ViewBag.tiposInmuebles = tipoInmuebles;
+        ViewBag.inmuebles = inmuebles;
+        ViewBag.idInquilino = idInq;
+
+        ViewBag.cantPag = (int)Math.Ceiling( (decimal)inmuebles.Count / limit);
+        ViewBag.offsetSiguiente = offset + 1;
+        ViewBag.offsetAnterior = offset - 1;
+
+        ViewBag.desde = desde;
+        ViewBag.hasta = hasta;
+        ViewBag.uso = Uso;
+        ViewBag.tipo = IdTipoInmueble;
+        ViewBag.precio = Precio;
+        ViewBag.cantAmb = CantidadAmbientes;
+
+        return View(new Inmueble());
+    }
+
+    // public IActionResult Listar(string? prop, int offset = 1, int limit = 10, int disp = 2)
+    // {
+    //     IList<Inmueble>? inmuebles = repo.ListarInmuebles(disp, offset, limit, prop);
+
+    //     return Json(new { inmuebles });
+    // }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()

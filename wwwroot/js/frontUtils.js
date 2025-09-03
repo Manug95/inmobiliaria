@@ -33,7 +33,7 @@ function mostrarElemento(id) {
 /**
  * Recupera un elemento HTML del DOM por su ID
  * @param {String} id La id del elemento a recuperar
- * @returns {HTMLElement} El elemento HTML recurado
+ * @returns {HTMLElement | null} El elemento HTML recurado
  */
 function getElementById(id) {
   return document.getElementById(id);
@@ -47,7 +47,7 @@ function getElementById(id) {
  * @returns {String} El value del input
  */
 function getFormInputValue(id) {
-  return getElementById(id).value;
+  return getElementById(id)?.value ?? null;
 }
 
 

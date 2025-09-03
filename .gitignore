@@ -58,3 +58,5 @@ Thumbs.db
 .vs/
 
 wwwroot/js/animaciones.js
+wwwroot/js/listadoLotes.js
+wwwroot/js/httpRequests.js

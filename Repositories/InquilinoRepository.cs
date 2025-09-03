@@ -46,7 +46,7 @@ public class InquilinoRepository : BaseRepository, IInquilinoRepository
 
             using (var command = new MySqlCommand(sql + ";", connection))
             {
-                if (!string.IsNullOrWhiteSpace(nomApe)) command.Parameters.AddWithValue($"{nameof(Inquilino.Nombre)}", nomApe);
+                if (!string.IsNullOrWhiteSpace(nomApe)) command.Parameters.AddWithValue($"nomApe", $"%{nomApe}%");
                 if (!string.IsNullOrWhiteSpace(orderBy) && campos.Contains(orderBy, StringComparer.OrdinalIgnoreCase)) command.Parameters.AddWithValue($"orderBy", orderBy);
                 if (offset.HasValue && limit.HasValue)
                 {

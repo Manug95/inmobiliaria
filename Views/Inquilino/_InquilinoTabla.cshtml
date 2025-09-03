@@ -84,10 +84,9 @@
                         </td>
                         <td>
                             <div class="d-flex justify-content-evenly align-items-center">
-                                @* <a asp-action="PropietarioForm" asp-route-id="@item.Id" title="Editar"><i class="bi bi-pencil-square fs-3"></i></a> *@
                                 <i id="edit-@item.Id" class="bi bi-pencil-square fs-3 text-primary icon-hover" style="cursor: pointer;" data-bs-toggle="tooltip" data-bs-title="Editar"></i>
-                                @* <a asp-action="Eliminar" asp-route-id="@item.Id" title="Eliminar"><i class="bi bi-trash fs-3 text-danger"></i></a> *@
                                 <i id="del-@item.Id" class="bi bi-trash fs-3 text-danger icon-hover" style="cursor: pointer;" data-bs-toggle="tooltip" data-bs-title="Eliminar"></i>
+                                <a class="icon-enlace" asp-controller="Inmueble" asp-action="Alquilar" asp-route-idInq="@item.Id" data-bs-toggle="tooltip" data-bs-title="Alquilar Inmueble"><i class="bi bi-house-door fs-3 text-success icon-hover"></i></a>
                             </div>
                         </td>
                     </tr>
