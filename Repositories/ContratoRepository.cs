@@ -183,17 +183,17 @@ public class ContratoRepository : BaseRepository, IContratoRepository
                     p.{nameof(Propietario.Dni)}, 
                     inq.{nameof(Inquilino.Nombre)}, 
                     inq.{nameof(Inquilino.Apellido)}, 
-                    inq.{nameof(Inquilino.Dni)}, 
+                    inq.{nameof(Inquilino.Dni)} 
                 FROM contratos AS c 
                 INNER JOIN inmuebles AS inm 
                     ON c.{nameof(Contrato.IdInmueble)} = inm.id 
-                INNER JOIN tipos_inmuebles AS ti 
+                INNER JOIN tipos_inmueble AS ti 
                     ON inm.{nameof(Inmueble.IdTipoInmueble)} = ti.id 
                 INNER JOIN propietarios AS p 
                     ON inm.{nameof(Inmueble.IdPropietario)} = p.id 
                 INNER JOIN inquilinos AS inq 
                     ON c.{nameof(Contrato.IdInquilino)} = inq.id 
-                WHERE {nameof(Contrato.Borrado)} = 0"
+                WHERE c.{nameof(Contrato.Borrado)} = 0"
             ;
 
             if (offset.HasValue && limit.HasValue)
@@ -218,12 +218,12 @@ public class ContratoRepository : BaseRepository, IContratoRepository
                             Id = reader.GetInt32(nameof(Contrato.Id)),
                             IdInmueble = reader.GetInt32(nameof(Contrato.IdInmueble)),
                             IdInquilino = reader.GetInt32(nameof(Contrato.IdInquilino)),
-                            IdUsuarioContratador = reader.GetInt32(nameof(Contrato.IdUsuarioContratador)),
-                            IdUsuarioTerminador = reader.GetInt32(nameof(Contrato.IdUsuarioTerminador)),
+                            IdUsuarioContratador = reader[nameof(Contrato.IdUsuarioContratador)] == DBNull.Value ? 0 : reader.GetInt32(nameof(Contrato.IdUsuarioContratador)),
+                            IdUsuarioTerminador = reader[nameof(Contrato.IdUsuarioTerminador)] == DBNull.Value ? 0 : reader.GetInt32(nameof(Contrato.IdUsuarioTerminador)),
                             MontoMensual = reader.GetDecimal(nameof(Contrato.MontoMensual)),
                             FechaInicio = reader.GetDateTime(nameof(Contrato.FechaInicio)),
                             FechaFin = reader.GetDateTime(nameof(Contrato.FechaFin)),
-                            FechaTerminado = reader.GetDateTime(nameof(Contrato.FechaTerminado)),
+                            FechaTerminado = reader[nameof(Contrato.FechaTerminado)] == DBNull.Value ? null : reader.GetDateTime(nameof(Contrato.FechaTerminado)),
                             Inmueble = new Inmueble
                             {
                                 Id = reader.GetInt32(nameof(Contrato.IdInmueble)),
@@ -282,22 +282,22 @@ public class ContratoRepository : BaseRepository, IContratoRepository
                     inm.{nameof(Inmueble.NroCalle)}, 
                     inm.{nameof(Inmueble.IdTipoInmueble)}, 
                     ti.{nameof(Inmueble.Tipo)}, 
-                    p.{nameof(Propietario.Nombre)}, 
-                    p.{nameof(Propietario.Apellido)}, 
-                    p.{nameof(Propietario.Dni)}, 
-                    inq.{nameof(Inquilino.Nombre)}, 
-                    inq.{nameof(Inquilino.Apellido)}, 
-                    inq.{nameof(Inquilino.Dni)}, 
+                    p.{nameof(Propietario.Nombre)} AS nombreProp, 
+                    p.{nameof(Propietario.Apellido)} AS apellidoProp, 
+                    p.{nameof(Propietario.Dni)} AS dniProp, 
+                    inq.{nameof(Inquilino.Nombre)} AS nombreInq, 
+                    inq.{nameof(Inquilino.Apellido)} AS apellidoInq, 
+                    inq.{nameof(Inquilino.Dni)} AS dniInq 
                 FROM contratos AS c 
                 INNER JOIN inmuebles AS inm 
                     ON c.{nameof(Contrato.IdInmueble)} = inm.id 
-                INNER JOIN tipos_inmuebles AS ti 
+                INNER JOIN tipos_inmueble AS ti 
                     ON inm.{nameof(Inmueble.IdTipoInmueble)} = ti.id 
                 INNER JOIN propietarios AS p 
                     ON inm.{nameof(Inmueble.IdPropietario)} = p.id 
                 INNER JOIN inquilinos AS inq 
                     ON c.{nameof(Contrato.IdInquilino)} = inq.id 
-                WHERE {nameof(Contrato.Borrado)} = 0"
+                WHERE c.{nameof(Contrato.Borrado)} = 0"
             ;
 
             using (var command = new MySqlCommand(sql + ";", connection))
@@ -315,12 +315,12 @@ public class ContratoRepository : BaseRepository, IContratoRepository
                             Id = reader.GetInt32(nameof(Contrato.Id)),
                             IdInmueble = reader.GetInt32(nameof(Contrato.IdInmueble)),
                             IdInquilino = reader.GetInt32(nameof(Contrato.IdInquilino)),
-                            IdUsuarioContratador = reader.GetInt32(nameof(Contrato.IdUsuarioContratador)),
-                            IdUsuarioTerminador = reader.GetInt32(nameof(Contrato.IdUsuarioTerminador)),
+                            IdUsuarioContratador = reader[nameof(Contrato.IdUsuarioContratador)] == DBNull.Value ? 0 : reader.GetInt32(nameof(Contrato.IdUsuarioContratador)),
+                            IdUsuarioTerminador = reader[nameof(Contrato.IdUsuarioTerminador)] == DBNull.Value ? 0 : reader.GetInt32(nameof(Contrato.IdUsuarioTerminador)),
                             MontoMensual = reader.GetDecimal(nameof(Contrato.MontoMensual)),
                             FechaInicio = reader.GetDateTime(nameof(Contrato.FechaInicio)),
                             FechaFin = reader.GetDateTime(nameof(Contrato.FechaFin)),
-                            FechaTerminado = reader.GetDateTime(nameof(Contrato.FechaTerminado)),
+                            FechaTerminado = reader[nameof(Contrato.FechaTerminado)] == DBNull.Value ? null : reader.GetDateTime(nameof(Contrato.FechaTerminado)),
                             Inmueble = new Inmueble
                             {
                                 Id = reader.GetInt32(nameof(Contrato.IdInmueble)),
@@ -336,17 +336,17 @@ public class ContratoRepository : BaseRepository, IContratoRepository
                                 Duenio = new Propietario
                                 {
                                     Id = reader.GetInt32(nameof(Inmueble.IdPropietario)),
-                                    Nombre = reader.GetString(nameof(Propietario.Nombre)),
-                                    Apellido = reader.GetString(nameof(Propietario.Apellido)),
-                                    Dni = reader.GetString(nameof(Propietario.Dni))
+                                    Nombre = reader.GetString("nombreProp"),
+                                    Apellido = reader.GetString("apellidoProp"),
+                                    Dni = reader.GetString("dniProp")
                                 }
                             },
                             Inquilino = new Inquilino
                             {
                                 Id = reader.GetInt32(nameof(Contrato.IdInquilino)),
-                                Nombre = reader.GetString(nameof(Inquilino.Nombre)),
-                                Apellido = reader.GetString(nameof(Inquilino.Apellido)),
-                                Dni = reader.GetString(nameof(Inquilino.Dni))
+                                Nombre = reader.GetString("nombreInq"),
+                                Apellido = reader.GetString("apellidoInq"),
+                                Dni = reader.GetString("dniInq")
                             }
                         };
                     }

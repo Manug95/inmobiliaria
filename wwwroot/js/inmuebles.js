@@ -2,6 +2,7 @@ import { getElementById, mostrarMensaje, mostrarPregunta } from "./frontUtils.js
 
 
 document.addEventListener("DOMContentLoaded", () => {
+  const DETALLES = [];
 
   mostrarMensaje(false, null);
 
@@ -47,32 +48,35 @@ document.addEventListener("DOMContentLoaded", () => {
 
   });
 
+  document.querySelectorAll("td .bi-file-earmark-text").forEach(i => {
+    i.addEventListener("click", async e => {
+      const idFila = e.target.id.split("-")[1];
+
+      if (!DETALLES.includes(d => +d.id === +idFila)) {
+        const respuesta = await fetch(`/Inmueble/Buscar/${idFila}`);
+        const datos = await respuesta.json();
+        DETALLES.push(datos.inmueble);console.log(datos.inmueble);
+        agregarDatosAlModal(datos.inmueble);
+      } else {
+        agregarDatosAlModal(DETALLES.find(d => +d.id === +idFila));
+      }
+
+      const myModal = new bootstrap.Modal(getElementById('modal_detalle_inmueble'), {});
+      myModal.show();
+    });
+  });
+
 });
 
-// function eventoClicksDeLasPaginasDelPaginador(paginador) {
-//   return async () => {
-//     const propietario = getElementById("propietario").value;
-//     const disponibilidad = getElementById("filtro-disponible").value;
-
-//     const offset = (paginador.paginaActual - 1) * paginador.resultadosPorPagina;
-//     const limit = paginador.resultadosPorPagina;
-//     const otherParams = [];
-//     if (disponibilidad !== undefined && disponibilidad.lenght > 0) otherParams.push(`disp=${disponibilidad}`);
-//     if (propietario !== undefined && propietario.lenght > 0) otherParams.push(`prop=${propietario}`);
-//     // const { order, orderType } = obtenerOpcionesDeConsulta(paginador.instanciaPaginador);
-
-//     const datos = await paginador.enviarPeticion({ offset, limit, order, orderType, otherParams: otherParams.join("&") });
-    
-//     if (datos) {
-//       const rutas = {
-//         actualizar: "/Inmueble/FormularioInmueble"
-//       };
-//       renderizarTabla(datos, rutas); //refactorizar esta funcion
-//     } else {
-//       paginador.resetCantidadPaginadores();
-//       mostrarMensaje(false, "No se encontraron datos");
-//     }
-
-//     paginador.actualizarPaginador();
-//   }
-// }
+function agregarDatosAlModal(datos) {
+  getElementById("nro").textContent = datos.id;
+  getElementById("propietario_detalle").textContent = `${datos.duenio.apellido}, ${datos.duenio.nombre}`;
+  getElementById("tipo_inmueble_detalle").textContent = datos.tipo.tipo;
+  getElementById("uso_detalle").textContent = datos.uso;
+  getElementById("cant_amb_detalle").textContent = datos.cantidadAmbientes;
+  getElementById("precio_detalle").textContent = datos.precio;
+  getElementById("dir_detalle").textContent = `${datos.calle} ${datos.nroCalle}`;
+  getElementById("lat_detalle").textContent = datos.latitud;
+  getElementById("long_detalle").textContent = datos.longitud;
+  getElementById("habilitado_detalle").textContent = datos.disponible ? "SI" : "NO";
+}

@@ -6,7 +6,6 @@ export function setValidInputStyle(id) {
     removerClases(input, "is-invalid");
     agregarClases(input, "is-valid");
   }
-  // input.dispatchEvent(new Event("change", { bubbles: true }));
 }
 
 export function setInvalidInputStyle(id) {
@@ -15,7 +14,6 @@ export function setInvalidInputStyle(id) {
     removerClases(input, "is-valid");
     agregarClases(input, "is-invalid");
   }
-  // input.dispatchEvent(new Event("change", { bubbles: true }));
 }
 
 export function resetValidationInputStyle(id) {
@@ -95,10 +93,6 @@ export function validarTelefono(cadena) {
   // if (cadena.trim() === "") return { errorMessage: "El campo es requerido." };
   // if (cadena.length > 20) return { errorMessage: "El máximo de caracteres de de 20." };
 
-  // const regExp = /^(\+54)?\s?(11|15|2\d{3}|3[1-9]\d{2}|4\d{3}|5[1-3]|6[1-8]|7[1-5]|8[1-7]|9[1-8])?\s?(\d{4}[ -]?\d{4}|\d{2}[ -]?\d{4}[ -]?\d{4})$/;
-  // const regExp = /^(?:(?:(?:\\+|00)?54(?:\\s)?)?(?:(?:9)(?:\\s)?)?(?:(?:0)?(?:\\s)?)?(?:(?:\\(?11\\)?)|(?:\\(?2\\d{2,3}\\)?)|(?:\\(?3\\d{2,3}\\)?)|(?:\\(?6\\d{2}\\)?)|(?:\\(?8\\d{2}\\)?)))(?:(?:\\s)?(?:15)(?:\\s)?)?(?|(\\d{2})|(\\d{3})|(\\d{4})|(\\d{5}))(?:(?:\\s|\\-|\\.)?)(?:(?:\\d{4})|(?|(\\d{4})|(\\d{3})|(\\d{2})|(\\d{1})))(?:(?:\\s|\\-|\\.)?)(?:(?:\\d{4})|(?|(\\d{4})|(\\d{3})|(\\d{2})|(\\d{1})))$/;
-  // const regExp = /^\d{4}-\d{6}$/;
-  // const regExp = /^(?:\+54)?\s*(?:\(?(?:11|2\d{2,3}|3\d{2,3}|6\d{2}|8\d{2})\)?)\s*(?:15\s*)?\d{4}[-\s.]?\d{4}$/;
   const regExp = /^(\+54\s)?0?(\d{2,4})\s(15\s)?(\d{4}-?\d{4})|(\d{3}-?\d{4})|(\d{2}-?\d{4})$/;
   // /(\d{4}-?\d{4})|(\d{3}-?\d{4})|(\d{2}-?\d{4})/ //1234–5678 o 123–4567 o 12-3456
   if (!regExp.test(cadena)) return { errorMessage: "El teléfono ingresado NO es valido" };
@@ -135,7 +129,6 @@ export function validarDescripcionTipoInmueble(cadena) {
 }
 
 export function validarNroCalle(cadena) {
-  // const reNroCalle = /^\d{1,5}[A-Za-z]?$/;
   if (cadena.length === 0) {
     return { errorMessage: "El número de calle esta vacío o es incorrecto" };
   }
@@ -178,8 +171,10 @@ export function validarCalle(cadena) {
   return;
 }
 
-export function validarCantidadAmbientes(cadena) {
+export function validarCantidadAmbientes(cadena, requrido = true) {
   if (cadena.length === 0) {
+    if (!requrido) return;
+
     return { errorMessage: "La cantidad de ambientes es obligatoria" };
   }
   if (isNaN(cadena)) {
@@ -199,9 +194,10 @@ export function validarCantidadAmbientes(cadena) {
   return;
 }
 
-export function validarPrecio(cadena) {
-  // const rePrecio = /^\d+([.,]\d{1,2})?$/;
+export function validarPrecio(cadena, requrido = true) {
   if (cadena.length === 0) {
+    if (!requrido) return;
+    
     return { errorMessage: "El precio es obligatorio" };
   }
   let precioNum = parseFloat(cadena.replace(",", "."));
@@ -215,7 +211,6 @@ export function validarPrecio(cadena) {
 }
 
 export function validarLatitud(cadena) {
-  // const reLat = /^-?([0-8]?\d(\.\d+)?|90(\.0+)?)$/;
   if (cadena.length === 0) {
     return { errorMessage: "La latitud es obligatoria" };
   }
@@ -230,7 +225,6 @@ export function validarLatitud(cadena) {
 }
 
 export function validarLongitud(cadena) {
-  // const reLng = /^-?(1[0-7]\d(\.\d+)?|180(\.0+)?|\d{1,2}(\.\d+)?)$/;
   if (cadena.length === 0) {
     return { errorMessage: "La longitud es obligatoria" };
   }

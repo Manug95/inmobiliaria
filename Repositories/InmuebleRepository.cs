@@ -265,13 +265,7 @@ public class InmuebleRepository : BaseRepository, IInmuebleRepository
         return inmuebles;
     }
 
-    public IList<Inmueble> ListarInmueblesPorPropietario(
-        string? nomApePropietario = null,
-        string? orderBy = null,
-        string? order = "ASC",
-        int? offset = null,
-        int? limit = null
-    )
+    public IList<Inmueble> ListarInmueblesPorPropietario(int idProp, int? offset, int? limit)
     {
         var inmuebles = new List<Inmueble>();
 
@@ -279,40 +273,36 @@ public class InmuebleRepository : BaseRepository, IInmuebleRepository
         {
             string sql = @$"
                 SELECT 
-                    {nameof(Inmueble.Id)}, 
-                    {nameof(Inmueble.IdPropietario)}, 
-                    {nameof(Inmueble.IdTipoInmueble)}, 
-                    {nameof(Inmueble.Uso)}, 
-                    {nameof(Inmueble.CantidadAmbientes)}, 
-                    {nameof(Inmueble.Calle)}, 
-                    {nameof(Inmueble.NroCalle)}, 
-                    {nameof(Inmueble.Latitud)}, 
-                    {nameof(Inmueble.Longitud)}, 
-                    {nameof(Inmueble.Precio)}, 
-                    {nameof(Inmueble.Disponible)}, 
-                    ti.{nameof(TipoInmueble.Tipo)}, 
-                    p.{nameof(Propietario.Nombre)}, 
-                    p.{nameof(Propietario.Apellido)}, 
-                    p.{nameof(Propietario.Dni)} 
+                    i.{nameof(Inmueble.Id)}, 
+                    i.{nameof(Inmueble.IdPropietario)}, 
+                    i.{nameof(Inmueble.IdTipoInmueble)}, 
+                    i.{nameof(Inmueble.Uso)}, 
+                    i.{nameof(Inmueble.CantidadAmbientes)}, 
+                    i.{nameof(Inmueble.Calle)}, 
+                    i.{nameof(Inmueble.NroCalle)}, 
+                    i.{nameof(Inmueble.Latitud)}, 
+                    i.{nameof(Inmueble.Longitud)}, 
+                    i.{nameof(Inmueble.Precio)}, 
+                    i.{nameof(Inmueble.Disponible)}, 
+                    ti.{nameof(TipoInmueble.Tipo)} AS tipoInmueble, 
+                    p.{nameof(Propietario.Nombre)} AS nombreProp, 
+                    p.{nameof(Propietario.Apellido)} AS apellidoProp, 
+                    p.{nameof(Propietario.Dni)} AS dniProp 
                 FROM inmuebles AS i 
                 INNER JOIN tipos_inmueble AS ti 
                     ON i.{nameof(Inmueble.IdTipoInmueble)} = ti.id 
                 INNER JOIN propietarios AS p 
                     ON i.{nameof(Inmueble.IdPropietario)} = p.id 
-                WHERE {nameof(Inmueble.Borrado)} = 0"
+                WHERE i.{nameof(Inmueble.Borrado)} = 0 AND i.{nameof(Inmueble.IdPropietario)} = @{nameof(Inmueble.IdPropietario)}"
             ;
 
-            if (!string.IsNullOrWhiteSpace(nomApePropietario))
-                sql += $" AND i.({nameof(Propietario.Nombre)} LIKE '@nomApe' OR i.{nameof(Propietario.Apellido)} LIKE '@nomApe')";
-            if (!string.IsNullOrWhiteSpace(orderBy))
-                sql += $" ORDER BY p.@orderBy {order}";
             if (offset.HasValue && limit.HasValue)
                 sql += $" LIMIT @limit OFFSET @offset";
 
             using (var command = new MySqlCommand(sql + ";", connection))
             {
-                if (!string.IsNullOrWhiteSpace(nomApePropietario)) command.Parameters.AddWithValue("nomApe", nomApePropietario);
-                if (!string.IsNullOrWhiteSpace(orderBy)) command.Parameters.AddWithValue($"orderBy", orderBy);
+                command.Parameters.AddWithValue($"{nameof(Inmueble.IdPropietario)}", idProp);
+
                 if (offset.HasValue && limit.HasValue)
                 {
                     command.Parameters.AddWithValue($"limit", limit.Value);
@@ -341,14 +331,14 @@ public class InmuebleRepository : BaseRepository, IInmuebleRepository
                             Duenio = new Propietario
                             {
                                 Id = reader.GetInt32(nameof(Inmueble.IdPropietario)),
-                                Nombre = reader.GetString(nameof(Propietario.Nombre)),
-                                Apellido = reader.GetString(nameof(Propietario.Apellido)),
-                                Dni = reader.GetString(nameof(Propietario.Dni))
+                                Nombre = reader.GetString("nombreProp"),
+                                Apellido = reader.GetString("apellidoProp"),
+                                Dni = reader.GetString("dniProp")
                             },
                             Tipo = new TipoInmueble
                             {
                                 Id = reader.GetInt32(nameof(Inmueble.IdTipoInmueble)),
-                                Tipo = reader.GetString(nameof(TipoInmueble.Tipo))
+                                Tipo = reader.GetString("tipoInmueble")
                             }
                         });
                     }
@@ -378,10 +368,10 @@ public class InmuebleRepository : BaseRepository, IInmuebleRepository
                     i.{nameof(Inmueble.Longitud)}, 
                     i.{nameof(Inmueble.Precio)}, 
                     i.{nameof(Inmueble.Disponible)}, 
-                    ti.{nameof(TipoInmueble.Tipo)}, 
-                    p.{nameof(Propietario.Nombre)}, 
-                    p.{nameof(Propietario.Apellido)}, 
-                    p.{nameof(Propietario.Dni)} 
+                    ti.{nameof(TipoInmueble.Tipo)} AS tipoInmueble, 
+                    p.{nameof(Propietario.Nombre)} AS nombreDuenio, 
+                    p.{nameof(Propietario.Apellido)} AS apellidoDuenio, 
+                    p.{nameof(Propietario.Dni)} AS dniDuenio 
                 FROM inmuebles AS i 
                 INNER JOIN tipos_inmueble AS ti 
                     ON i.{nameof(Inmueble.IdTipoInmueble)} = ti.id 
@@ -390,7 +380,7 @@ public class InmuebleRepository : BaseRepository, IInmuebleRepository
                 WHERE i.{nameof(Inmueble.Id)} = @{nameof(Inmueble.Id)} AND {nameof(Inmueble.Borrado)} = 0;"
             ;
 
-            using (var command = new MySqlCommand(sql + ";", connection))
+            using (var command = new MySqlCommand(sql, connection))
             {
                 command.Parameters.AddWithValue($"{nameof(Inmueble.Id)}", id);
 
@@ -416,14 +406,14 @@ public class InmuebleRepository : BaseRepository, IInmuebleRepository
                             Duenio = new Propietario
                             {
                                 Id = reader.GetInt32(nameof(Inmueble.IdPropietario)),
-                                Nombre = reader.GetString(nameof(Propietario.Nombre)),
-                                Apellido = reader.GetString(nameof(Propietario.Apellido)),
-                                Dni = reader.GetString(nameof(Propietario.Dni))
+                                Nombre = reader.GetString("nombreDuenio"),
+                                Apellido = reader.GetString("apellidoDuenio"),
+                                Dni = reader.GetString("dniDuenio")
                             },
                             Tipo = new TipoInmueble
                             {
                                 Id = reader.GetInt32(nameof(Inmueble.IdTipoInmueble)),
-                                Tipo = reader.GetString(nameof(TipoInmueble.Tipo))
+                                Tipo = reader.GetString("tipoInmueble")
                             }
                         };
                     }
@@ -434,7 +424,7 @@ public class InmuebleRepository : BaseRepository, IInmuebleRepository
         return inmueble;
     }
     
-    public IList<Inmueble> ListarInmueblesParaAlquilar(string desde, string hasta, string uso, int tipo, int cantAmb, decimal precio, int offset = 1, int limit = 10)
+    public IList<Inmueble> ListarInmueblesParaAlquilar(string desde, string hasta, string? uso, int? tipo, int? cantAmb, decimal? precio, int offset = 1, int limit = 10)
     {
         var inmuebles = new List<Inmueble>();
 
@@ -443,10 +433,10 @@ public class InmuebleRepository : BaseRepository, IInmuebleRepository
             string sql = @$"
                 SELECT 
                     i.*, 
-                    ti.{nameof(TipoInmueble.Tipo)}, 
-                    p.{nameof(Propietario.Nombre)}, 
-                    p.{nameof(Propietario.Apellido)}, 
-                    p.{nameof(Propietario.Dni)} 
+                    ti.{nameof(TipoInmueble.Tipo)} AS tipoInmueble, 
+                    p.{nameof(Propietario.Nombre)} AS nombreProp, 
+                    p.{nameof(Propietario.Apellido)} AS apellidoProp, 
+                    p.{nameof(Propietario.Dni)} AS dniProp 
                 FROM inmuebles AS i 
                 INNER JOIN tipos_inmueble AS ti 
                     ON i.{nameof(Inmueble.IdTipoInmueble)} = ti.id 
@@ -458,15 +448,23 @@ public class InmuebleRepository : BaseRepository, IInmuebleRepository
                         AND {desde} NOT BETWEEN c.{nameof(Contrato.FechaInicio)} AND c.{nameof(Contrato.FechaFin)} 
                 WHERE c.{nameof(Contrato.Id)} IS NULL 
                     AND i.{nameof(Inmueble.Borrado)} = 0 
-                    AND i.{nameof(Inmueble.Disponible)} = 1 
-                    AND i.{nameof(Inmueble.Uso)} = @uso 
-                    AND i.{nameof(Inmueble.CantidadAmbientes)} = {cantAmb} 
-                    AND i.{nameof(Inmueble.Precio)} >= {precio} 
-                    AND i.{nameof(Inmueble.IdTipoInmueble)} = {tipo}"
+                    AND i.{nameof(Inmueble.Disponible)} = 1"
             ;
 
+            if (uso != null)
+                sql += $" AND i.{nameof(Inmueble.Uso)} = @uso";
+
+            if (tipo != null)
+                sql += $" AND i.{nameof(Inmueble.IdTipoInmueble)} = {tipo.Value}";
+
+            if (cantAmb != null)
+                sql += $" AND i.{nameof(Inmueble.CantidadAmbientes)} = {cantAmb.Value}";
+
+            if (precio != null)
+                sql += $" AND i.{nameof(Inmueble.Precio)} >= {precio.Value}";
+
             if (offset > 0 && limit > 0)
-                sql += $" LIMIT @limit OFFSET @offset";
+                    sql += $" LIMIT @limit OFFSET @offset";
 
             using (var command = new MySqlCommand(sql + ";", connection))
             {
@@ -500,14 +498,14 @@ public class InmuebleRepository : BaseRepository, IInmuebleRepository
                             Duenio = new Propietario
                             {
                                 Id = reader.GetInt32(nameof(Inmueble.IdPropietario)),
-                                Nombre = reader.GetString(nameof(Propietario.Nombre)),
-                                Apellido = reader.GetString(nameof(Propietario.Apellido)),
-                                Dni = reader.GetString(nameof(Propietario.Dni))
+                                Nombre = reader.GetString("nombreProp"),
+                                Apellido = reader.GetString("apellidoProp"),
+                                Dni = reader.GetString("dniProp")
                             },
                             Tipo = new TipoInmueble
                             {
                                 Id = reader.GetInt32(nameof(Inmueble.IdTipoInmueble)),
-                                Tipo = reader.GetString(nameof(TipoInmueble.Tipo))
+                                Tipo = reader.GetString("tipoInmueble")
                             }
                         });
                     }

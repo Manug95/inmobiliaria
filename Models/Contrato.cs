@@ -5,6 +5,7 @@ namespace InmobiliariaGutierrezManuel.Models;
 public class Contrato
 {
     [Key]
+    [Display(Name = "N°")]
     public int Id { get; set; }
     public int? IdInquilino { get; set; }
     public Inquilino? Inquilino { get; set; }
@@ -12,9 +13,13 @@ public class Contrato
     public Inmueble? Inmueble { get; set; }
     public int IdUsuarioContratador { get; set; }
     public int IdUsuarioTerminador { get; set; }
+    [DataType(DataType.Currency)]
     public decimal? MontoMensual { get; set; }
+    [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
     public DateTime? FechaInicio { get; set; }
+    [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
     public DateTime? FechaFin { get; set; }
+    [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
     public DateTime? FechaTerminado { get; set; }
     public bool Borrado { get; set; }
 

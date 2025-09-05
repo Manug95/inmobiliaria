@@ -19,17 +19,31 @@ public class InmuebleController : Controller
         repoPropietario = new PropietarioRepository();
     }
 
-    public IActionResult Index(string? prop, int offset = 1, int limit = 10, int disp = (int)Disponiblilidad.TODOS)
+    public IActionResult Index(string? prop, int idProp = 0, int offset = 1, int limit = 10, int disp = (int)Disponiblilidad.TODOS)
     {
-        IList<Inmueble>? inmuebles = repo.ListarInmuebles(disp, offset, limit, prop);
-        int cantidadInmuebles = repo.ContarInmuebles(disp);
+        IList<Inmueble>? inmuebles;
+        int cantidadInmuebles;
+
+        if (idProp == 0)
+        {
+            inmuebles = repo.ListarInmuebles(disp, offset, limit, prop);
+            cantidadInmuebles = repo.ContarInmuebles(disp);
+        }
+        else
+        {
+            inmuebles = repo.ListarInmueblesPorPropietario(idProp, offset, limit);
+            cantidadInmuebles = inmuebles.Count;
+        }
+        
+        
         IList<TipoInmueble> tiposInmuebles = repoTipoInmueble.ListarTiposInmueble();
         
         ViewBag.cantPag = Math.Ceiling( (decimal)cantidadInmuebles / limit);
         ViewBag.offsetSiguiente = offset + 1;
         ViewBag.offsetAnterior = offset - 1;
         ViewBag.disponible = disp;
-        ViewBag.propietario = prop;
+        ViewBag.propietario = idProp == 0 ? prop : (inmuebles.First().Duenio?.Apellido + " " + inmuebles.First().Duenio?.Nombre);
+        ViewBag.idProp = idProp;
 
         InmuebleViewModel ivm = new InmuebleViewModel
         {
@@ -165,9 +179,10 @@ public class InmuebleController : Controller
     public IActionResult Alquilar(string? desde, string? hasta, string? Uso, int? IdTipoInmueble, int? CantidadAmbientes, decimal? Precio, int idInq = 0, int offset = 1, int limit = 10)
     {
         IList<Inmueble> inmuebles = [];
-        if (desde != null && hasta != null && Uso != null && IdTipoInmueble != null && CantidadAmbientes != null && Precio != null)
+        if (desde != null && hasta != null)
         {
-            inmuebles = repo.ListarInmueblesParaAlquilar(desde, hasta, Uso, (int)IdTipoInmueble, (int)CantidadAmbientes, (decimal)Precio, offset, limit);
+            inmuebles = repo.ListarInmueblesParaAlquilar(desde, hasta, Uso, IdTipoInmueble, CantidadAmbientes, Precio, offset, limit);
+            if (inmuebles.Count == 0) ViewBag.mensaje = "No se encontraron resultados";
         }
         IList<TipoInmueble>? tipoInmuebles = repoTipoInmueble.ListarTiposInmueble();
 
@@ -189,12 +204,11 @@ public class InmuebleController : Controller
         return View(new Inmueble());
     }
 
-    // public IActionResult Listar(string? prop, int offset = 1, int limit = 10, int disp = 2)
-    // {
-    //     IList<Inmueble>? inmuebles = repo.ListarInmuebles(disp, offset, limit, prop);
-
-    //     return Json(new { inmuebles });
-    // }
+    public IActionResult Buscar(int id)
+    {
+        Inmueble? inmueble = repo.ObtenerInmueble(id);
+        return Json(new { inmueble });
+    }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()

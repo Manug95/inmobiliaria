@@ -1,4 +1,4 @@
-import { getElementById, getFormInputValue } from "./frontUtils.js";
+import { getElementById, getFormInputValue, mostrarMensaje } from "./frontUtils.js";
 import {
   resetValidationErrorMessage,
   setInvalidInputStyle,
@@ -14,6 +14,8 @@ import {
 
 
 document.addEventListener("DOMContentLoaded", () => {
+  mostrarMensaje(false, null);
+
   const form = getElementById("form-buscar-inmuebles");
 
   form?.addEventListener("submit", (e) => {
@@ -62,17 +64,17 @@ function validarFormulario(values) {
   const mapaValidador = new Map([
     ["FechaInicio", validarFechaDeInputDate],
     ["FechaFin", validarFechaDeInputDate],
-    ["IdTipoInmueble", validarFormSelect],
     ["CantidadAmbientes", validarCantidadAmbientes],
-    ["Uso", validarFormSelect],
-    ["Precio", validarPrecio]
+    ["Precio", validarPrecio],
+    ["Uso", (_) => { return; }],
+    ["IdTipoInmueble", (_) => { return; }]
   ]);
 
   const esValido = Object.keys(values)
     .map(v => {
       const fnValidadora = mapaValidador.get(v);
       if (fnValidadora === undefined) return true;
-      const result = fnValidadora(values[v]);
+      const result = fnValidadora(values[v], v !== "CantidadAmbientes" && v !== "Precio");
       if (result !== undefined) { setInvalidInputStyle(v); setValidationErrorMessage(`tpe_${v}`, result.errorMessage); }
       else { setValidInputStyle(v); resetValidationErrorMessage(`tpe_${v}`); }
       return result === undefined;

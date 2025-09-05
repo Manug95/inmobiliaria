@@ -16,7 +16,7 @@ public class ContratoController : Controller
         repoInmueble = new InmuebleRepository();
     }
 
-    public IActionResult Index(string? order, int offset = 1, int limit = 10)
+    public IActionResult Index(int offset = 1, int limit = 10)
     {
         IList<Contrato> contratos = repo.ListarContratos(offset, limit);
         int cantidadContratos = repo.ContarContratos();
@@ -27,21 +27,20 @@ public class ContratoController : Controller
 
         ViewBag.contratos = contratos;
 
-        return View();
+        return View(new Contrato());
     }
 
-    public IActionResult Listar(string? nomApe, string? orderBy, string? order, int? offset = 1, int? limit = 10)
-    {
-        IList<Contrato> contratos = repo.ListarContratos(offset, limit);
-        return Json(new { datos = contratos } );
-    }
-
-    // public IActionResult Buscar(int id = 0, string? dni = null)
+    // public IActionResult Listar(string? nomApe, int? offset = 1, int? limit = 10)
     // {
-    //     Propietario? propietario = repo.ObtenerPropietario(id, dni);
-    //     return View(propietario);
-    //     // return View();
+    //     IList<Contrato> contratos = repo.ListarContratos(offset, limit);
+    //     return Json(new { datos = contratos } );
     // }
+
+    public IActionResult Buscar(int id)
+    {
+        Contrato? contrato = repo.ObtenerContrato(id);
+        return Json(contrato);
+    }
 
     [HttpPost]
     public IActionResult Guardar(Contrato contrato)
@@ -82,15 +81,30 @@ public class ContratoController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    public IActionResult FormularioContrato(int id = 0, int idInq = 0, int idInm = 0)
+    public IActionResult FormularioContrato(string? desde, string? hasta, int id = 0, int idInq = 0, int idInm = 0)
     {
+        Contrato? contrato = new Contrato();
+        if (desde != null && hasta != null)
+        {
+            var desdeArr = desde.Split("-");
+            var hastaArr = hasta.Split("-");
+
+            contrato.FechaInicio = new DateTime(int.Parse(desdeArr[0]), int.Parse(desdeArr[1]), int.Parse(desdeArr[2]));
+            contrato.FechaFin = new DateTime(int.Parse(hastaArr[0]), int.Parse(hastaArr[1]), int.Parse(hastaArr[2]));
+        }
         if (idInm > 0)
         {
             ViewBag.inmueble = repoInmueble.ObtenerInmueble(idInm);
         }
+        if (id > 0)
+        {
+            contrato = repo.ObtenerContrato(id);//ponerle los datos del contrato para la modificacion
+        }
         ViewBag.IdInquilino = idInq;
         ViewBag.IdInmueble = idInm;
-        return View(new Contrato());
+        ViewBag.desde = desde;
+        ViewBag.hasta = hasta;
+        return View(contrato);
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

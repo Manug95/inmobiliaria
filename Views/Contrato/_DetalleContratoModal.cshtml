@@ -1,0 +1,57 @@
+@using InmobiliariaGutierrezManuel.Models;
+
+<div id="modal_detalle_contrato" class="modal fade modal-sm" tabindex="-1" aria-describedby="titulo-modal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div id="titulo-modal" class="modal-title fs-5">Detalle Contrato</div>
+                <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body justify-content-center align-items-center">
+                <div class="container-md align-middle">
+                    <div class="d-flex justify-content-center align-items-center vh-50 w-100">
+                        
+                        <div class="card" style="width: 18rem;">
+                            <div class="card-header">
+                                Detalle del Contrato n° <span id="nro"></span>
+                            </div>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">
+                                    <span class="fw-bold">Propietario: &nbsp;</span>
+                                    </br>
+                                    <span id="propietario"></span>
+                                </li>
+                                <li class="list-group-item">
+                                    <span class="fw-bold">Inquilino: &nbsp;</span>
+                                    </br>
+                                    <span id="inquilino"></span>
+                                </li>
+                                <li class="list-group-item">
+                                    <span class="fw-bold">Fecha de Inicio: &nbsp;</span>
+                                    </br>
+                                    <span id="fIni"></span>
+                                </li>
+                                <li class="list-group-item">
+                                    <span class="fw-bold">Fecha de Finalización: &nbsp;</span>
+                                    </br>
+                                    <span id="fFin"></span>
+                                </li>
+                                <li class="list-group-item">
+                                    <span class="fw-bold">Mensualización: &nbsp;</span>
+                                    </br>
+                                    <span id="monto"></span>
+                                </li>
+                                <li class="list-group-item">
+                                    <span class="fw-bold">Fecha Terminado: &nbsp;</span>
+                                    </br>
+                                    <span id="fTerm"></span>
+                                </li>
+                            </ul>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -136,7 +136,12 @@
                                 </td>
                                 <td>
                                     <div class="d-flex justify-content-evenly align-items-center contenedor-iconos">
-                                        <a class="icon-enlace" asp-controller="Contrato" asp-action="FormularioContrato" asp-route-idInm="@item.Id" asp-route-idInq="@ViewBag.idInquilino">
+                                        <a class="icon-enlace" asp-controller="Contrato" asp-action="FormularioContrato" 
+                                            asp-route-idInm="@item.Id" 
+                                            asp-route-idInq="@ViewBag.idInquilino"
+                                            asp-route-desde="@ViewBag.desde"
+                                            asp-route-hasta="@ViewBag.hasta"
+                                        >
                                             <i class="bi bi-file-earmark-text fs-3 icon-hover text-warning" data-bs-toggle="tooltip" data-bs-title="Crear Contrato"></i>
                                         </a>
                                     </div>
@@ -165,6 +170,10 @@
             </nav>
         </div>
     </div>
+}
+
+@if (ViewBag.mensaje != null) {
+    <partial name="_MensajeError" model="ViewBag.mensaje"></partial>
 }
 
 <script type="module" src="~/js/alquilar.js"></script>
