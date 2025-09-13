@@ -54,24 +54,13 @@ export function validarFecha(fecha) {
   return true;
 }
 
-// export function validarDNI(dni) {
-//   if (!dni) return false;
-
-//   const regex = /^\d{8}$/;
-//   if (!regex.test(dni)) return false;
-
-//   return true;
-// }
-
 export function validarDNI(dni) {
   if (dni === null) return { errorMessage: "El DNI es requerido" };
 
-  if (typeof dni !== "string") return { errorMessage: "Debe ser un número de 7 u 8 dígitos numéricos" };
+  if (dni.length > 13) return { errorMessage: "El máximo de caracteres es 13" };
 
-  if (dni.length < 7 || dni.length > 8) return { errorMessage: "Debe ser un número de 7 u 8 dígitos" };
-
-  const regex = /^\d{7,8}$/;
-  if (!regex.test(dni)) return { errorMessage: "El DNI ingresado NO es valido" };
+  // const regex = /^\d{7,8}$/;
+  // if (!regex.test(dni)) return { errorMessage: "El DNI ingresado NO es valido" };
 
   return;
 }
@@ -83,27 +72,23 @@ export function validarNombreApellido(cadena) {
   if (cadena === undefined || cadena === null) return { errorMessage: "El campo es requerido" };
   if (typeof cadena !== "string") return { errorMessage: "El campo de ser de texto" };
   if (cadena.trim() === "") return { errorMessage: "El campo es requerido" };
-  if (cadena.length > 25) return { errorMessage: "El máximo de caracteres de de 25" };
+  if (cadena.length > 50) return { errorMessage: "El máximo de caracteres de de 50" };
   return;
 }
 
 export function validarTelefono(cadena) {
-  // if (cadena === undefined || cadena === null) return { errorMessage: "El campo es requerido." };
-  // if (typeof cadena !== "string") return { errorMessage: "El campo de ser de texto." };
-  // if (cadena.trim() === "") return { errorMessage: "El campo es requerido." };
-  // if (cadena.length > 20) return { errorMessage: "El máximo de caracteres de de 20." };
+  if (cadena.length > 25) return { errorMessage: "El máximo de caracteres de de 25." };
 
   const regExp = /^(\+54\s)?0?(\d{2,4})\s(15\s)?(\d{4}-?\d{4})|(\d{3}-?\d{4})|(\d{2}-?\d{4})$/;
-  // /(\d{4}-?\d{4})|(\d{3}-?\d{4})|(\d{2}-?\d{4})/ //1234–5678 o 123–4567 o 12-3456
   if (!regExp.test(cadena)) return { errorMessage: "El teléfono ingresado NO es valido" };
   return;
 }
 
 export function validarEmail(cadena) {
-  if (cadena === undefined || cadena === null) return { errorMessage: "El campo es requerido" };
-  if (typeof cadena !== "string") return { errorMessage: "El campo de ser de texto" };
-  if (cadena.trim() === "") return { errorMessage: "El campo es requerido" };
-  if (cadena.length > 50) return { errorMessage: "El máximo de caracteres de de 50" };
+  // if (cadena === undefined || cadena === null) return { errorMessage: "El campo es requerido" };
+  // if (typeof cadena !== "string") return { errorMessage: "El campo de ser de texto" };
+  // if (cadena.trim() === "") return { errorMessage: "El campo es requerido" };
+  if (cadena.length > 100) return { errorMessage: "El máximo de caracteres de de 100" };
   const regExp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   if (!regExp.test(cadena)) return { errorMessage: "El EMAIL ingresado NO es valido" };
   return;
@@ -116,7 +101,7 @@ export function validarNombreTipoInmueble(cadena) {
   if (cadena === undefined || cadena === null) return { errorMessage: "El campo es requerido" };
   if (typeof cadena !== "string") return { errorMessage: "El campo de ser de texto" };
   if (cadena.trim() === "") return { errorMessage: "El campo es requerido" };
-  if (cadena.length > 25) return { errorMessage: "El máximo de caracteres de de 25" };
+  if (cadena.length > 50) return { errorMessage: "El máximo de caracteres de de 50" };
   return;
 }
 
@@ -132,9 +117,6 @@ export function validarNroCalle(cadena) {
   if (cadena.length === 0) {
     return { errorMessage: "El número de calle esta vacío o es incorrecto" };
   }
-  if (isNaN(parseInt(cadena[0]))) {
-    return { errorMessage: "El número de calle debe comenzar con un número" };
-  }
   const num = parseInt(cadena);
   if (isNaN(num)) return { errorMessage: "No es un número" };
   if (num <= 0) {
@@ -143,30 +125,15 @@ export function validarNroCalle(cadena) {
   if (num > 99999) {
     return { errorMessage: "El número de calle es demasiado grande" };
   }
-  if (cadena.length > 1) {
-    const ultimo = cadena[cadena.length - 1];
-    if (isNaN(ultimo) && !(/[a-zA-Z]/.test(ultimo))) {
-      return { errorMessage: "El número de calle solo puede terminar en una letra opcional" };
-    }
-  }
   return;
 }
 
 export function validarCalle(cadena) {
-  // const reCalle = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s\.\-]{3,100}$/;
   if (cadena.length === 0) {
     return { errorMessage: "La calle es obligatoria" };
   }
-  // if (cadena.length < 3) {
-  //   return { errorMessage: "La calle debe tener al menos 3 caracteres" };
-  // }
-  if (cadena.length > 50) {
-    return { errorMessage: "La calle no puede superar los 50 caracteres" };
-  }
-  for (let c of cadena) {
-    if (!(/[1-9a-zA-ZáéíóúÁÉÍÓÚñÑ\s\.\-°]/.test(c))) {
-      return { errorMessage: "La calle contiene caracteres inválidos" };
-    }
+  if (cadena.length > 100) {
+    return { errorMessage: "La calle no puede superar los 100 caracteres" };
   }
   return;
 }
@@ -212,7 +179,8 @@ export function validarPrecio(cadena, requrido = true) {
 
 export function validarLatitud(cadena) {
   if (cadena.length === 0) {
-    return { errorMessage: "La latitud es obligatoria" };
+    // return { errorMessage: "La latitud es obligatoria" };
+    return;
   }
   let latNum = parseFloat(cadena);
   if (isNaN(latNum)) {
@@ -226,7 +194,8 @@ export function validarLatitud(cadena) {
 
 export function validarLongitud(cadena) {
   if (cadena.length === 0) {
-    return { errorMessage: "La longitud es obligatoria" };
+    // return { errorMessage: "La longitud es obligatoria" };
+    return;
   }
   let lngNum = parseFloat(cadena);
   if (isNaN(lngNum)) {
@@ -243,21 +212,22 @@ export function validarFechaDeInputDate(cadena) {
   return;
 }
 
-export function validarFechaInicioDelContrato(inico, fin, terminacion) {
-  const fechaIni = new Date(inico);
-  const fechaAct = new Date();
-  
-  if (fechaIni.getFullYear() < fechaAct.getFullYear()) return { errorMessage: "Fecha inicio no puede ser menor a la fecha actual" };
-  else if (fechaIni.getMonth() < fechaAct.getMonth()) return { errorMessage: "Fecha inicio no puede ser menor a la fecha actual" };
-  else if (fechaIni.getDate() < fechaAct.getDate()) return { errorMessage: "Fecha inicio no puede ser menor a la fecha actual" };
+export function validarFechaInicioDelContrato(inico, fin, terminacion, esNuevoContrato) {
+  const fechaIni = new Date(inico + "T00:00:00");
+  // const fechaAct = new Date();
+  // fechaAct.setHours(0, 0, 0, 0);
+
+  // if (!esNuevoContrato) {
+  //   if (fechaIni < fechaAct) return { errorMessage: "F. inicio es menor a la f. actual" };
+  // }
     
   const msFechaIni = fechaIni.getTime();
-  const msFechaFIn = new Date(fin).getTime();
+  const msFechaFIn = new Date(fin + "T00:00:00").getTime();
 
-  if (msFechaIni > msFechaFIn) return { errorMessage: "Fecha inicio no puede ser mayor a fecha fin del contrato" };
+  if (msFechaIni > msFechaFIn) return { errorMessage: "F. inicio es mayor a la f. fin del contrato" };
   if (terminacion) {
-    const fechaTerm = new Date(terminacion).getTime();
-    if (msFechaIni > fechaTerm) return { errorMessage: "Fecha inicio no puede ser mayor a fecha terminacion del contrato" };
+    const fechaTerm = new Date(terminacion + "T00:00:00").getTime();
+    if (msFechaIni > fechaTerm) return { errorMessage: "F. inicio es mayor a la f. terminación del contrato" };
   }
 
   return;
@@ -267,10 +237,10 @@ export function validarFechaFinDelContrato(inico, fin, terminacion) {
   const fechaIni = new Date(inico).getTime();
   const fechaFIn = new Date(fin).getTime();
 
-  if (fechaFIn < fechaIni) return { errorMessage: "Fecha fin no puede ser menor a fecha incio del contrato" };
+  if (fechaFIn < fechaIni) return { errorMessage: "F. fin es menor a la f. incio del contrato" };
   if (terminacion) {
     const fechaTerm = new Date(terminacion).getTime();
-    if (fechaFIn > fechaTerm) return { errorMessage: "Fecha fin no puede ser mayor a fecha terminacion del contrato" };
+    if (fechaFIn > fechaTerm) return { errorMessage: "F. fin es mayor a la f. terminación del contrato" };
   }
 
   return;
@@ -279,10 +249,12 @@ export function validarFechaFinDelContrato(inico, fin, terminacion) {
 export function validarFechaTerminacionDelContrato(inico, fin, terminacion) {
   if (terminacion) {
     const fechaIni = new Date(inico).getTime();
-    const fechaFIn = new Date(fin).getTime();
+    const fechaFin = new Date(fin).getTime();
     const fechaTerm = new Date(terminacion).getTime();
 
-    if (fechaTerm < fechaIni || fechaTerm < fechaFIn) return { errorMessage: "Fecha terminacion no puede ser menor a las fechas de inicio o fin del contrato" };
+    // if (fechaTerm < fechaIni) return { errorMessage: "F. terminación es menor a la f. inicio del contrato" };
+    if (fechaTerm < fechaIni) return { errorMessage: "¿puede un contrato cancelarse antes de que inicie?" };
+    if (fechaTerm > fechaFin) return { errorMessage: "F. terminación es mayor a la f. fin del contrato" };
   }
 
   return;

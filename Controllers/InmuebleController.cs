@@ -85,18 +85,17 @@ public class InmuebleController : Controller
                 CantidadAmbientes = (int)inmuebleForm.CantidadAmbientes!,
                 IdPropietario = inmuebleForm.IdPropietario,
                 IdTipoInmueble = inmuebleForm.IdTipoInmueble,
-                Latitud = (decimal)inmuebleForm.Latitud!,
-                Longitud = (decimal)inmuebleForm.Longitud!,
+                Latitud = inmuebleForm.Latitud != null ? (decimal)inmuebleForm.Latitud : 0,
+                Longitud = inmuebleForm.Longitud != null ? (decimal)inmuebleForm.Longitud : 0,
                 NroCalle = (uint)inmuebleForm.NroCalle!,
                 Precio = (decimal)inmuebleForm.Precio!,
                 Uso = inmuebleForm.Uso,
-                Disponible = inmuebleForm.Disponible
             };
 
             if (inmuebleForm.Id > 0)
             {
-                Console.WriteLine("Actualizando");
                 inmueble.Id = inmuebleForm.Id;
+                inmueble.Disponible = inmuebleForm.Disponible;
                 repo.ActualizarInmueble(inmueble);
             }
             else
@@ -153,7 +152,8 @@ public class InmuebleController : Controller
                     NroCalle = inmueble.NroCalle,
                     Precio = inmueble.Precio,
                     Uso = inmueble.Uso,
-                    Disponible = inmueble.Disponible
+                    Disponible = inmueble.Disponible,
+                    Duenio = inmueble.Duenio
                 };
             }
 
@@ -184,6 +184,10 @@ public class InmuebleController : Controller
             inmuebles = repo.ListarInmueblesParaAlquilar(desde, hasta, Uso, IdTipoInmueble, CantidadAmbientes, Precio, offset, limit);
             if (inmuebles.Count == 0) ViewBag.mensaje = "No se encontraron resultados";
         }
+        // else
+        // {
+        //     inmuebles = repo.ListarInmuebles((int)Disponiblilidad.HABILITADOS, offset, limit);
+        // }
         IList<TipoInmueble>? tipoInmuebles = repoTipoInmueble.ListarTiposInmueble();
 
         ViewBag.tiposInmuebles = tipoInmuebles;

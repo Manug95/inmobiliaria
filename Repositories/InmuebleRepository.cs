@@ -190,8 +190,8 @@ public class InmuebleRepository : BaseRepository, IInmuebleRepository
                     i.{nameof(Inmueble.CantidadAmbientes)}, 
                     i.{nameof(Inmueble.Calle)}, 
                     i.{nameof(Inmueble.NroCalle)}, 
-                    i.{nameof(Inmueble.Latitud)}, 
-                    i.{nameof(Inmueble.Longitud)}, 
+                    IFNULL(i.{nameof(Inmueble.Latitud)}, 0) AS latitud, 
+                    IFNULL(i.{nameof(Inmueble.Longitud)}, 0) AS longitud, 
                     i.{nameof(Inmueble.Precio)}, 
                     i.{nameof(Inmueble.Disponible)}, 
                     ti.{nameof(TipoInmueble.Tipo)}, 
@@ -240,8 +240,8 @@ public class InmuebleRepository : BaseRepository, IInmuebleRepository
                             CantidadAmbientes = reader.GetInt32(nameof(Inmueble.CantidadAmbientes)),
                             Calle = reader.GetString(nameof(Inmueble.Calle)),
                             NroCalle = reader.GetUInt32(nameof(Inmueble.NroCalle)),
-                            Latitud = reader.GetDecimal(nameof(Inmueble.Latitud)),
-                            Longitud = reader.GetDecimal(nameof(Inmueble.Longitud)),
+                            Latitud = reader.GetDecimal("latitud"),
+                            Longitud = reader.GetDecimal("longitud"),
                             Disponible = reader.GetBoolean(nameof(Inmueble.Disponible)),
                             Precio = reader.GetDecimal(nameof(Inmueble.Precio)),
                             Duenio = new Propietario
@@ -280,8 +280,8 @@ public class InmuebleRepository : BaseRepository, IInmuebleRepository
                     i.{nameof(Inmueble.CantidadAmbientes)}, 
                     i.{nameof(Inmueble.Calle)}, 
                     i.{nameof(Inmueble.NroCalle)}, 
-                    i.{nameof(Inmueble.Latitud)}, 
-                    i.{nameof(Inmueble.Longitud)}, 
+                    IFNULL(i.{nameof(Inmueble.Latitud)}, 0) AS latitud, 
+                    IFNULL(i.{nameof(Inmueble.Longitud)}, 0) AS longitud, 
                     i.{nameof(Inmueble.Precio)}, 
                     i.{nameof(Inmueble.Disponible)}, 
                     ti.{nameof(TipoInmueble.Tipo)} AS tipoInmueble, 
@@ -324,8 +324,8 @@ public class InmuebleRepository : BaseRepository, IInmuebleRepository
                             CantidadAmbientes = reader.GetInt32(nameof(Inmueble.CantidadAmbientes)),
                             Calle = reader.GetString(nameof(Inmueble.Calle)),
                             NroCalle = reader.GetUInt32(nameof(Inmueble.NroCalle)),
-                            Latitud = reader.GetDecimal(nameof(Inmueble.Latitud)),
-                            Longitud = reader.GetDecimal(nameof(Inmueble.Longitud)),
+                            Latitud = reader.GetDecimal("latitud"),
+                            Longitud = reader.GetDecimal("longitud"),
                             Disponible = reader.GetBoolean(nameof(Inmueble.Disponible)),
                             Precio = reader.GetDecimal(nameof(Inmueble.Precio)),
                             Duenio = new Propietario
@@ -364,8 +364,8 @@ public class InmuebleRepository : BaseRepository, IInmuebleRepository
                     i.{nameof(Inmueble.CantidadAmbientes)}, 
                     i.{nameof(Inmueble.Calle)}, 
                     i.{nameof(Inmueble.NroCalle)}, 
-                    i.{nameof(Inmueble.Latitud)}, 
-                    i.{nameof(Inmueble.Longitud)}, 
+                    IFNULL(i.{nameof(Inmueble.Latitud)}, 0) AS latitud, 
+                    IFNULL(i.{nameof(Inmueble.Longitud)}, 0) AS longitud, 
                     i.{nameof(Inmueble.Precio)}, 
                     i.{nameof(Inmueble.Disponible)}, 
                     ti.{nameof(TipoInmueble.Tipo)} AS tipoInmueble, 
@@ -399,8 +399,8 @@ public class InmuebleRepository : BaseRepository, IInmuebleRepository
                             CantidadAmbientes = reader.GetInt32(nameof(Inmueble.CantidadAmbientes)),
                             Calle = reader.GetString(nameof(Inmueble.Calle)),
                             NroCalle = reader.GetUInt32(nameof(Inmueble.NroCalle)),
-                            Latitud = reader.GetDecimal(nameof(Inmueble.Latitud)),
-                            Longitud = reader.GetDecimal(nameof(Inmueble.Longitud)),
+                            Latitud = reader.GetDecimal("latitud"),
+                            Longitud = reader.GetDecimal("longitud"),
                             Disponible = reader.GetBoolean(nameof(Inmueble.Disponible)),
                             Precio = reader.GetDecimal(nameof(Inmueble.Precio)),
                             Duenio = new Propietario
@@ -442,13 +442,14 @@ public class InmuebleRepository : BaseRepository, IInmuebleRepository
                     ON i.{nameof(Inmueble.IdTipoInmueble)} = ti.id 
                 INNER JOIN propietarios AS p 
                     ON i.{nameof(Inmueble.IdPropietario)} = p.id 
-                LEFT JOIN contratos as c 
-                    ON c.{nameof(Contrato.IdInmueble)} = i.{nameof(Inmueble.Id)} 
-                        AND {hasta} NOT BETWEEN c.{nameof(Contrato.FechaInicio)} AND c.{nameof(Contrato.FechaFin)} 
-                        AND {desde} NOT BETWEEN c.{nameof(Contrato.FechaInicio)} AND c.{nameof(Contrato.FechaFin)} 
-                WHERE c.{nameof(Contrato.Id)} IS NULL 
-                    AND i.{nameof(Inmueble.Borrado)} = 0 
-                    AND i.{nameof(Inmueble.Disponible)} = 1"
+                WHERE i.{nameof(Inmueble.Borrado)} = 0 
+                    AND i.{nameof(Inmueble.Disponible)} = 1 
+                    AND i.{nameof(Inmueble.Id)} NOT IN (
+                        SELECT {nameof(Contrato.IdInmueble)} 
+                        FROM contratos 
+                        WHERE @desde BETWEEN {nameof(Contrato.FechaInicio)} AND {nameof(Contrato.FechaFin)} 
+                            OR @hasta BETWEEN {nameof(Contrato.FechaInicio)} AND {nameof(Contrato.FechaFin)}
+                    )" 
             ;
 
             if (uso != null)
@@ -461,20 +462,24 @@ public class InmuebleRepository : BaseRepository, IInmuebleRepository
                 sql += $" AND i.{nameof(Inmueble.CantidadAmbientes)} = {cantAmb.Value}";
 
             if (precio != null)
-                sql += $" AND i.{nameof(Inmueble.Precio)} >= {precio.Value}";
+                sql += $" AND i.{nameof(Inmueble.Precio)} <= {precio.Value}";
 
             if (offset > 0 && limit > 0)
-                    sql += $" LIMIT @limit OFFSET @offset";
+                sql += $" LIMIT @limit OFFSET @offset";
 
             using (var command = new MySqlCommand(sql + ";", connection))
             {
+                command.Parameters.AddWithValue("desde", desde);
+                command.Parameters.AddWithValue("hasta", hasta);
+
                 if (offset > 0 && limit > 0)
                 {
                     command.Parameters.AddWithValue($"limit", limit);
                     command.Parameters.AddWithValue($"offset", (offset - 1) * limit);
                 }
 
-                command.Parameters.AddWithValue("uso", uso);
+                if (uso != null)
+                    command.Parameters.AddWithValue("uso", uso);
 
                 connection.Open();
 
@@ -491,8 +496,8 @@ public class InmuebleRepository : BaseRepository, IInmuebleRepository
                             CantidadAmbientes = reader.GetInt32(nameof(Inmueble.CantidadAmbientes)),
                             Calle = reader.GetString(nameof(Inmueble.Calle)),
                             NroCalle = reader.GetUInt32(nameof(Inmueble.NroCalle)),
-                            Latitud = reader.GetDecimal(nameof(Inmueble.Latitud)),
-                            Longitud = reader.GetDecimal(nameof(Inmueble.Longitud)),
+                            Latitud = reader[nameof(Inmueble.Latitud)] == DBNull.Value ? 0 : reader.GetDecimal(nameof(Inmueble.Latitud)),
+                            Longitud = reader[nameof(Inmueble.Longitud)] == DBNull.Value ? 0 : reader.GetDecimal(nameof(Inmueble.Longitud)),
                             Disponible = reader.GetBoolean(nameof(Inmueble.Disponible)),
                             Precio = reader.GetDecimal(nameof(Inmueble.Precio)),
                             Duenio = new Propietario

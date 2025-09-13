@@ -119,7 +119,7 @@ function validarFormulario(values) {
     ["precio", validarPrecio],
     ["latitud", validarLatitud],
     ["longitud", validarLongitud],
-    ["propietario", validarFormSelect],
+    ["propietario", validarFormSelect]
   ]);
 
   const esValido = Object.keys(values)

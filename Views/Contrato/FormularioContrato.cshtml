@@ -4,7 +4,7 @@
 @model Contrato;
 
 @{
-    Inquilino inquilino;
+    Inquilino? inquilino;
 }
 
 <link rel="stylesheet" href="~/css/styles.css">
@@ -14,7 +14,7 @@
 
     <div class="d-flex justify-content-center align-items-center vh-50 w-100">
         <form asp-action="Guardar" id="form-contrato" class="p-3 w-75 mx-auto border rounded-4 shadow-sm needs-validation mt-3 mb-3 bg-light-subtle" novalidate>
-            @if (ViewBag.IdInquilino == 0) {
+            @if (ViewBag.IdInquilino == 0 || ViewBag.desde != null) { //si desde no es null, hasta tampoco lo es. asi que es lo mismo usar desde, hasta o los 2
                 <div class="row mb-md-4 border rounded-4">
                     <div class="col-12 col-md-6 mt-md-1 mb-md-3">
                         <label for="buscador" class="form-label fw-bold">Escriba nombre o apellido del inquilino</label>
@@ -25,9 +25,10 @@
                             <label asp-for="IdInquilino" class="form-label fw-bold">Inquilino</label>
                             <select asp-for="IdInquilino" class="form-select" id="IdInquilino">
                                 @if (Model.Id > 0) {
-                                    inquilino = Model.Inquilino!;
-                                    <option value="@Model.IdInquilino" selected>@inquilino.ToString()</option>
-                                } else {
+                                    inquilino = Model.Inquilino;
+                                    <option value="@Model.IdInquilino" selected>@inquilino?.ToString()</option>
+                                } 
+                                @* else {
                                     <option value="" selected disabled>Seleccione el inquilino</option>
                                     @for (int i = 0; i < ViewBag?.inquilinos?.Count(); i++) {
                                         <option value="@ViewBag.inquilinos.ElementAt(i).Id"
@@ -36,7 +37,7 @@
                                             @ViewBag.inquilinos.ElementAt(i).ToString()
                                         </option>
                                     }
-                                }
+                                } *@
                             </select>
                             <div id="tpe_IdInquilino" class="invalid-tooltip"></div>
                         </div>
@@ -76,8 +77,13 @@
                     <div class="position-relative input-group">
                         <span class="input-group-text">$</span>
                         <input type="number" asp-for="MontoMensual" class="form-control rounded-end" id="MontoMensual" 
-                            value="@(Model.MontoMensual.HasValue ? Model.MontoMensual.Value.ToString(CultureInfo.InvariantCulture) : ViewBag.inmueble.Precio.ToString(CultureInfo.InvariantCulture))"
+                            value="@(Model.MontoMensual.HasValue 
+                                    ? Model.MontoMensual.Value.ToString(CultureInfo.InvariantCulture) 
+                                    : (ViewBag.inmueble != null ? ViewBag.inmueble.Precio.ToString(CultureInfo.InvariantCulture) : ""))"
                             >
+                        @* <input type="number" asp-for="MontoMensual" class="form-control rounded-end" id="MontoMensual" 
+                            value="@(Model.MontoMensual.HasValue ? Model.MontoMensual.Value.ToString(CultureInfo.InvariantCulture) : ViewBag.inmueble.Precio.ToString(CultureInfo.InvariantCulture))"
+                            > *@
                         <div id="tpe_MontoMensual" class="invalid-tooltip"></div>
                     </div>
                 </div>
@@ -89,7 +95,7 @@
 
             <div class="row mb-2 mt-5 mt-md-4 justify-content-evenly align-items-end pt-3">
                 <div class="col-2 d-flex justify-content-center">
-                    @if (ViewBag!.IdInmueble == 0) {
+                    @if (ViewBag!.IdInmueble == 0 && Model.Id == 0) {
                         <span class="d-inline-block" tabindex="0" data-bs-toggle="tooltip" data-bs-title="Todavía no ha seleccionado un Inmueble" data-bs-custom-class="custom-tooltip-disabled">
                             <input type="submit" value="Guardar" class="btn btn-primary d-block mx-auto" disabled>
                         </span>
@@ -109,5 +115,9 @@
 
     </div>
 </div>
+
+@if (ViewBag.mensajeError != null) {
+    <partial name="_MensajeError" model="ViewBag.mensajeError"/>
+}
 
 <script type="module" src="~/js/contratoForm.js"></script>

@@ -87,20 +87,24 @@
 
             <div class="row mb-md-4">
                 <div class="col-12 col-md-6 mt-5 mt-md-3 mb-md-0">
-                    <label for="buscador" class="form-label fw-bold">Escriba nombre o apellido del propietario</label>
+                    <label for="buscador" class="form-label fw-bold">nombre o apellido del propietario</label>
                     <input type="text" class="form-control" id="buscador">
                 </div>
                  <div class="col-12 col-md-6 mt-5 mt-md-3 mb-md-0">
                     <div class="position-relative">
                         <label asp-for="InmuebleFormData.IdPropietario" class="form-label fw-bold">Propietario</label>
                         <select asp-for="InmuebleFormData.IdPropietario" class="form-select" id="propietario">
-                            <option value="" selected disabled>Seleccione el propietario</option>
-                            @for (int i = 0; i < Model?.Propietarios?.Count(); i++) {
-                                <option value="@Model?.Propietarios.ElementAt(i).Id"
-                                    selected="@(Model?.Propietarios.Count() == 1)"
-                                >
-                                    @Model?.Propietarios.ElementAt(i).ToString()
-                                </option>
+                            @if(Model.InmuebleFormData!.Duenio != null) {
+                                <option value="@Model.InmuebleFormData.Duenio.Id" selected>@Model.InmuebleFormData.Duenio</option>
+                            } else {
+                                <option value="" selected disabled>Seleccione el propietario</option>
+                                @for (int i = 0; i < Model?.Propietarios?.Count(); i++) {
+                                    <option value="@Model?.Propietarios.ElementAt(i).Id"
+                                        selected="@(Model?.Propietarios.Count() == 1)"
+                                    >
+                                        @Model?.Propietarios.ElementAt(i).ToString()
+                                    </option>
+                                }
                             }
                         </select>
                         <div id="tpe_propietario" class="invalid-tooltip"></div>

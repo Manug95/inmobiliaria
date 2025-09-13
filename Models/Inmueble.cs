@@ -21,7 +21,7 @@ public class Inmueble
     public TipoInmueble? Tipo { get; set; }
 
     [Required]
-    [StringLength(25, ErrorMessage = "El maximo de caracteres es 50")]
+    [StringLength(50, ErrorMessage = "El maximo de caracteres es 50")]
     public string? Uso { get; set; }
 
     [Required]
@@ -34,6 +34,7 @@ public class Inmueble
     public decimal Precio { get; set; }
 
     [Required]
+    [StringLength(100, ErrorMessage = "El maximo de caracteres es 100")]
     public string? Calle { get; set; }
 
     [Required]

@@ -20,12 +20,14 @@ public class ContratoController : Controller
     {
         IList<Contrato> contratos = repo.ListarContratos(offset, limit);
         int cantidadContratos = repo.ContarContratos();
-        
-        ViewBag.cantPag = Math.Ceiling( (decimal)cantidadContratos / limit );
+
+        ViewBag.cantPag = Math.Ceiling((decimal)cantidadContratos / limit);
         ViewBag.offsetSiguiente = offset + 1;
         ViewBag.offsetAnterior = offset - 1;
 
         ViewBag.contratos = contratos;
+
+        ViewBag.mensajeError = TempData["MensajeError"];
 
         return View(new Contrato());
     }
@@ -49,30 +51,45 @@ public class ContratoController : Controller
         {
             if (contrato.Id > 0)
             {
+                // Console.WriteLine(contrato.IdInmueble);
+                // Console.WriteLine(contrato.IdInquilino);
+                // Console.WriteLine(contrato.MontoMensual);
+                // Console.WriteLine(contrato.FechaInicio);
+                // Console.WriteLine(contrato.FechaFin);
+                // Console.WriteLine(contrato.FechaTerminado);
+                // Console.WriteLine(contrato.Id);
                 repo.ActualizarContrato(contrato);
             }
             else
             {
-                repo.InsertarContrato(contrato);
+                DateTime desde = (DateTime)contrato.FechaInicio!;
+                DateTime hasta = (DateTime)contrato.FechaFin!;
+                if (repo.EstaDisponible(desde.ToString("yyyy-MM-dd"), hasta.ToString("yyyy-MM-dd"), (int)contrato.IdInmueble!))
+                    repo.InsertarContrato(contrato);
+                else
+                {
+                    TempData["MensajeError"] = "El Inmueble ya está en un contrato entre las fechas indicadas";
+                    return RedirectToAction(nameof(FormularioContrato), new { desde=desde.ToString("yyyy-MM-dd"), hasta=hasta.ToString("yyyy-MM-dd"), idInq= contrato.IdInquilino, idInm=contrato.IdInmueble });
+                }
             }
-            return RedirectToAction(nameof(FormularioContrato));
+            return RedirectToAction(nameof(Index));
         }
         else
         {
-            string errorMsg = "<ul>";
+            string errorMsg = "";
             foreach (var estado in ModelState)
             {
                 var campo = estado.Key;
                 foreach (var error in estado.Value.Errors)
                 {
-                    errorMsg += $"<li class=\"text-danger fs-5\"><strong>{error.ErrorMessage}</strong></li>";
+                    errorMsg += $"{error.ErrorMessage}";
                 }
             }
-            TempData["MensajeError"] = errorMsg + "</ul>";
+            TempData["MensajeError"] = errorMsg;
 
             return RedirectToAction(nameof(Index));
         }
-        
+
     }
 
     public IActionResult Eliminar(int id)
@@ -99,11 +116,17 @@ public class ContratoController : Controller
         if (id > 0)
         {
             contrato = repo.ObtenerContrato(id);//ponerle los datos del contrato para la modificacion
+            ViewBag.IdInmueble = contrato?.IdInmueble;
+        }
+        else
+        {
+            ViewBag.IdInmueble = idInm;
         }
         ViewBag.IdInquilino = idInq;
-        ViewBag.IdInmueble = idInm;
+        ViewBag.id = id;
         ViewBag.desde = desde;
         ViewBag.hasta = hasta;
+        ViewBag.mensajeError = TempData["MensajeError"];
         return View(contrato);
     }
 

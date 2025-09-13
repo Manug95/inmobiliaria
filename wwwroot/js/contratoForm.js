@@ -1,4 +1,4 @@
-import { getElementById, getFormInputValue, createElement } from "./frontUtils.js";
+import { getElementById, getFormInputValue, createElement, mostrarMensaje } from "./frontUtils.js";
 import {
   resetValidationErrorMessage,
   setInvalidInputStyle,
@@ -14,8 +14,9 @@ import {
 
 
 document.addEventListener("DOMContentLoaded", () => {
-  const form = getElementById("form-contrato");
+  mostrarMensaje(false, null);
 
+  const form = getElementById("form-contrato");
   form?.addEventListener("submit", (e) => {
     e.preventDefault();
 
@@ -64,9 +65,9 @@ function validarFormulario(values) {
     ["MontoMensual", validarPrecio]
   ]);
 
-  if (values["FechaTerminado"] !== null) mapaValidador.set("FechaTerminado", validarFechaDeInputDate);
+  // if (values["FechaTerminado"] !== null) mapaValidador.set("FechaTerminado", validarFechaDeInputDate);
   if (values["IdInquilino"] !== null) mapaValidador.set("IdInquilino", validarFormSelect);
-console.log(values);
+
   const esValido = Object.keys(values)
     .map(v => {
       const fnValidadora = mapaValidador.get(v);
@@ -89,12 +90,13 @@ function validarRangosDeFechas(formValues) {
   if (formValues["FechaTerminado"] !== null) mapaValidador.set("FechaTerminado", validarFechaTerminacionDelContrato);
 
   const {FechaInicio, FechaFin, FechaTerminado} = formValues;
+  const idContrato = +getElementById("Id").value;
 
   return Object.keys(formValues)
     .map(v => {
       const fnValidadora = mapaValidador.get(v);
       if (fnValidadora === undefined) return true;
-      const result = fnValidadora(FechaInicio, FechaFin, FechaTerminado);
+      const result = fnValidadora(FechaInicio, FechaFin, FechaTerminado, idContrato === 0);
       if (result !== undefined) { setInvalidInputStyle(v); setValidationErrorMessage(`tpe_${v}`, result.errorMessage); }
       else { setValidInputStyle(v); resetValidationErrorMessage(`tpe_${v}`); }
       return result === undefined;
@@ -124,8 +126,7 @@ async function buscar(valor) {
     select.innerHTML = "";
 
     data.datos.forEach(item => {
-      const option = createElement("option", { value: item.id, content: `${item.apellido}, ${item.nombre} - ${item.dni}` });
-      select.appendChild(option);
+      select.appendChild( createElement("option", { value: item.id, content: `${item.apellido}, ${item.nombre} - ${item.dni}` }) );
     });
 
   } catch (error) {

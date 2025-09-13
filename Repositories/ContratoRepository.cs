@@ -20,7 +20,7 @@ public class ContratoRepository : BaseRepository, IContratoRepository
                 {nameof(Contrato.MontoMensual)} = @{nameof(Contrato.MontoMensual)}, 
                 {nameof(Contrato.FechaInicio)} = @{nameof(Contrato.FechaInicio)}, 
                 {nameof(Contrato.FechaFin)} = @{nameof(Contrato.FechaFin)}, 
-                {nameof(Contrato.FechaTerminado)} = @{nameof(Contrato.FechaTerminado)}, 
+                {nameof(Contrato.FechaTerminado)} = @{nameof(Contrato.FechaTerminado)} 
                 WHERE {nameof(Contrato.Id)} = @{nameof(Contrato.Id)};"
             ;
 
@@ -297,12 +297,12 @@ public class ContratoRepository : BaseRepository, IContratoRepository
                     ON inm.{nameof(Inmueble.IdPropietario)} = p.id 
                 INNER JOIN inquilinos AS inq 
                     ON c.{nameof(Contrato.IdInquilino)} = inq.id 
-                WHERE c.{nameof(Contrato.Borrado)} = 0"
+                WHERE c.{nameof(Contrato.Borrado)} = 0 AND c.{nameof(Contrato.Id)} = @{nameof(Contrato.Id)}"
             ;
 
             using (var command = new MySqlCommand(sql + ";", connection))
             {
-                command.Parameters.AddWithValue($"{nameof(Inmueble.Id)}", id);
+                command.Parameters.AddWithValue($"{nameof(Contrato.Id)}", id);
 
                 connection.Open();
 
@@ -355,5 +355,38 @@ public class ContratoRepository : BaseRepository, IContratoRepository
         }
 
         return contrato;
+    }
+
+    public bool EstaDisponible(string desde, string hasta, int idInmueble)
+    {
+        bool disponible;
+
+        string sql = @$"
+            SELECT {nameof(Contrato.Id)} 
+            FROM contratos 
+            WHERE 
+                {nameof(Contrato.IdInmueble)} = @idInmueble 
+                AND (@desde BETWEEN {nameof(Contrato.FechaInicio)} AND {nameof(Contrato.FechaFin)} 
+                OR @hasta BETWEEN {nameof(Contrato.FechaInicio)} AND {nameof(Contrato.FechaFin)});"
+        ;
+        
+        using (var connection = new MySqlConnection(connectionString))
+        {
+            using (var command = new MySqlCommand(sql, connection))
+            {
+                command.Parameters.AddWithValue("idInmueble", idInmueble);
+                command.Parameters.AddWithValue("desde", desde);
+                command.Parameters.AddWithValue("hasta", hasta);
+
+                connection.Open();
+
+                using (var reader = command.ExecuteReader())
+                {
+                    disponible = !reader.HasRows;
+                }
+            }
+        }
+
+        return disponible;
     }
 }

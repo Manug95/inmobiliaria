@@ -7,7 +7,7 @@ public class TipoInmueble
     [Key]
     public int Id { get; set; }
 
-    [StringLength(25, ErrorMessage = "El maximo de caracteres es 25")]
+    [StringLength(50, ErrorMessage = "El maximo de caracteres es 50")]
     [Required(ErrorMessage="El nombre de tipo es requerido")]
     public string? Tipo { get; set; }
 

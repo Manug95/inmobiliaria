@@ -39,6 +39,7 @@ document.addEventListener("DOMContentLoaded", e => {
 function agregarDatosAlModal(datos) {
   getElementById("nro").textContent = datos.id;
   getElementById("propietario").textContent = `${datos.inmueble.duenio.apellido}, ${datos.inmueble.duenio.nombre}`;
+  getElementById("direccion").textContent = `${datos.inmueble.calle} ${datos.inmueble.nroCalle}`;
   getElementById("inquilino").textContent = `${datos.inquilino.apellido}, ${datos.inquilino.nombre}`;
   getElementById("fIni").textContent = aFechaLocal(datos.fechaInicio.split("T")[0]);
   getElementById("fFin").textContent = aFechaLocal(datos.fechaFin.split("T")[0]);
