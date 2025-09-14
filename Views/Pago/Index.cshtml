@@ -1,0 +1,23 @@
+@using Microsoft.VisualBasic
+@model Pago
+@{
+    ViewData["Title"] = "Pagos";
+}
+
+<link rel="stylesheet" href="~/css/tablas.css">
+<link rel="stylesheet" href="~/css/styles.css">
+
+<h1 id="titulo" data-modelo="@nameof(Pago)" class="text-center mt-2">Pagos</h1>
+
+<partial name="_PagoTabla" model="ViewBag.pagos"/>
+
+<partial name="_DetallePagoModal"/>
+
+<partial name="_ModalPregunta"/>
+
+@if(!string.IsNullOrEmpty(ViewBag.mensajeError)) {
+    <partial name="_MensajeError" model="ViewBag.mensajeError"/>
+}
+
+
+<script type="module" src="~/js/pagos.js"></script>

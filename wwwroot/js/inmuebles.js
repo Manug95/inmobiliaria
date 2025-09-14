@@ -52,10 +52,10 @@ document.addEventListener("DOMContentLoaded", () => {
     i.addEventListener("click", async e => {
       const idFila = e.target.id.split("-")[1];
 
-      if (!DETALLES.includes(d => +d.id === +idFila)) {
+      if (DETALLES.findIndex(d => d.id === +idFila) < 0) {
         const respuesta = await fetch(`/Inmueble/Buscar/${idFila}`);
         const datos = await respuesta.json();
-        DETALLES.push(datos.inmueble);console.log(datos.inmueble);
+        DETALLES.push(datos.inmueble);
         agregarDatosAlModal(datos.inmueble);
       } else {
         agregarDatosAlModal(DETALLES.find(d => +d.id === +idFila));

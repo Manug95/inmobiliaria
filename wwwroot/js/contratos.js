@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", e => {
     i.addEventListener("click", async e => {
       const idFila = e.target.id.split("-")[1];
 
-      if (!DETALLES.includes(d => +d.id === +idFila)) {
+      if (DETALLES.findIndex(d => d.id === +idFila) < 0) {
         const respuesta = await fetch(`/Contrato/Buscar/${idFila}`);
         const contrato = await respuesta.json();
         DETALLES.push(contrato);

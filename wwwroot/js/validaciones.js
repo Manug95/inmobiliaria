@@ -165,14 +165,14 @@ export function validarPrecio(cadena, requrido = true) {
   if (cadena.length === 0) {
     if (!requrido) return;
     
-    return { errorMessage: "El precio es obligatorio" };
+    return { errorMessage: "El campo es obligatorio" };
   }
   let precioNum = parseFloat(cadena.replace(",", "."));
   if (isNaN(precioNum)) {
-    return { errorMessage: "El precio debe ser un número" };
+    return { errorMessage: "Debe ser un número" };
   }
   if (precioNum <= 0) {
-    return { errorMessage: "El precio debe ser mayor que 0" };
+    return { errorMessage: "Debe ser mayor que 0" };
   }
   return;
 }

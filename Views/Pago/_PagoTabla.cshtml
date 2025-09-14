@@ -1,13 +1,6 @@
 @using Microsoft.VisualBasic
-@using System;
-@using System.Runtime.Serialization
 
-@* @model IEnumerable<Propietario> *@
-@model Contrato
-
-@{
-    IEnumerable<Contrato> contratos = ViewBag.contratos;
-}
+@model IEnumerable<Pago>
 
 <div class="container-fluid shadow border rounded-4 mt-4 bg-light-subtle position-relative">
     <div class="table-responsive my-4 rounded-3 fixed-height-table-container">
@@ -18,49 +11,40 @@
                         @Html.DisplayNameFor(model => model.Id)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.FechaInicio).ToUpper()
+                        @Html.DisplayNameFor(model => model.Fecha).ToUpper()
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.FechaFin).ToUpper()
+                        @Html.DisplayNameFor(model => model.Importe).ToUpper()
                     </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.MontoMensual).ToUpper()
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.FechaTerminado).ToUpper()
+                    <th colspan="2">
+                        @Html.DisplayNameFor(model => model.Detalle).ToUpper()
                     </th>
                     <th></th>
                 </tr>
             </thead>
             <tbody id="cuerpo">
-                @foreach (var item in contratos)
+                @foreach (var item in Model)
                 {
                     <tr id="@item.Id">
                         <td class="align-middle py-0 ps-2">
                             @Html.DisplayFor(modelItem => item.Id)
                         </td>
                         <td class="align-middle py-0 ps-2">
-                            @Html.DisplayFor(modelItem => item.FechaInicio)
+                            @Html.DisplayFor(modelItem => item.Fecha)
                         </td>
                         <td class="align-middle py-0 ps-2">
-                            @Html.DisplayFor(modelItem => item.FechaFin)
+                            @Html.DisplayFor(modelItem => item.Importe)
                         </td>
-                        <td class="align-middle py-0 ps-2">
-                            @Html.DisplayFor(modelItem => item.MontoMensual)
-                        </td>
-                        <td class="align-middle py-0 ps-2">
-                            @Html.DisplayFor(modelItem => item.FechaTerminado)
+                        <td class="align-middle py-0 ps-2" colspan="2">
+                            @Html.DisplayFor(modelItem => item.Detalle)
                         </td>
                         <td>
                             <div class="d-flex justify-content-evenly align-items-center">
-                                <a class="icon-enlace" asp-action="FormularioContrato" asp-controller="Contrato" asp-route-id="@item.Id" data-bs-toggle="tooltip" data-bs-title="Editar">
+                                <a class="icon-enlace" asp-action="FormularioPago" asp-controller="Pago" asp-route-id="@item.Id" data-bs-toggle="tooltip" data-bs-title="Editar">
                                     <i class="bi bi-pencil-square fs-3 text-primary"></i>
                                 </a>
                                 <i id="del-@item.Id" class="bi bi-trash fs-3 text-danger icon-hover" style="cursor: pointer;" data-bs-toggle="tooltip" data-bs-title="Eliminar"></i>
-                                <i id="det-@item.Id" class="bi bi-file-earmark-text fs-3 text-info icon-hover" data-bs-toggle="tooltip" data-bs-title="Ver Detalle"></i>
-                                <a class="icon-enlace" asp-action="FormularioPago" asp-controller="Pago" asp-route-idCon="@item.Id" data-bs-toggle="tooltip" data-bs-title="Registrar Pago">
-                                    <i class="bi bi-currency-dollar fs-3 text-success"></i>
-                                </a>
+                                <i id="det-@item.Id" class="bi bi-file-earmark-text fs-3 text-info icon-hover" style="cursor: pointer;" data-bs-toggle="tooltip" data-bs-title="Ver Detalle"></i>
                             </div>
                         </td>
                     </tr>
@@ -83,7 +67,9 @@
             </li>
         </ul>
     </nav>
-    @* <div id="btn_add" class="position-absolute bottom-0 end-0 me-4 mb-2" style="cursor: pointer;">
-        <i class="bi bi-plus-square fs-1 text-primary icon-hover d-inline-block" data-bs-toggle="tooltip" data-bs-title="Registrar Nuevo"></i>
-    </div> *@
+    <div id="btn_add" class="position-absolute bottom-0 end-0 me-4 mb-2" style="cursor: pointer;">
+        <a class="icon-enlace d-inline-block" asp-action="FormularioPago" asp-controller="Pago" data-bs-toggle="tooltip" data-bs-title="Registrar Nuevo">
+            <i class="bi bi-plus-square fs-1 text-primary"></i>
+        </a>
+    </div>
 </div>
