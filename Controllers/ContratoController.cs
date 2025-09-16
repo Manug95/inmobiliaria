@@ -16,15 +16,15 @@ public class ContratoController : Controller
         repoInmueble = new InmuebleRepository();
     }
 
-    public IActionResult Index(int offset = 1, int limit = 10)
+    public IActionResult Index(int? idInm, int offset = 1, int limit = 10)
     {
-        IList<Contrato> contratos = repo.ListarContratos(offset, limit);
-        int cantidadContratos = repo.ContarContratos();
+        IList<Contrato> contratos = repo.ListarContratos(offset, limit, idInm);
+        int cantidadContratos = repo.ContarContratos(idInm);
 
         ViewBag.cantPag = Math.Ceiling((decimal)cantidadContratos / limit);
         ViewBag.offsetSiguiente = offset + 1;
         ViewBag.offsetAnterior = offset - 1;
-
+        ViewBag.idInm = idInm;
         ViewBag.contratos = contratos;
 
         ViewBag.mensajeError = TempData["MensajeError"];

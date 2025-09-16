@@ -45,7 +45,7 @@ public class ContratoRepository : BaseRepository, IContratoRepository
         return modificado;
     }
 
-    public int ContarContratos()
+    public int ContarContratos(int? idInm = null)
     {
         int cantidadContratos = 0;
 
@@ -54,11 +54,15 @@ public class ContratoRepository : BaseRepository, IContratoRepository
             string sql = @$"
                 SELECT COUNT({nameof(Contrato.Id)}) AS cantidad 
                 FROM contratos 
-                WHERE {nameof(Contrato.Borrado)} = 0;"
+                WHERE {nameof(Contrato.Borrado)} = 0"
             ;
 
-            using (var command = new MySqlCommand(sql, connection))
+            if (idInm.HasValue)
+                sql += $" AND {nameof(Contrato.IdInmueble)} = @idInm";
+
+            using (var command = new MySqlCommand(sql + ";", connection))
             {
+                if (idInm.HasValue) command.Parameters.AddWithValue($"idInm", idInm.Value);
 
                 connection.Open();
 
@@ -156,7 +160,7 @@ public class ContratoRepository : BaseRepository, IContratoRepository
         return id;
     }
 
-    public IList<Contrato> ListarContratos(int? offset = null, int? limit = null)
+    public IList<Contrato> ListarContratos(int? offset = null, int? limit = null, int? idInm = null)
     {
         var contratos = new List<Contrato>();
 
@@ -196,11 +200,16 @@ public class ContratoRepository : BaseRepository, IContratoRepository
                 WHERE c.{nameof(Contrato.Borrado)} = 0"
             ;
 
+            if (idInm.HasValue)
+                sql += $" AND c.{nameof(Contrato.IdInmueble)} = @idInm";
+
             if (offset.HasValue && limit.HasValue)
-                sql += $" LIMIT @limit OFFSET @offset";
+                    sql += $" LIMIT @limit OFFSET @offset";
 
             using (var command = new MySqlCommand(sql + ";", connection))
             {
+                if (idInm.HasValue) command.Parameters.AddWithValue($"idInm", idInm.Value);
+
                 if (offset.HasValue && limit.HasValue)
                 {
                     command.Parameters.AddWithValue($"limit", limit.Value);

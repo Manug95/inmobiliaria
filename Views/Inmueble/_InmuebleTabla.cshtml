@@ -71,9 +71,14 @@
                         </td>
                         <td>
                             <div class="d-flex justify-content-evenly align-items-center contenedor-iconos">
-                                <a class="icon-enlace" asp-action="FormularioInmueble" asp-route-id="@item.Id"><i class="bi bi-pencil-square fs-3 icon-hover" data-bs-toggle="tooltip" data-bs-title="Editar"></i></a>
+                                <a class="icon-enlace" asp-action="FormularioInmueble" asp-route-id="@item.Id">
+                                    <i class="bi bi-pencil-square fs-3 icon-hover text-primary" data-bs-toggle="tooltip" data-bs-title="Editar"></i>
+                                </a>
                                 <i id="del-@item.Id" class="bi bi-trash fs-3 text-danger icon-hover" data-bs-toggle="tooltip" data-bs-title="Eliminar"></i>
                                 <i id="det-@item.Id" class="bi bi-file-earmark-text fs-3 text-info icon-hover" data-bs-toggle="tooltip" data-bs-title="Ver Detalle"></i>
+                                <a class="icon-enlace" asp-controller="Contrato" asp-action="Index" asp-route-idInm="@item.Id">
+                                    <i class="bi bi-file-earmark-text fs-3 icon-hover text-warning" data-bs-toggle="tooltip" data-bs-title="Ver Contratos"></i>
+                                </a>
                             </div>
                         </td>
                     </tr>

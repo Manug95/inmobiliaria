@@ -83,7 +83,16 @@
             </li>
         </ul>
     </nav>
-    @* <div id="btn_add" class="position-absolute bottom-0 end-0 me-4 mb-2" style="cursor: pointer;">
-        <i class="bi bi-plus-square fs-1 text-primary icon-hover d-inline-block" data-bs-toggle="tooltip" data-bs-title="Registrar Nuevo"></i>
-    </div> *@
+    @if(ViewBag.idInm != null) {
+        <div class="position-absolute bottom-0 start-0 ms-4 mb-2 contenedor-iconos">
+            <a asp-controller="Inmueble" asp-action="Index" class="icon-enlace d-inline-block">
+                <i class="bi bi-box-arrow-in-left fs-1 text-primary" data-bs-toggle="tooltip" data-bs-title="Volver a Inmuebles"></i>
+            </a>
+        </div>
+        <div class="position-absolute bottom-0 end-0 me-4 mb-2 contenedor-iconos">
+            <a asp-action="Index" class="icon-enlace d-inline-block">
+                <i class="bi bi-arrow-counterclockwise fs-1 text-primary" data-bs-toggle="tooltip" data-bs-title="Recargar Contratos"></i>
+            </a>
+        </div>
+    }
 </div>

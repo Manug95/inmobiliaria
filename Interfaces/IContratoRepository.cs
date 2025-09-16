@@ -4,11 +4,11 @@ namespace InmobiliariaGutierrezManuel.Interfaces
 {
     public interface IContratoRepository
     {
-        public IList<Contrato> ListarContratos(int? offset = null, int? limit = null);
+        public IList<Contrato> ListarContratos(int? offset = null, int? limit = null, int? idInm = null);
         public Contrato? ObtenerContrato(int id);
         public int InsertarContrato(Contrato contrato);
         public bool ActualizarContrato(Contrato contrato);
         public bool EliminarContrato(int id);
-        public int ContarContratos();
+        public int ContarContratos(int? idInm = null);
     }
 }
