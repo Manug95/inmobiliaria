@@ -204,7 +204,7 @@ public class ContratoRepository : BaseRepository, IContratoRepository
                 sql += $" AND c.{nameof(Contrato.IdInmueble)} = @idInm";
 
             if (offset.HasValue && limit.HasValue)
-                    sql += $" LIMIT @limit OFFSET @offset";
+                sql += $" LIMIT @limit OFFSET @offset";
 
             using (var command = new MySqlCommand(sql + ";", connection))
             {
@@ -378,7 +378,7 @@ public class ContratoRepository : BaseRepository, IContratoRepository
                 AND (@desde BETWEEN {nameof(Contrato.FechaInicio)} AND {nameof(Contrato.FechaFin)} 
                 OR @hasta BETWEEN {nameof(Contrato.FechaInicio)} AND {nameof(Contrato.FechaFin)});"
         ;
-        
+
         using (var connection = new MySqlConnection(connectionString))
         {
             using (var command = new MySqlCommand(sql, connection))
@@ -397,5 +397,33 @@ public class ContratoRepository : BaseRepository, IContratoRepository
         }
 
         return disponible;
+    }
+
+    public bool TerminarContrato(int id, string fecha)
+    {
+        bool finalizado = false;
+
+        using (var connection = new MySqlConnection(connectionString))
+        {
+            string sql = @$"
+                UPDATE contratos 
+                SET {nameof(Contrato.FechaTerminado)} = @{nameof(Contrato.FechaTerminado)} 
+                WHERE {nameof(Contrato.Id)} = @{nameof(Contrato.Id)};"
+            ;
+
+            using (var command = new MySqlCommand(sql, connection))
+            {
+                command.Parameters.AddWithValue($"{nameof(Contrato.FechaTerminado)}", fecha);
+                command.Parameters.AddWithValue($"{nameof(Contrato.Id)}", id);
+
+                connection.Open();
+
+                finalizado = command.ExecuteNonQuery() > 0;
+
+                connection.Close();
+            }
+        }
+
+        return finalizado;
     }
 }

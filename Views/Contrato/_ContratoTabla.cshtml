@@ -61,6 +61,11 @@
                                 <a class="icon-enlace" asp-action="FormularioPago" asp-controller="Pago" asp-route-idCon="@item.Id" data-bs-toggle="tooltip" data-bs-title="Registrar Pago">
                                     <i class="bi bi-currency-dollar fs-3 text-success"></i>
                                 </a>
+                                @if (item.FechaTerminado != null) {
+                                    <i id="mult-@item.Id" class="bi bi-card-list fs-3 text-secondary icon-hover" data-bs-toggle="tooltip" data-bs-title="Ver detalle multa"></i>
+                                } else {
+                                    <i id="end-@item.Id" class="bi bi-file-earmark-x fs-3 text-danger icon-hover" data-bs-toggle="tooltip" data-bs-title="Terminar Contrato"></i>
+                                }
                             </div>
                         </td>
                     </tr>

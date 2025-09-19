@@ -45,7 +45,7 @@ public class PagoRepository : BaseRepository, IPagoRepository
         return modificado;
     }
 
-    public int ContarPagos()
+    public int ContarPagos(int? idCon = null)
     {
         int cantidadPagos = 0;
 
@@ -53,12 +53,15 @@ public class PagoRepository : BaseRepository, IPagoRepository
         {
             string sql = @$"
                 SELECT COUNT({nameof(Pago.Id)}) AS cantidad 
-                FROM pagos 
-                WHERE {nameof(Pago.Estado)} = 1;"
+                FROM pagos"
             ;
 
-            using (var command = new MySqlCommand(sql, connection))
+            if (idCon.HasValue)
+                sql += $" AND {nameof(Pago.IdContrato)} = @{nameof(Pago.IdContrato)}";
+
+            using (var command = new MySqlCommand(sql + ";", connection))
             {
+                if (idCon.HasValue) command.Parameters.AddWithValue($"{nameof(Pago.IdContrato)}", idCon.Value);
 
                 connection.Open();
 
@@ -159,7 +162,7 @@ public class PagoRepository : BaseRepository, IPagoRepository
         return id;
     }
 
-    public IList<Pago> ListarPagos(int? offset = null, int? limit = null)
+    public IList<Pago> ListarPagos(int? offset = null, int? limit = null, int? idCon = null)
     {
         var pagos = new List<Pago>();
 
@@ -171,6 +174,7 @@ public class PagoRepository : BaseRepository, IPagoRepository
                     p.{nameof(Pago.IdContrato)},  
                     p.{nameof(Pago.Fecha)}, 
                     p.{nameof(Pago.Importe)}, 
+                    p.{nameof(Pago.Estado)}, 
                     IFNULL({nameof(Pago.Detalle)}, 'Sin Detalle') AS det, 
                     c.{nameof(Contrato.FechaInicio)}, 
                     c.{nameof(Contrato.FechaFin)}, 
@@ -182,15 +186,19 @@ public class PagoRepository : BaseRepository, IPagoRepository
                     IFNULL(c.{nameof(Contrato.IdUsuarioTerminador)}, 0) AS idUTerminador 
                 FROM pagos AS p 
                 INNER JOIN contratos AS c 
-                    ON p.{nameof(Pago.IdContrato)} = c.{nameof(Contrato.Id)} 
-                WHERE {nameof(Pago.Estado)} = 1"
+                    ON p.{nameof(Pago.IdContrato)} = c.{nameof(Contrato.Id)}"
             ;
 
+            if (idCon.HasValue)
+                sql += $" WHERE p.{nameof(Pago.IdContrato)} = @{nameof(Pago.IdContrato)}";
+
             if (offset.HasValue && limit.HasValue)
-                sql += $" LIMIT @limit OFFSET @offset";
+                    sql += $" LIMIT @limit OFFSET @offset";
 
             using (var command = new MySqlCommand(sql + ";", connection))
             {
+                if (idCon.HasValue) command.Parameters.AddWithValue($"{nameof(Pago.IdContrato)}", idCon.Value);
+
                 if (offset.HasValue && limit.HasValue)
                 {
                     command.Parameters.AddWithValue($"limit", limit.Value);
@@ -209,6 +217,7 @@ public class PagoRepository : BaseRepository, IPagoRepository
                             Fecha = reader.GetDateTime(nameof(Pago.Fecha)),
                             Importe = reader.GetDecimal(nameof(Pago.Importe)),
                             Detalle = reader.GetString("det"),
+                            Estado = reader.GetBoolean(nameof(Pago.Estado)),
                             Contrato = new Contrato
                             {
                                 Id = reader.GetInt32(nameof(Pago.IdContrato)),
@@ -241,6 +250,7 @@ public class PagoRepository : BaseRepository, IPagoRepository
                     p.{nameof(Pago.IdContrato)},  
                     p.{nameof(Pago.Fecha)}, 
                     p.{nameof(Pago.Importe)}, 
+                    p.{nameof(Pago.Estado)}, 
                     IFNULL({nameof(Pago.Detalle)}, 'Sin Detalle') AS det, 
                     c.{nameof(Contrato.FechaInicio)}, 
                     c.{nameof(Contrato.FechaFin)}, 
@@ -278,7 +288,7 @@ public class PagoRepository : BaseRepository, IPagoRepository
                     ON i.{nameof(Inmueble.IdPropietario)} = pr.id 
                 INNER JOIN inquilinos AS inq 
                     ON c.{nameof(Contrato.IdInquilino)} = inq.id 
-                WHERE p.{nameof(Pago.Id)} = @{nameof(Pago.Id)} AND p.{nameof(Pago.Estado)} = 1;"
+                WHERE p.{nameof(Pago.Id)} = @{nameof(Pago.Id)};"
             ;
 
             using (var command = new MySqlCommand(sql, connection))
@@ -298,6 +308,7 @@ public class PagoRepository : BaseRepository, IPagoRepository
                             Fecha = reader.GetDateTime(nameof(Pago.Fecha)),
                             Importe = reader.GetDecimal(nameof(Pago.Importe)),
                             Detalle = reader.GetString("det"),
+                            Estado = reader.GetBoolean(nameof(Pago.Estado)),
                             Contrato = new Contrato
                             {
                                 Id = reader.GetInt32(nameof(Pago.IdContrato)),

@@ -16,6 +16,9 @@
                     <th>
                         @Html.DisplayNameFor(model => model.Importe).ToUpper()
                     </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Estado).ToUpper()
+                    </th>
                     <th colspan="2">
                         @Html.DisplayNameFor(model => model.Detalle).ToUpper()
                     </th>
@@ -35,15 +38,19 @@
                         <td class="align-middle py-0 ps-2">
                             @Html.DisplayFor(modelItem => item.Importe)
                         </td>
+                        <td class="align-middle py-0 ps-2">
+                            @(item.Estado ? "" : "ANULADO")
+                        </td>
                         <td class="align-middle py-0 ps-2" colspan="2">
                             @Html.DisplayFor(modelItem => item.Detalle)
                         </td>
                         <td>
                             <div class="d-flex justify-content-evenly align-items-center">
-                                <a class="icon-enlace" asp-action="FormularioPago" asp-controller="Pago" asp-route-id="@item.Id" data-bs-toggle="tooltip" data-bs-title="Editar">
+                                @* <a class="icon-enlace" asp-action="FormularioPago" asp-controller="Pago" asp-route-id="@item.Id" data-bs-toggle="tooltip" data-bs-title="Editar">
                                     <i class="bi bi-pencil-square fs-3 text-primary"></i>
-                                </a>
-                                <i id="del-@item.Id" class="bi bi-trash fs-3 text-danger icon-hover" style="cursor: pointer;" data-bs-toggle="tooltip" data-bs-title="Eliminar"></i>
+                                </a> *@
+                                <i id="edit-@item.Id" class="bi bi-pencil-square fs-3 text-primary icon-hover" style="cursor: pointer;" data-bs-toggle="tooltip" data-bs-title="Editar"></i>
+                                <i id="del-@item.Id" class="bi bi-trash fs-3 text-danger icon-hover @(!item.Estado ? "invisible" : "")" style="cursor: pointer;" data-bs-toggle="tooltip" data-bs-title="Anular"></i>
                                 <i id="det-@item.Id" class="bi bi-file-earmark-text fs-3 text-info icon-hover" style="cursor: pointer;" data-bs-toggle="tooltip" data-bs-title="Ver Detalle"></i>
                             </div>
                         </td>

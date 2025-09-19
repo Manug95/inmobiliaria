@@ -2,6 +2,8 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using InmobiliariaGutierrezManuel.Models;
 using InmobiliariaGutierrezManuel.Repositories;
+using InmobiliariaGutierrezManuel.Models.ViewModels;
+using System.Text.Json.Serialization;
 
 namespace InmobiliariaGutierrezManuel.Controllers;
 
@@ -9,11 +11,15 @@ public class ContratoController : Controller
 {
     private readonly ContratoRepository repo;
     private readonly InmuebleRepository repoInmueble;
+    private readonly PagoRepository repoPago;
+    private readonly InquilinoRepository repoInquilino;
 
     public ContratoController()
     {
         repo = new ContratoRepository();
         repoInmueble = new InmuebleRepository();
+        repoPago = new PagoRepository();
+        repoInquilino = new InquilinoRepository();
     }
 
     public IActionResult Index(int? idInm, int offset = 1, int limit = 10)
@@ -27,7 +33,7 @@ public class ContratoController : Controller
         ViewBag.idInm = idInm;
         ViewBag.contratos = contratos;
 
-        ViewBag.mensajeError = TempData["MensajeError"];
+        ViewBag.mensajeError = "";
 
         return View(new Contrato());
     }
@@ -51,13 +57,6 @@ public class ContratoController : Controller
         {
             if (contrato.Id > 0)
             {
-                // Console.WriteLine(contrato.IdInmueble);
-                // Console.WriteLine(contrato.IdInquilino);
-                // Console.WriteLine(contrato.MontoMensual);
-                // Console.WriteLine(contrato.FechaInicio);
-                // Console.WriteLine(contrato.FechaFin);
-                // Console.WriteLine(contrato.FechaTerminado);
-                // Console.WriteLine(contrato.Id);
                 repo.ActualizarContrato(contrato);
             }
             else
@@ -69,7 +68,7 @@ public class ContratoController : Controller
                 else
                 {
                     TempData["MensajeError"] = "El Inmueble ya está en un contrato entre las fechas indicadas";
-                    return RedirectToAction(nameof(FormularioContrato), new { desde=desde.ToString("yyyy-MM-dd"), hasta=hasta.ToString("yyyy-MM-dd"), idInq= contrato.IdInquilino, idInm=contrato.IdInmueble });
+                    return RedirectToAction(nameof(FormularioContrato), new { desde = desde.ToString("yyyy-MM-dd"), hasta = hasta.ToString("yyyy-MM-dd"), idInq = contrato.IdInquilino, idInm = contrato.IdInmueble });
                 }
             }
             return RedirectToAction(nameof(Index));
@@ -122,6 +121,7 @@ public class ContratoController : Controller
         {
             ViewBag.IdInmueble = idInm;
         }
+        if (idInq > 0) ViewBag.inquilino = repoInquilino.ObtenerInquilino(idInq, null);
         ViewBag.IdInquilino = idInq;
         ViewBag.id = id;
         ViewBag.desde = desde;
@@ -130,9 +130,66 @@ public class ContratoController : Controller
         return View(contrato);
     }
 
+    [HttpPost]
+    public IActionResult Terminar([FromBody] TerminarContratoViewModel vm)
+    {
+        if (ModelState.IsValid)
+        {
+            DateTime fechaTerminado = vm.FechaTerminado.HasValue ? vm.FechaTerminado!.Value : DateTime.Today;
+            if (repo.TerminarContrato(vm.Id, fechaTerminado.ToString("yyyy-MM-dd")))
+            {
+                return Json(CalcularMulta(vm.Id));
+            }
+            else
+                return Json(new { error = "No se pudo terminar el contrato" });
+        }
+        else
+        {
+            Console.WriteLine(vm.Id);
+            Console.WriteLine(vm.FechaTerminado);
+            return Json(new { error = "Datos incorrectos" });
+        }
+    }
+
+    public IActionResult DetalleMulta(int id)
+    {
+        return Json(CalcularMulta(id));
+    }
+
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+    }
+
+    private MultaViewModel CalcularMulta(int idContrato)
+    {
+        Contrato? contrato = repo.ObtenerContrato(idContrato);
+        decimal deuda = 0;
+
+        // Paso 1: calcular la duración total
+        TimeSpan duracionTotalContrato = contrato!.FechaFin!.Value - contrato!.FechaInicio!.Value;
+
+        // Paso 2: calcular la fecha de mitad
+        DateTime fechaMitad = contrato.FechaInicio.Value + TimeSpan.FromTicks(duracionTotalContrato.Ticks / 2);
+
+        // Paso 3: comparar
+        decimal multa = contrato.FechaTerminado!.Value < fechaMitad ? contrato!.MontoMensual!.Value * 2 : contrato!.MontoMensual!.Value;
+
+        int cantPagos = repoPago.ContarPagos(contrato.Id);
+        int cantMesesAlquilado = (int)Math.Floor((contrato.FechaTerminado.Value - contrato.FechaInicio.Value).TotalDays / 30);
+        int cantMesesDelContrato = (int)Math.Floor((contrato.FechaFin.Value - contrato.FechaInicio.Value).TotalDays / 30);
+        if (cantPagos < cantMesesAlquilado)
+            deuda = contrato.MontoMensual.Value * (cantMesesAlquilado - cantPagos);
+
+        return new MultaViewModel
+        {
+            Multa = multa,
+            Deuda = deuda,
+            CantMesesDelContrato = cantMesesDelContrato,
+            CantMesesAlquilado = cantMesesAlquilado,
+            CantMesesPagados = cantPagos,
+            IdContrato = idContrato
+        };
     }
 }

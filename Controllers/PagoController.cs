@@ -17,9 +17,9 @@ public class PagoController : Controller
         repoContrato = new ContratoRepository();
     }
 
-    public IActionResult Index(int offset = 1, int limit = 10)
+    public IActionResult Index(int? idCon, int offset = 1, int limit = 10)
     {
-        IList<Pago> pagos = repo.ListarPagos(offset, limit);
+        IList<Pago> pagos = repo.ListarPagos(offset, limit, idCon);
         int cantidadPagos = repo.ContarPagos();
         
         ViewBag.cantPag = Math.Ceiling( (decimal)cantidadPagos / limit);
@@ -52,7 +52,9 @@ public class PagoController : Controller
         {
             if (pago.Id > 0)
             {
-                repo.ActualizarPago(pago);
+                Pago? pagoAactualizar = repo.ObtenerPago(pago.Id);
+                if (pagoAactualizar != null) pagoAactualizar.Detalle = pago.Detalle;
+                repo.ActualizarPago(pagoAactualizar??pago);
             }
             else
             {
@@ -85,14 +87,19 @@ public class PagoController : Controller
 
     public IActionResult FormularioPago(int id = 0, int idCon = 0)
     {
-        Pago? pago;
+        // Pago? pago;
 
-        if (id > 0) pago = repo.ObtenerPago(id);
-        else pago = new Pago{ IdContrato = idCon };
+        // if (id > 0) pago = repo.ObtenerPago(id);
+        // else pago = new Pago{ IdContrato = idCon };
+
+        if (idCon > 0)
+        {
+            ViewBag.contrato = repoContrato.ObtenerContrato(idCon);
+        }
 
         // pago.IdContrato = idCon;
 
-        return View(pago);
+        return View(new Pago());
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

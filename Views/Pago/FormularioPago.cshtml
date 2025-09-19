@@ -13,15 +13,15 @@
             <div class="row mb-md-4">
                 <div class="col-12 col-md-6 mt-5 mt-md-3 mb-md-0">
                     <div class="position-relative">
-                        <label asp-for="Fecha" class="form-label fw-bold">Fecha</label>
-                        <input type="date" asp-for="Fecha" class="form-control" id="Fecha">
+                        <label for="Fecha" class="form-label fw-bold">Fecha</label>
+                        <input type="date" name="Fecha" class="form-control" id="Fecha" value="@(DateTime.Today.ToString("yyyy-MM-dd"))">
                         <div id="tpe_Fecha" class="invalid-tooltip"></div>
                     </div>
                 </div>
                 <div class="col-12 col-md-6 mt-5 mt-md-3 mb-md-0">
                     <div class="position-relative">
-                        <label asp-for="Importe" class="form-label fw-bold">Importe</label>
-                        <input type="number" asp-for="Importe" class="form-control" id="Importe">
+                        <label for="Importe" class="form-label fw-bold">Importe</label>
+                        <input type="number" name="Importe" class="form-control" id="Importe" value="@((int)ViewBag?.contrato?.MontoMensual)">
                         <div id="tpe_Importe" class="invalid-tooltip"></div>
                     </div>
                 </div>
@@ -30,15 +30,15 @@
             <div class="row mb-md-4">
                 <div class="col-12 mt-5 mt-md-3 mb-md-0">
                     <div class="position-relative">
-                        <label asp-for="Detalle" class="form-label fw-bold">Detalle</label>
-                        <textarea asp-for="Detalle" id="Detalle" class="form-control" rows="3" placeholder="(opcional) agregue un detalle al pago"></textarea>
+                        <label for="Detalle" class="form-label fw-bold">Detalle</label>
+                        <textarea name="Detalle" id="Detalle" class="form-control" rows="3" placeholder="(opcional) agregue un detalle al pago"></textarea>
                         <div id="tpe_Detalle" class="invalid-tooltip"></div>
                     </div>
                 </div>
             </div>
 
             <input id="Id" type="hidden" asp-for="Id"/>
-            <input id="IdContrato" type="hidden" asp-for="IdContrato"/>
+            <input id="IdContrato" type="hidden" value="@ViewBag?.contrato?.Id"/>
 
             <div class="row mb-2 mt-5 mt-md-4 justify-content-evenly align-items-end pt-3">
                 <div class="col-2 d-flex justify-content-center">

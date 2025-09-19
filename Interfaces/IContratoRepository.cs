@@ -10,5 +10,6 @@ namespace InmobiliariaGutierrezManuel.Interfaces
         public bool ActualizarContrato(Contrato contrato);
         public bool EliminarContrato(int id);
         public int ContarContratos(int? idInm = null);
+        public bool TerminarContrato(int id, string fecha);
     }
 }
