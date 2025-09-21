@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
   const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
   
-  document.querySelectorAll(".bi-trash").forEach(i => {
+  document.querySelectorAll(".bi-trash")?.forEach(i => {
     i.addEventListener("click", e => {
       const idFila = e.target.id.split("-")[1];
 

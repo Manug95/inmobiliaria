@@ -12,3 +12,9 @@ public enum UsoInmueble
     RESIDENCIAL,
     COMERCIAL
 }
+
+public enum Rol
+{
+    ADMIN,
+    EMPLEADO
+}

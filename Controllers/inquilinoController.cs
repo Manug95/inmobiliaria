@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using InmobiliariaGutierrezManuel.Models;
 using InmobiliariaGutierrezManuel.Repositories;
 using System.Text.Json;
+using Microsoft.AspNetCore.Authorization;
 
 namespace InmobiliariaGutierrezManuel.Controllers;
 
@@ -15,12 +16,13 @@ public class InquilinoController : Controller
         repo = new InquilinoRepository();
     }
 
+    [Authorize]
     public IActionResult Index(string? nomApe, string? orderBy, string? order, int offset = 1, int limit = 10)
     {
         IList<Inquilino> inquilinos = repo.ListarInquilinos(nomApe, orderBy, order, offset, limit);
         int cantidadInquilinos = repo.ContarInquilinos();
-        
-        ViewBag.cantPag = Math.Ceiling( (decimal)cantidadInquilinos / limit);
+
+        ViewBag.cantPag = Math.Ceiling((decimal)cantidadInquilinos / limit);
         ViewBag.offsetSiguiente = offset + 1;
         ViewBag.offsetAnterior = offset - 1;
 
@@ -47,6 +49,7 @@ public class InquilinoController : Controller
     // }
 
     [HttpPost]
+    [Authorize]
     public IActionResult Guardar(Inquilino inquilino)
     {
         // if (repo.ObtenerInquilino(null, inquilino.Dni) != null)
@@ -85,9 +88,10 @@ public class InquilinoController : Controller
         }
 
 
-        
+
     }
 
+    [Authorize(Policy = "ADMIN")]
     public IActionResult Eliminar(int id)
     {
         repo.EliminarInquilino(id);

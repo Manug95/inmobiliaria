@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   });
 
-  document.querySelectorAll(".bi-trash").forEach(i => {
+  document.querySelectorAll(".bi-trash")?.forEach(i => {
     i.addEventListener("click", e => {
       // const fila = e.target.parentElement.parentElement.parentElement;
       // const idFila = fila.id;

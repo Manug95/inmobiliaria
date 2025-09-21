@@ -2,6 +2,7 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using InmobiliariaGutierrezManuel.Models;
 using InmobiliariaGutierrezManuel.Repositories;
+using Microsoft.AspNetCore.Authorization;
 
 namespace InmobiliariaGutierrezManuel.Controllers;
 
@@ -14,6 +15,7 @@ public class TipoInmuebleController : Controller
         repo = new TipoInmuebleRepository();
     }
 
+    [Authorize]
     public IActionResult Index()
     {
         IList<TipoInmueble> tiposInmueble = repo.ListarTiposInmueble();
@@ -34,6 +36,7 @@ public class TipoInmuebleController : Controller
     // }
 
     [HttpPost]
+    [Authorize]
     public IActionResult Guardar(TipoInmueble tipoInmueble)
     {
         if (ModelState.IsValid)
@@ -65,9 +68,10 @@ public class TipoInmuebleController : Controller
         }
 
 
-        
+
     }
 
+    [Authorize]
     public IActionResult Eliminar(int id)
     {
         repo.EliminarTipoInmueble(id);

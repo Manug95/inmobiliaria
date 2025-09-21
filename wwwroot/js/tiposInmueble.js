@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  document.querySelectorAll("td .bi-trash").forEach(i => {
+  document.querySelectorAll("td .bi-trash")?.forEach(i => {
     i.addEventListener("click", e => {
       const idFila = e.target.id.split("-")[1];
 

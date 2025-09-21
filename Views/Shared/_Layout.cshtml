@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@using System.Security.Claims
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -55,7 +56,36 @@
                                 <li><a class="dropdown-item text-dark" asp-area="" asp-controller="Pago" asp-action="FormularioPago">Crear Pago</a></li>
                             </ul>
                         </li>
+                        @if (User.IsInRole(Rol.ADMIN.ToString())) {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Usuario" asp-action="Index">Usuarios</a>
+                            </li>
+                        }
                     </ul>
+                    @if (User.Identity!.IsAuthenticated) {
+                        <div class="dropdown">
+                            <button class="btn btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <span class="pe-3 ps-1">@User.Identity.Name</span>
+                                @{string? avatarURL = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Uri)?.Value;}
+                                @if (avatarURL?.Length > 0) {
+                                    <img width="32" src="@avatarURL" alt="" class="rounded-circle">
+                                } else {
+                                    string nombre = User!.Identity!.Name!.Split(" ")[0];
+                                    string apellido = User.Identity.Name.Split(" ")[1];
+                                    <img width="32" src="https://ui-avatars.com/api/?name=@(nombre + "+" + apellido)&background=random&rounded=true" alt="">
+                                }
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-dark">
+                                <li><span class="dropdown-item text-white">@User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value</span></li>
+                                <li><hr class="dropdown-divider"></li>
+                                @{string? id = User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;}
+                                <li><a class="dropdown-item text-white" asp-area="" asp-controller="Usuario" asp-action="FormularioEditarUsuario" asp-route-id="@id">Actualizar Perfil</a></li>
+                                <li><a class="dropdown-item text-white" asp-area="" asp-controller="Usuario" asp-action="Logout">Salir</a></li>
+                            </ul>
+                        </div>
+                    } else {
+                        <a asp-action="Login" asp-controller="Usuario" type="button" class="btn btn-primary">Login</a>
+                    }
                 </div>
             </div>
         </nav>

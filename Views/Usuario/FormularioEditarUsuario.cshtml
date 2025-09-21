@@ -1,0 +1,120 @@
+@using InmobiliariaGutierrezManuel.Models;
+@model Usuario;
+
+@{
+    ViewData["Title"] = "Formulario Usuario";
+}
+
+<link rel="stylesheet" href="~/css/styles.css">
+
+<div class="container-md mt-2">
+    <div class="row">
+        <form asp-action="ActualizarDatos" id="form-datos-personales" class="p-3 w-75 mx-auto border rounded-4 shadow-sm needs-validation mt-2 mb-3 bg-light-subtle">
+            <legend>Editar Datos Personales</legend>
+            <div class="row mt-3 mb-md-4 border rounded-4  pb-3">
+                <div class="col-12 col-md-6 mt-5 mt-md-1 mb-md-0">
+                    <div class="position-relative">
+                        <label asp-for="Nombre" class="form-label fw-bold">Nombre</label>
+                        <input type="text" asp-for="Nombre" class="form-control" id="Nombre">
+                        <div id="tpe_Nombre" class="invalid-tooltip"></div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 mt-5 mt-md-1 mb-md-0">
+                    <div class="position-relative">
+                        <label asp-for="Apellido" class="form-label fw-bold">Apellido</label>
+                        <input type="text" asp-for="Apellido" class="form-control" id="Apellido">
+                        <div id="tpe_Apellido" class="invalid-tooltip"></div>
+                    </div>
+                </div>
+            </div>
+
+            <input type="hidden" asp-for="Id"/>
+
+            <div class="row mb-2 mt-5 mt-md-4 justify-content-center">
+                <div class="col-2 d-flex justify-content-center">
+                    <input type="submit" value="Guardar" class="btn btn-primary d-block mx-auto">
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="row">
+        <form asp-action="ActualizarUsuario" id="form-datos-usuario" class="p-3 w-75 mx-auto border rounded-4 shadow-sm needs-validation mt-2 mb-3 bg-light-subtle">
+            <legend>Editar Datos de Sesión</legend>
+            <div class="row mb-md-4 border rounded-4  pb-3">
+                <div class="col-12 col-md-6 mt-5 mt-md-1 mb-md-0">
+                    <div class="position-relative">
+                        <label asp-for="Email" class="form-label fw-bold">Email</label>
+                        <input type="email" asp-for="Email" class="form-control" id="Email">
+                        <div id="tpe_Email" class="invalid-tooltip"></div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 mt-5 mt-md-1 mb-md-0">
+                    <div class="position-relative">
+                        <label asp-for="Password" class="form-label fw-bold">Contraseña</label>
+                        <input type="password" asp-for="Password" class="form-control" id="Password">
+                        <div id="tpe_Password" class="invalid-tooltip"></div>
+                    </div>
+                </div>
+                @if (User.IsInRole(Rol.ADMIN.ToString())) {
+                    <div class="col-12 col-md-6 mt-5 mt-md-1 mb-md-0">
+                        <div class="position-relative">
+                            <label asp-for="Rol" class="form-label fw-bold">Rol</label>
+                            <select class="form-select" asp-for="Rol" id="Rol">
+                                <option value="@Rol.ADMIN" selected="@(Model.Rol==Rol.ADMIN.ToString())">@Rol.ADMIN</option>
+                                <option value="@Rol.EMPLEADO" selected="@(Model.Rol==Rol.EMPLEADO.ToString())">@Rol.EMPLEADO</option>
+                            </select>
+                            <div id="tpe_Rol" class="invalid-tooltip"></div>
+                        </div>
+                    </div>
+                }
+            </div>
+            <input type="hidden" asp-for="Id"/>
+            <input type="hidden" asp-for="Rol"/>
+            <div class="row mb-2 mt-5 mt-md-4 justify-content-center">
+                <div class="col-2 d-flex justify-content-center">
+                    <input type="submit" value="Guardar" class="btn btn-primary d-block mx-auto">
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="row">
+        <form asp-action="ActualizarAvatar" enctype="multipart/form-data" id="form-avatar-usuario" class="p-3 w-75 mx-auto border rounded-4 shadow-sm needs-validation mt-2 mb-3 bg-light-subtle">
+            <legend>Cambiar o Eliminar el Avatar</legend>
+            <div class="row mb-md-4 border rounded-4 pb-3">
+                <div class="col-12 col-md-8 mt-5 mt-md-1 mb-md-0">
+                    <div class="position-relative">
+                        <label asp-for="AvatarFile" class="form-label fw-bold">Avatar</label>
+                        <input type="file" name="AvatarFile" class="form-control" id="Avatar" accept="image/*">
+                        <div id="tpe_Avatar" class="invalid-tooltip"></div>
+                    </div>
+                </div>
+                @if(!string.IsNullOrWhiteSpace(Model.Avatar)){
+                    <div class="col-4 col-md-4 mt-5 mt-md-4 mb-md-0 d-flex justify-content-center align-items-center">
+                        <img src="@Model.Avatar" alt="" width="48" class="rounded-circle" data-bs-toggle="tooltip" data-bs-title="Mi Avatar"/>
+                        <a class="icon-enlace align-top ms-3" asp-action="EliminarAvatar" asp-route-id="@Model.Id" asp-route-avatar="@Model.Avatar">
+                            <i class="bi bi-trash fs-2 text-danger icon-hover" style="cursor: pointer;" data-bs-toggle="tooltip" data-bs-title="Eliminar Avatar"></i>
+                        </a>
+                    </div>
+                }
+            </div>
+            <input type="hidden" asp-for="Id"/>
+            <div class="row mb-2 mt-5 mt-md-4 justify-content-center">
+                <div class="col-2 d-flex justify-content-center">
+                    <input type="submit" value="Guardar" class="btn btn-primary d-block mx-auto">
+                </div>
+            </div>
+        </form>
+    </div>
+
+    @* <div class="d-flex justify-content-start">
+        <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+    </div> *@
+</div>
+
+@if(!string.IsNullOrWhiteSpace(ViewBag.mensajeError)) {
+    <partial name="_MensajeError" model="ViewBag.mensajeError" />
+}
+
+<script type="module" src="~/js/usuarioEditForm.js"></script>

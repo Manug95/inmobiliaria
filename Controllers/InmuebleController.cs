@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using InmobiliariaGutierrezManuel.Models;
 using InmobiliariaGutierrezManuel.Models.ViewModels;
 using InmobiliariaGutierrezManuel.Repositories;
+using Microsoft.AspNetCore.Authorization;
 
 namespace InmobiliariaGutierrezManuel.Controllers;
 
@@ -19,6 +20,7 @@ public class InmuebleController : Controller
         repoPropietario = new PropietarioRepository();
     }
 
+    [Authorize]
     public IActionResult Index(string? prop, int idProp = 0, int offset = 1, int limit = 10, int disp = (int)Disponiblilidad.TODOS)
     {
         IList<Inmueble>? inmuebles;
@@ -34,11 +36,11 @@ public class InmuebleController : Controller
             inmuebles = repo.ListarInmueblesPorPropietario(idProp, offset, limit);
             cantidadInmuebles = inmuebles.Count;
         }
-        
-        
+
+
         IList<TipoInmueble> tiposInmuebles = repoTipoInmueble.ListarTiposInmueble();
-        
-        ViewBag.cantPag = Math.Ceiling( (decimal)cantidadInmuebles / limit);
+
+        ViewBag.cantPag = Math.Ceiling((decimal)cantidadInmuebles / limit);
         ViewBag.offsetSiguiente = offset + 1;
         ViewBag.offsetAnterior = offset - 1;
         ViewBag.disponible = disp;
@@ -63,6 +65,7 @@ public class InmuebleController : Controller
         entoces con este Bind le digo al framework que tenga en cuenta eso para poder mapear los campos del formulario correctamente
     */
     [HttpPost]
+    [Authorize]
     public IActionResult Guardar([Bind(Prefix = "InmuebleFormData")] InmuebleFormData inmuebleForm)
     {
         if (inmuebleForm.IdTipoInmueble == 0)
@@ -122,11 +125,12 @@ public class InmuebleController : Controller
 
     }
 
+    [Authorize]
     public IActionResult FormularioInmueble(int id = 0, int idProp = 0)
     {
         IList<TipoInmueble> tiposInmuebles = repoTipoInmueble.ListarTiposInmueble();
         IList<Propietario> propietarios = [];
-        
+
         if (idProp > 0)
         {
             Propietario? prop = repoPropietario.ObtenerPropietario(idProp, null);
@@ -134,7 +138,7 @@ public class InmuebleController : Controller
         }
 
         InmuebleFormData? inmuebleFormData = null;
-        
+
         if (id > 0)
         {
             Inmueble? inmueble = repo.ObtenerInmueble(id);
@@ -170,12 +174,14 @@ public class InmuebleController : Controller
         return View(ivm);
     }
 
+    [Authorize(Policy = "ADMIN")]
     public IActionResult Eliminar(int id)
     {
         repo.EliminarInmueble(id);
         return RedirectToAction(nameof(Index));
     }
 
+    [Authorize]
     public IActionResult Alquilar(string? desde, string? hasta, string? Uso, int? IdTipoInmueble, int? CantidadAmbientes, decimal? Precio, int idInq = 0, int offset = 1, int limit = 10)
     {
         IList<Inmueble> inmuebles = [];
@@ -194,7 +200,7 @@ public class InmuebleController : Controller
         ViewBag.inmuebles = inmuebles;
         ViewBag.idInquilino = idInq;
 
-        ViewBag.cantPag = (int)Math.Ceiling( (decimal)inmuebles.Count / limit);
+        ViewBag.cantPag = (int)Math.Ceiling((decimal)inmuebles.Count / limit);
         ViewBag.offsetSiguiente = offset + 1;
         ViewBag.offsetAnterior = offset - 1;
 

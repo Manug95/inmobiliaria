@@ -2,6 +2,7 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using InmobiliariaGutierrezManuel.Models;
 using InmobiliariaGutierrezManuel.Repositories;
+using Microsoft.AspNetCore.Authorization;
 
 namespace InmobiliariaGutierrezManuel.Controllers;
 
@@ -14,12 +15,13 @@ public class PropietarioController : Controller
         repo = new PropietarioRepository();
     }
 
+    [Authorize]
     public IActionResult Index(string? nomApe, string? orderBy, string? order, int offset = 1, int limit = 10)
     {
         IList<Propietario> propietarios = repo.ListarPropietarios(nomApe, orderBy, order, offset, limit);
         int cantidadPropietarios = repo.ContarPropietarios();
-        
-        ViewBag.cantPag = Math.Ceiling( (decimal)cantidadPropietarios / limit );
+
+        ViewBag.cantPag = Math.Ceiling((decimal)cantidadPropietarios / limit);
         // ViewBag.offsetSiguiente = offset.HasValue ? offset.Value + 1 : 2;
         ViewBag.offsetSiguiente = offset + 1;
         // ViewBag.offsetAnterior = offset.HasValue ? offset.Value - 1 : 0;
@@ -49,6 +51,7 @@ public class PropietarioController : Controller
     // }
 
     [HttpPost]
+    [Authorize]
     public IActionResult Guardar(Propietario propietario)
     {
         // if (repo.ObtenerPropietario(null, propietario.Dni) != null)
@@ -88,7 +91,7 @@ public class PropietarioController : Controller
         }
 
 
-        
+
     }
 
     // public IActionResult PropietarioForm(int id = 0)
@@ -98,10 +101,11 @@ public class PropietarioController : Controller
     //         Propietario? propietario = repo.ObtenerPropietario(id, null);
     //         return View(propietario);
     //     }
-        
+
     //     return View();
     // }
 
+    [Authorize(Policy = "ADMIN")]
     public IActionResult Eliminar(int id)
     {
         repo.EliminarPropietario(id);

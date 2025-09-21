@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using InmobiliariaGutierrezManuel.Models;
 using InmobiliariaGutierrezManuel.Repositories;
 using System.Text.Json;
+using Microsoft.AspNetCore.Authorization;
 
 namespace InmobiliariaGutierrezManuel.Controllers;
 
@@ -17,12 +18,13 @@ public class PagoController : Controller
         repoContrato = new ContratoRepository();
     }
 
+    [Authorize]
     public IActionResult Index(int? idCon, int offset = 1, int limit = 10)
     {
         IList<Pago> pagos = repo.ListarPagos(offset, limit, idCon);
         int cantidadPagos = repo.ContarPagos();
-        
-        ViewBag.cantPag = Math.Ceiling( (decimal)cantidadPagos / limit);
+
+        ViewBag.cantPag = Math.Ceiling((decimal)cantidadPagos / limit);
         ViewBag.offsetSiguiente = offset + 1;
         ViewBag.offsetAnterior = offset - 1;
 
@@ -46,6 +48,7 @@ public class PagoController : Controller
     }
 
     [HttpPost]
+    [Authorize]
     public IActionResult Guardar(Pago pago)
     {
         if (ModelState.IsValid)
@@ -54,7 +57,7 @@ public class PagoController : Controller
             {
                 Pago? pagoAactualizar = repo.ObtenerPago(pago.Id);
                 if (pagoAactualizar != null) pagoAactualizar.Detalle = pago.Detalle;
-                repo.ActualizarPago(pagoAactualizar??pago);
+                repo.ActualizarPago(pagoAactualizar ?? pago);
             }
             else
             {
@@ -76,15 +79,17 @@ public class PagoController : Controller
             TempData["MensajeError"] = errorMsg + "</ul>";
 
             return RedirectToAction(nameof(Index));
-        } 
+        }
     }
 
+    [Authorize(Policy = "ADMIN")]
     public IActionResult Eliminar(int id)
     {
         repo.EliminarPago(id);
         return RedirectToAction(nameof(Index));
     }
 
+    [Authorize]
     public IActionResult FormularioPago(int id = 0, int idCon = 0)
     {
         // Pago? pago;

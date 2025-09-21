@@ -4,6 +4,7 @@ using InmobiliariaGutierrezManuel.Models;
 using InmobiliariaGutierrezManuel.Repositories;
 using InmobiliariaGutierrezManuel.Models.ViewModels;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Authorization;
 
 namespace InmobiliariaGutierrezManuel.Controllers;
 
@@ -22,6 +23,7 @@ public class ContratoController : Controller
         repoInquilino = new InquilinoRepository();
     }
 
+    [Authorize]
     public IActionResult Index(int? idInm, int offset = 1, int limit = 10)
     {
         IList<Contrato> contratos = repo.ListarContratos(offset, limit, idInm);
@@ -51,6 +53,7 @@ public class ContratoController : Controller
     }
 
     [HttpPost]
+    [Authorize]
     public IActionResult Guardar(Contrato contrato)
     {
         if (ModelState.IsValid)
@@ -91,12 +94,14 @@ public class ContratoController : Controller
 
     }
 
+    [Authorize(Policy = "ADMIN")]
     public IActionResult Eliminar(int id)
     {
         repo.EliminarContrato(id);
         return RedirectToAction(nameof(Index));
     }
 
+    [Authorize]
     public IActionResult FormularioContrato(string? desde, string? hasta, int id = 0, int idInq = 0, int idInm = 0)
     {
         Contrato? contrato = new Contrato();

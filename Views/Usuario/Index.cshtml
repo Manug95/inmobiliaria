@@ -1,0 +1,21 @@
+@using Microsoft.VisualBasic
+@model Usuario
+@{
+    ViewData["Title"] = "Usuarios";
+}
+
+<link rel="stylesheet" href="~/css/tablas.css">
+<link rel="stylesheet" href="~/css/styles.css">
+
+<h1 id="titulo" data-modelo="@nameof(Usuario)" class="text-center mt-2">Usuarios</h1>
+
+<partial name="_UsuarioTabla" model="ViewBag.usuarios"/>
+
+<partial name="_ModalPregunta"/>
+
+@if(!string.IsNullOrEmpty(ViewBag.mensajeError)) {
+    <partial name="_MensajeError" model="ViewBag.mensajeError"/>
+}
+
+
+<script type="module" src="~/js/usuarios.js"></script>
