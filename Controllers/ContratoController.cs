@@ -5,6 +5,7 @@ using InmobiliariaGutierrezManuel.Repositories;
 using InmobiliariaGutierrezManuel.Models.ViewModels;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace InmobiliariaGutierrezManuel.Controllers;
 
@@ -66,8 +67,11 @@ public class ContratoController : Controller
             {
                 DateTime desde = (DateTime)contrato.FechaInicio!;
                 DateTime hasta = (DateTime)contrato.FechaFin!;
-                if (repo.EstaDisponible(desde.ToString("yyyy-MM-dd"), hasta.ToString("yyyy-MM-dd"), (int)contrato.IdInmueble!))
+                if (repo.EstaDisponible(desde.ToString("yyyy-MM-dd"), hasta.ToString("yyyy-MM-dd"), (int)contrato.IdInmueble!)) {
+                    string idUsuario = User.Claims.FirstOrDefault(c => c.Type == "id")?.Value!;
+                    contrato.IdUsuarioContratador = int.Parse(idUsuario);
                     repo.InsertarContrato(contrato);
+                }
                 else
                 {
                     TempData["MensajeError"] = "El Inmueble ya está en un contrato entre las fechas indicadas";
@@ -141,7 +145,7 @@ public class ContratoController : Controller
         if (ModelState.IsValid)
         {
             DateTime fechaTerminado = vm.FechaTerminado.HasValue ? vm.FechaTerminado!.Value : DateTime.Today;
-            if (repo.TerminarContrato(vm.Id, fechaTerminado.ToString("yyyy-MM-dd")))
+            if (repo.TerminarContrato(vm.Id, fechaTerminado.ToString("yyyy-MM-dd"), int.Parse(User.Claims.FirstOrDefault(c => c.Type == "id")?.Value!)))
             {
                 return Json(CalcularMulta(vm.Id));
             }

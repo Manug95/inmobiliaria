@@ -113,6 +113,7 @@ public class ContratoRepository : BaseRepository, IContratoRepository
                 (
                     {nameof(Contrato.IdInmueble)}, 
                     {nameof(Contrato.IdInquilino)}, 
+                    {nameof(Contrato.IdUsuarioContratador)}, 
                     {nameof(Contrato.MontoMensual)}, 
                     {nameof(Contrato.FechaInicio)}, 
                     {nameof(Contrato.FechaFin)} 
@@ -121,6 +122,7 @@ public class ContratoRepository : BaseRepository, IContratoRepository
                 (
                     @{nameof(Contrato.IdInmueble)}, 
                     @{nameof(Contrato.IdInquilino)}, 
+                    @{nameof(Contrato.IdUsuarioContratador)}, 
                     @{nameof(Contrato.MontoMensual)}, 
                     @{nameof(Contrato.FechaInicio)}, 
                     @{nameof(Contrato.FechaFin)} 
@@ -133,6 +135,7 @@ public class ContratoRepository : BaseRepository, IContratoRepository
             {
                 command.Parameters.AddWithValue($"{nameof(Contrato.IdInmueble)}", contrato.IdInmueble);
                 command.Parameters.AddWithValue($"{nameof(Contrato.IdInquilino)}", contrato.IdInquilino);
+                command.Parameters.AddWithValue($"{nameof(Contrato.IdUsuarioContratador)}", contrato.IdUsuarioContratador);
                 command.Parameters.AddWithValue($"{nameof(Contrato.MontoMensual)}", contrato.MontoMensual);
                 command.Parameters.AddWithValue($"{nameof(Contrato.FechaInicio)}", contrato.FechaInicio);
                 command.Parameters.AddWithValue($"{nameof(Contrato.FechaFin)}", contrato.FechaFin);
@@ -296,8 +299,18 @@ public class ContratoRepository : BaseRepository, IContratoRepository
                     p.{nameof(Propietario.Dni)} AS dniProp, 
                     inq.{nameof(Inquilino.Nombre)} AS nombreInq, 
                     inq.{nameof(Inquilino.Apellido)} AS apellidoInq, 
-                    inq.{nameof(Inquilino.Dni)} AS dniInq 
+                    inq.{nameof(Inquilino.Dni)} AS dniInq, 
+                    uc.{nameof(Usuario.Nombre)} AS nombreContratador, 
+                    uc.{nameof(Usuario.Apellido)} AS apellidoContratador, 
+                    uc.{nameof(Usuario.Rol)} AS RolContratador, 
+                    ut.{nameof(Usuario.Nombre)} AS nombreTerminador, 
+                    ut.{nameof(Usuario.Apellido)} AS apellidoTerminador, 
+                    ut.{nameof(Usuario.Rol)} AS RolTerminador 
                 FROM contratos AS c 
+                INNER JOIN usuarios AS uc 
+                    ON c.{nameof(Contrato.IdUsuarioContratador)} = uc.id 
+                LEFT JOIN usuarios AS ut 
+                    ON c.{nameof(Contrato.IdUsuarioTerminador)} = ut.id 
                 INNER JOIN inmuebles AS inm 
                     ON c.{nameof(Contrato.IdInmueble)} = inm.id 
                 INNER JOIN tipos_inmueble AS ti 
@@ -356,8 +369,25 @@ public class ContratoRepository : BaseRepository, IContratoRepository
                                 Nombre = reader.GetString("nombreInq"),
                                 Apellido = reader.GetString("apellidoInq"),
                                 Dni = reader.GetString("dniInq")
+                            },
+                            UsuarioContratador = new Usuario
+                            {
+                                Id = reader.GetInt32(nameof(Contrato.IdUsuarioContratador)),
+                                Nombre = reader["nombreContratador"] == DBNull.Value ? null : reader.GetString("nombreContratador"),
+                                Apellido = reader["apellidoContratador"] == DBNull.Value ? null : reader.GetString("apellidoContratador"),
+                                Rol = reader.GetString("RolContratador")
                             }
                         };
+                        if (reader[nameof(Contrato.IdUsuarioTerminador)] != DBNull.Value)
+                        {
+                            contrato.UsuarioTerminador = new Usuario
+                            {
+                                Id = reader.GetInt32(nameof(Contrato.IdUsuarioTerminador)),
+                                Nombre = reader["nombreTerminador"] == DBNull.Value ? null : reader.GetString("nombreTerminador"),
+                                Apellido = reader["apellidoTerminador"] == DBNull.Value ? null : reader.GetString("apellidoTerminador"),
+                                Rol = reader.GetString("RolTerminador")
+                            };
+                        }
                     }
                 }
             }
@@ -399,7 +429,7 @@ public class ContratoRepository : BaseRepository, IContratoRepository
         return disponible;
     }
 
-    public bool TerminarContrato(int id, string fecha)
+    public bool TerminarContrato(int id, string fecha, int idUsuario)
     {
         bool finalizado = false;
 
@@ -407,13 +437,15 @@ public class ContratoRepository : BaseRepository, IContratoRepository
         {
             string sql = @$"
                 UPDATE contratos 
-                SET {nameof(Contrato.FechaTerminado)} = @{nameof(Contrato.FechaTerminado)} 
+                SET {nameof(Contrato.FechaTerminado)} = @{nameof(Contrato.FechaTerminado)}, 
+                    {nameof(Contrato.IdUsuarioTerminador)} = @{nameof(Contrato.IdUsuarioTerminador)} 
                 WHERE {nameof(Contrato.Id)} = @{nameof(Contrato.Id)};"
             ;
 
             using (var command = new MySqlCommand(sql, connection))
             {
                 command.Parameters.AddWithValue($"{nameof(Contrato.FechaTerminado)}", fecha);
+                command.Parameters.AddWithValue($"{nameof(Contrato.IdUsuarioTerminador)}", idUsuario);
                 command.Parameters.AddWithValue($"{nameof(Contrato.Id)}", id);
 
                 connection.Open();

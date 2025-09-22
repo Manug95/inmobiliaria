@@ -61,6 +61,8 @@ public class PagoController : Controller
             }
             else
             {
+                string idUsuario = User.Claims.FirstOrDefault(c => c.Type == "id")?.Value!;
+                pago.IdUsuarioCobrador = int.Parse(idUsuario);
                 repo.InsertarPago(pago);
             }
             return RedirectToAction(nameof(Index));
@@ -85,7 +87,7 @@ public class PagoController : Controller
     [Authorize(Policy = "ADMIN")]
     public IActionResult Eliminar(int id)
     {
-        repo.EliminarPago(id);
+        repo.EliminarPago(id, int.Parse(User.Claims.FirstOrDefault(c => c.Type == "id")?.Value!));
         return RedirectToAction(nameof(Index));
     }
 

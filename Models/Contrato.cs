@@ -12,7 +12,9 @@ public class Contrato
     public int? IdInmueble { get; set; }
     public Inmueble? Inmueble { get; set; }
     public int IdUsuarioContratador { get; set; }
+    public Usuario? UsuarioContratador { get; set; }
     public int IdUsuarioTerminador { get; set; }
+    public Usuario? UsuarioTerminador { get; set; }
     [DataType(DataType.Currency)]
     public decimal? MontoMensual { get; set; }
     [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]

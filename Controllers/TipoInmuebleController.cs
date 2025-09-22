@@ -53,16 +53,14 @@ public class TipoInmuebleController : Controller
         }
         else
         {
-            string errorMsg = "<ul>";
+            string errorMsg = "";
             foreach (var estado in ModelState)
             {
                 var campo = estado.Key;
                 foreach (var error in estado.Value.Errors)
-                {
-                    errorMsg += $"<li class=\"text-danger fs-5\"><strong>{error.ErrorMessage}</strong></li>";
-                }
+                    errorMsg += $" - {error.ErrorMessage}";
             }
-            TempData["MensajeError"] = errorMsg + "</ul>";
+            TempData["MensajeError"] = errorMsg;
 
             return RedirectToAction(nameof(Index));
         }

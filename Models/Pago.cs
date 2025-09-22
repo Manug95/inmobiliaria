@@ -14,8 +14,10 @@ public class Pago
     public Contrato? Contrato { get; set; }
 
     public int IdUsuarioCobrador { get; set; }
+    public Usuario? UsuarioCobrador { get; set; }
 
     public int IdUsuarioAnulador { get; set; }
+    public Usuario? UsuarioAnulador { get; set; }
 
     [Required(ErrorMessage = "La fecha es requerida")]
     [DataType(DataType.Date)]

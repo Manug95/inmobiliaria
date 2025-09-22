@@ -8,7 +8,7 @@ namespace InmobiliariaGutierrezManuel.Interfaces
         public Pago? ObtenerPago(int id);
         public int InsertarPago(Pago pago);
         public bool ActualizarPago(Pago pago);
-        public bool EliminarPago(int id);
+        public bool EliminarPago(int id, int idUsuario);
         public int ContarPagos(int? idCon = null);
     }
 }

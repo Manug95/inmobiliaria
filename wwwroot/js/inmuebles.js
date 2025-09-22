@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   });
 
-  document.querySelectorAll("td .bi-file-earmark-text").forEach(i => {
+  document.querySelectorAll("td .bi-file-earmark-text")?.forEach(i => {
     i.addEventListener("click", async e => {
       const idFila = e.target.id.split("-")[1];
 

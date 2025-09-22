@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  document.querySelectorAll("td .bi-file-earmark-text").forEach(i => {
+  document.querySelectorAll("td .bi-file-earmark-text")?.forEach(i => {
     i.addEventListener("click", async e => {
       const idFila = e.target.id.split("-")[1];
 
@@ -76,26 +76,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
 });
 
-function agregarDatosAlModal(datos) {
-  getElementById("nro").textContent = datos.id;
-  getElementById("fPago_detalle").textContent = aFechaLocal(datos.fecha?.split("T")[0]);
-  getElementById("importePago_detalle").textContent = datos.importe;
-  getElementById("detPago_detalle").textContent = datos.detalle;
-  getElementById("estadoPago_detalle").textContent = !datos.estado ? "ANULADO" : "";
-  getElementById("propietario_detalle").textContent = `${datos.contrato.inmueble.duenio.apellido}, ${datos.contrato.inmueble.duenio.nombre}`;
-  getElementById("inquilino_detalle").textContent = `${datos.contrato.inquilino.apellido}, ${datos.contrato.inquilino.nombre}`;
-  getElementById("tipo_inmueble_detalle").textContent = datos.contrato.inmueble.tipo.tipo;
-  getElementById("uso_detalle").textContent = datos.contrato.inmueble.uso;
-  getElementById("cant_amb_detalle").textContent = datos.contrato.inmueble.cantidadAmbientes;
-  getElementById("precio_detalle").textContent = datos.contrato.inmueble.precio;
-  getElementById("dir_detalle").textContent = `${datos.contrato.inmueble.calle} ${datos.contrato.inmueble.nroCalle}`;
-  getElementById("lat_detalle").textContent = datos.contrato.inmueble.latitud;
-  getElementById("long_detalle").textContent = datos.contrato.inmueble.longitud;
-  getElementById("habilitado_detalle").textContent = datos.contrato.inmueble.disponible ? "SI" : "NO";
-  getElementById("fIni_detalle").textContent = aFechaLocal(datos.contrato.fechaInicio?.split("T")[0]);
-  getElementById("fFin_detalle").textContent = aFechaLocal(datos.contrato.fechaFin?.split("T")[0]);
-  getElementById("monto_detalle").textContent = datos.contrato.montoMensual;
-  getElementById("fTerm_detalle").textContent = aFechaLocal(datos.contrato.fechaTerminado?.split("T")[0]);
+function agregarDatosAlModal(pago) {
+  getElementById("nro").textContent = pago.id;
+  getElementById("fPago_detalle").textContent = aFechaLocal(pago.fecha?.split("T")[0]);
+  getElementById("importePago_detalle").textContent = pago.importe;
+  getElementById("detPago_detalle").textContent = pago.detalle;
+  getElementById("estadoPago_detalle").textContent = !pago.estado ? "ANULADO" : "";
+  getElementById("propietario_detalle").textContent = `${pago.contrato.inmueble.duenio.apellido}, ${pago.contrato.inmueble.duenio.nombre}`;
+  getElementById("inquilino_detalle").textContent = `${pago.contrato.inquilino.apellido}, ${pago.contrato.inquilino.nombre}`;
+  getElementById("tipo_inmueble_detalle").textContent = pago.contrato.inmueble.tipo.tipo;
+  getElementById("uso_detalle").textContent = pago.contrato.inmueble.uso;
+  getElementById("cant_amb_detalle").textContent = pago.contrato.inmueble.cantidadAmbientes;
+  getElementById("precio_detalle").textContent = pago.contrato.inmueble.precio;
+  getElementById("dir_detalle").textContent = `${pago.contrato.inmueble.calle} ${pago.contrato.inmueble.nroCalle}`;
+  getElementById("lat_detalle").textContent = pago.contrato.inmueble.latitud;
+  getElementById("long_detalle").textContent = pago.contrato.inmueble.longitud;
+  getElementById("habilitado_detalle").textContent = pago.contrato.inmueble.disponible ? "SI" : "NO";
+  getElementById("fIni_detalle").textContent = aFechaLocal(pago.contrato.fechaInicio?.split("T")[0]);
+  getElementById("fFin_detalle").textContent = aFechaLocal(pago.contrato.fechaFin?.split("T")[0]);
+  getElementById("monto_detalle").textContent = pago.contrato.montoMensual;
+  getElementById("fTerm_detalle").textContent = aFechaLocal(pago.contrato.fechaTerminado?.split("T")[0]);
+  getElementById("detPago_cobrado").textContent = `Cod: ${pago.idUsuarioCobrador} - ${pago.usuarioCobrador.apellido}, ${pago.usuarioCobrador.nombre}`;
+  getElementById("detPago_anulado").textContent = pago.idUsuarioAnulador ? `Cod: ${pago.idUsuarioAnulador} - ${pago.usuarioAnulador.Apellido}, ${pago.usuarioAnulador.nombre}` : "";
 }
 
 function aFechaLocal(fecha) {

@@ -85,14 +85,14 @@ document.addEventListener("DOMContentLoaded", e => {
     i.addEventListener("click", verDetalleMulta);
   });
   
-  document.querySelectorAll("td .bi-file-earmark-text").forEach(i => {
+  document.querySelectorAll("td .bi-file-earmark-text")?.forEach(i => {
     i.addEventListener("click", async e => {
       const idFila = e.target.id.split("-")[1];
 
       if (DETALLES.findIndex(d => d.id === +idFila) < 0) {
         const respuesta = await fetch(`/Contrato/Buscar/${idFila}`);
         const contrato = await respuesta.json();
-        DETALLES.push(contrato);
+        DETALLES.push(contrato);console.log(contrato);
         agregarDatosAlModalDetalle(contrato);
       } else {
         agregarDatosAlModalDetalle(DETALLES.find(d => +d.id === +idFila));
@@ -147,15 +147,17 @@ document.addEventListener("DOMContentLoaded", e => {
   
 });
 
-function agregarDatosAlModalDetalle(datos) {
-  getElementById("nro").textContent = datos.id;
-  getElementById("propietario").textContent = `${datos.inmueble.duenio.apellido}, ${datos.inmueble.duenio.nombre}`;
-  getElementById("direccion").textContent = `${datos.inmueble.calle} ${datos.inmueble.nroCalle}`;
-  getElementById("inquilino").textContent = `${datos.inquilino.apellido}, ${datos.inquilino.nombre}`;
-  getElementById("fIni").textContent = aFechaLocal(datos.fechaInicio.split("T")[0]);
-  getElementById("fFin").textContent = aFechaLocal(datos.fechaFin.split("T")[0]);
-  getElementById("monto").textContent = datos.montoMensual;
-  getElementById("fTerm").textContent = aFechaLocal(datos.fechaTerminado?.split("T")[0]);
+function agregarDatosAlModalDetalle(contrato) {
+  getElementById("nro").textContent = contrato.id;
+  getElementById("propietario").textContent = `${contrato.inmueble.duenio.apellido}, ${contrato.inmueble.duenio.nombre}`;
+  getElementById("direccion").textContent = `${contrato.inmueble.calle} ${contrato.inmueble.nroCalle}`;
+  getElementById("inquilino").textContent = `${contrato.inquilino.apellido}, ${contrato.inquilino.nombre}`;
+  getElementById("fIni").textContent = aFechaLocal(contrato.fechaInicio.split("T")[0]);
+  getElementById("fFin").textContent = aFechaLocal(contrato.fechaFin.split("T")[0]);
+  getElementById("monto").textContent = contrato.montoMensual;
+  getElementById("fTerm").textContent = aFechaLocal(contrato.fechaTerminado?.split("T")[0]);
+  getElementById("contratador").textContent = `Cod: ${contrato.usuarioContratador.id} - ${contrato.usuarioContratador.apellido}, ${contrato.usuarioContratador.nombre}`;
+  getElementById("terminador").textContent = contrato.idUsuarioTerminador ? `Cod: ${contrato.usuarioTerminador.id} - ${contrato.usuarioTerminador.apellido}, ${contrato.usuarioTerminador.nombre}` : "";
 }
 
 function agregarDatosAlModalMulta(datos) {

@@ -57,7 +57,7 @@ public class PagoRepository : BaseRepository, IPagoRepository
             ;
 
             if (idCon.HasValue)
-                sql += $" AND {nameof(Pago.IdContrato)} = @{nameof(Pago.IdContrato)}";
+                sql += $" WHERE {nameof(Pago.IdContrato)} = @{nameof(Pago.IdContrato)}";
 
             using (var command = new MySqlCommand(sql + ";", connection))
             {
@@ -74,7 +74,7 @@ public class PagoRepository : BaseRepository, IPagoRepository
         return cantidadPagos;
     }
 
-    public bool EliminarPago(int id)
+    public bool EliminarPago(int id, int idUsuario)
     {
         bool borrado = false;
 
@@ -82,12 +82,14 @@ public class PagoRepository : BaseRepository, IPagoRepository
         {
             string sql = @$"
                 UPDATE pagos 
-                SET {nameof(Pago.Estado)} = 0 
+                SET {nameof(Pago.Estado)} = 0, 
+                    {nameof(Pago.IdUsuarioAnulador)} = @{nameof(Pago.IdUsuarioAnulador)} 
                 WHERE {nameof(Pago.Id)} = @{nameof(Pago.Id)};"
             ;
 
             using (var command = new MySqlCommand(sql, connection))
             {
+                command.Parameters.AddWithValue($"{nameof(Pago.IdUsuarioAnulador)}", idUsuario);
                 command.Parameters.AddWithValue($"{nameof(Pago.Id)}", id);
 
                 connection.Open();
@@ -112,7 +114,6 @@ public class PagoRepository : BaseRepository, IPagoRepository
                 (
                     {nameof(Pago.IdContrato)}, 
                     {nameof(Pago.IdUsuarioCobrador)}, 
-                    {nameof(Pago.IdUsuarioAnulador)}, 
                     {nameof(Pago.Fecha)}, 
                     {nameof(Pago.Importe)}, 
                     {nameof(Pago.Detalle)}
@@ -134,7 +135,6 @@ public class PagoRepository : BaseRepository, IPagoRepository
             {
                 command.Parameters.AddWithValue($"{nameof(Pago.IdContrato)}", pago.IdContrato);
                 command.Parameters.AddWithValue($"{nameof(Pago.IdUsuarioCobrador)}", pago.IdUsuarioCobrador);
-                command.Parameters.AddWithValue($"{nameof(Pago.IdUsuarioAnulador)}", pago.IdUsuarioAnulador);
                 command.Parameters.AddWithValue($"{nameof(Pago.Fecha)}", pago.Fecha);
                 command.Parameters.AddWithValue($"{nameof(Pago.Importe)}", pago.Importe);
                 command.Parameters.AddWithValue($"{nameof(Pago.Detalle)}", pago.Detalle);
@@ -247,7 +247,9 @@ public class PagoRepository : BaseRepository, IPagoRepository
             string sql = @$"
                 SELECT 
                     p.{nameof(Pago.Id)},  
-                    p.{nameof(Pago.IdContrato)},  
+                    p.{nameof(Pago.IdContrato)}, 
+                    p.{nameof(Pago.IdUsuarioCobrador)}, 
+                    p.{nameof(Pago.IdUsuarioAnulador)},   
                     p.{nameof(Pago.Fecha)}, 
                     p.{nameof(Pago.Importe)}, 
                     p.{nameof(Pago.Estado)}, 
@@ -276,8 +278,18 @@ public class PagoRepository : BaseRepository, IPagoRepository
                     pr.{nameof(Propietario.Dni)} AS dniProp, 
                     inq.{nameof(Inquilino.Nombre)} AS nombreInq, 
                     inq.{nameof(Inquilino.Apellido)} AS apellidoInq, 
-                    inq.{nameof(Inquilino.Dni)} AS dniInq 
+                    inq.{nameof(Inquilino.Dni)} AS dniInq, 
+                    uc.{nameof(Usuario.Nombre)} AS nombreCobrador, 
+                    uc.{nameof(Usuario.Apellido)} AS apellidoCobrador, 
+                    uc.{nameof(Usuario.Rol)} AS RolCobrador, 
+                    ua.{nameof(Usuario.Nombre)} AS nombreAnulador, 
+                    ua.{nameof(Usuario.Apellido)} AS apellidoAnulador, 
+                    ua.{nameof(Usuario.Rol)} AS RolAnulador 
                 FROM pagos AS p 
+                INNER JOIN usuarios AS uc 
+                    ON p.{nameof(Pago.IdUsuarioCobrador)} = uc.id 
+                LEFT JOIN usuarios AS ua 
+                    ON p.{nameof(Pago.IdUsuarioAnulador)} = ua.id 
                 INNER JOIN contratos AS c 
                     ON p.{nameof(Pago.IdContrato)} = c.{nameof(Contrato.Id)} 
                 INNER JOIN inmuebles AS i 
@@ -305,6 +317,8 @@ public class PagoRepository : BaseRepository, IPagoRepository
                         {
                             Id = reader.GetInt32(nameof(Pago.Id)),
                             IdContrato = reader.GetInt32(nameof(Pago.IdContrato)),
+                            IdUsuarioCobrador = reader.GetInt32(nameof(Pago.IdUsuarioCobrador)),
+                            IdUsuarioAnulador = reader[nameof(Pago.IdUsuarioAnulador)] == DBNull.Value ? 0 : reader.GetInt32(nameof(Pago.IdUsuarioAnulador)),
                             Fecha = reader.GetDateTime(nameof(Pago.Fecha)),
                             Importe = reader.GetDecimal(nameof(Pago.Importe)),
                             Detalle = reader.GetString("det"),
@@ -353,8 +367,25 @@ public class PagoRepository : BaseRepository, IPagoRepository
                                     Apellido = reader.GetString("apellidoInq"),
                                     Dni = reader.GetString("dniInq")
                                 }
+                            },
+                            UsuarioCobrador = new Usuario
+                            {
+                                Id = reader.GetInt32(nameof(Pago.IdUsuarioCobrador)),
+                                Nombre = reader["nombreCobrador"] == DBNull.Value ? null : reader.GetString("nombreCobrador"),
+                                Apellido = reader["apellidoCobrador"] == DBNull.Value ? null : reader.GetString("apellidoCobrador"),
+                                Rol = reader.GetString("rolCobrador")
                             }
                         };
+                        if (reader[nameof(Pago.IdUsuarioAnulador)] != DBNull.Value)
+                        {
+                            pago.UsuarioAnulador = new Usuario
+                            {
+                                Id = reader.GetInt32(nameof(Pago.IdUsuarioAnulador)),
+                                Nombre = reader["nombreAnulador"] == DBNull.Value ? null : reader.GetString("nombreAnulador"),
+                                Apellido = reader["apellidoAnulador"] == DBNull.Value ? null : reader.GetString("apellidoAnulador"),
+                                Rol = reader.GetString("rolAnulador")
+                            };
+                        }
                     }
                 }
             }
