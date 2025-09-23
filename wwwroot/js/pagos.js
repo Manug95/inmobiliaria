@@ -47,7 +47,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.querySelectorAll("td .bi-pencil-square").forEach(i => {
     i.addEventListener("click", e => {
-      // const fila = e.target.parentElement.parentElement.parentElement;
       const idFIla = e.target.id.split("-")[1];
       const fila = getElementById(idFIla);
       const datosFila = getRawValues(fila);
@@ -80,6 +79,7 @@ function agregarDatosAlModal(pago) {
   getElementById("nro").textContent = pago.id;
   getElementById("fPago_detalle").textContent = aFechaLocal(pago.fecha?.split("T")[0]);
   getElementById("importePago_detalle").textContent = pago.importe;
+  getElementById("tipoPago_detalle").textContent = pago.tipo;
   getElementById("detPago_detalle").textContent = pago.detalle;
   getElementById("estadoPago_detalle").textContent = !pago.estado ? "ANULADO" : "";
   getElementById("propietario_detalle").textContent = `${pago.contrato.inmueble.duenio.apellido}, ${pago.contrato.inmueble.duenio.nombre}`;
@@ -123,7 +123,6 @@ function getRawValues(raw) {
  * @returns {Boolean}
  */
 function validarFormulario(values) {
-  // const idInputDetalle = "Detalle-edit".split("-")[0];
   const mapaValidador = new Map([
     ["Detalle-edit", validarDescripcionTipoInmueble]
   ]);
@@ -141,7 +140,6 @@ function validarFormulario(values) {
 }
 
 function resetValidationStatus() {
-    resetValidationInputStyle("Detalle-edit");
-
-    resetValidationErrorMessage("Detalle-edit");
+  resetValidationInputStyle("Detalle-edit");
+  resetValidationErrorMessage("Detalle-edit");
 }

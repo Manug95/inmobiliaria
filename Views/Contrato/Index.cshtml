@@ -48,10 +48,6 @@
                     </div>
                 </form>
             </div>
-            @* <div class="modal-footer justify-content-around">
-                <a id="btn_si" class="btn btn-danger" type="button">&nbsp;&nbsp;SI&nbsp;&nbsp;</a>
-                <button id="btn_no" class="btn btn-secondary" type="button" data-bs-dismiss="modal">&nbsp;NO&nbsp;</button>
-            </div> *@
         </div>
     </div>
 </div>
@@ -71,20 +67,20 @@
                 <p class="text-start fw-semibold fs-5"><strong>Multa por Termiación del contrato: </strong><span id="mensaje_multa_monto" class="fw-normal"></span></p>
                 <p class="text-start fw-semibold fs-5"><strong>Cantidad de meses pagos: </strong><span id="mensaje_multa_mesesPagos" class="fw-normal"></span></p>
                 <p class="text-start fw-semibold fs-5"><strong>Deuda por meses impagos: </strong><span id="mensaje_multa_deuda" class="fw-normal"></span></p>
-                <p class="text-start fw-semibold fs-5"><strong>Total: </strong><span id="mensaje_multa_total" class="fw-normal"></span></p>
+                <p class="text-start fw-semibold fs-5"><strong>Monto Pagado de la Multa: </strong><span id="mensaje_multa_montoPagado" class="fw-normal"></span></p>
+                <p class="text-start fw-semibold fs-5"><strong>Total a Pagar: </strong><span id="mensaje_multa_total" class="fw-normal"></span></p>
             </div>
-            <div class="modal-footer justify-content-center">
+            <div class="modal-footer justify-content-evenly">
+                <a id="enlacePagarMulta" asp-action="FormularioPago" asp-controller="Pago" type="button" class="btn btn-primary d-none">Pagar</a>
                 <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cerrar</button>
             </div>
         </div>
     </div>
 </div>
 
-<partial name="_MensajeError" model="ViewBag.mensajeError"/>
-
-@* @if(!string.IsNullOrEmpty(ViewBag.mensajeError)) {
+@if(!string.IsNullOrEmpty(ViewBag.mensajeError)) {
     <partial name="_MensajeError" model="ViewBag.mensajeError"/>
-} *@
+}
 
 
 <script type="module" src="~/js/contratos.js"></script>

@@ -17,6 +17,9 @@
                         @Html.DisplayNameFor(model => model.Importe).ToUpper()
                     </th>
                     <th>
+                        @Html.DisplayNameFor(model => model.Tipo).ToUpper()
+                    </th>
+                    <th>
                         @Html.DisplayNameFor(model => model.Estado).ToUpper()
                     </th>
                     <th colspan="2">
@@ -37,6 +40,9 @@
                         </td>
                         <td class="align-middle py-0 ps-2">
                             @Html.DisplayFor(modelItem => item.Importe)
+                        </td>
+                        <td class="align-middle py-0 ps-2">
+                            @Html.DisplayFor(modelItem => item.Tipo)
                         </td>
                         <td class="align-middle py-0 ps-2">
                             @(item.Estado ? "" : "ANULADO")

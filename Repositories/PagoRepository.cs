@@ -74,6 +74,52 @@ public class PagoRepository : BaseRepository, IPagoRepository
         return cantidadPagos;
     }
 
+    public int ContarPagosDeAlquileres(int idContrato)
+    {
+        int cantidadPagos = 0;
+        using (var connection = new MySqlConnection(connectionString))
+        {
+            string sql = @$"
+                SELECT COUNT({nameof(Pago.Id)}) AS cantidad 
+                FROM pagos 
+                WHERE {nameof(Pago.IdContrato)} = @{nameof(Pago.IdContrato)} 
+                    AND {nameof(Pago.Tipo)} = 'MENSUALIZACION';"
+            ;
+
+            using (var command = new MySqlCommand(sql, connection))
+            {
+                command.Parameters.AddWithValue($"{nameof(Pago.IdContrato)}", idContrato);
+                connection.Open();
+                cantidadPagos = Convert.ToInt32(command.ExecuteScalar());
+                connection.Close();
+            }
+        }
+        return cantidadPagos;
+    }
+
+    public decimal ObtenerSumaMultaAlquiler(int idContrato)
+    {
+        decimal sumaMulta = 0;
+        using (var connection = new MySqlConnection(connectionString))
+        {
+            string sql = @$"
+                SELECT IFNULL(SUM({nameof(Pago.Importe)}), 0) AS suma 
+                FROM pagos 
+                WHERE {nameof(Pago.IdContrato)} = @{nameof(Pago.IdContrato)} 
+                    AND {nameof(Pago.Tipo)} = 'MULTA';"
+            ;
+
+            using (var command = new MySqlCommand(sql, connection))
+            {
+                command.Parameters.AddWithValue($"{nameof(Pago.IdContrato)}", idContrato);
+                connection.Open();
+                sumaMulta = Convert.ToInt32(command.ExecuteScalar());
+                connection.Close();
+            }
+        }
+        return sumaMulta;
+    }
+
     public bool EliminarPago(int id, int idUsuario)
     {
         bool borrado = false;
@@ -116,16 +162,17 @@ public class PagoRepository : BaseRepository, IPagoRepository
                     {nameof(Pago.IdUsuarioCobrador)}, 
                     {nameof(Pago.Fecha)}, 
                     {nameof(Pago.Importe)}, 
-                    {nameof(Pago.Detalle)}
+                    {nameof(Pago.Detalle)}, 
+                    {nameof(Pago.Tipo)}
                 )
                 VALUES 
                 (
                     @{nameof(Pago.IdContrato)}, 
                     @{nameof(Pago.IdUsuarioCobrador)}, 
-                    @{nameof(Pago.IdUsuarioAnulador)}, 
                     @{nameof(Pago.Fecha)}, 
                     @{nameof(Pago.Importe)}, 
-                    @{nameof(Pago.Detalle)} 
+                    @{nameof(Pago.Detalle)}, 
+                    @{nameof(Pago.Tipo)} 
                 ); 
                 
                 SELECT LAST_INSERT_ID();"
@@ -138,6 +185,7 @@ public class PagoRepository : BaseRepository, IPagoRepository
                 command.Parameters.AddWithValue($"{nameof(Pago.Fecha)}", pago.Fecha);
                 command.Parameters.AddWithValue($"{nameof(Pago.Importe)}", pago.Importe);
                 command.Parameters.AddWithValue($"{nameof(Pago.Detalle)}", pago.Detalle);
+                command.Parameters.AddWithValue($"{nameof(Pago.Tipo)}", pago.Tipo);
 
                 try
                 {
@@ -174,6 +222,7 @@ public class PagoRepository : BaseRepository, IPagoRepository
                     p.{nameof(Pago.IdContrato)},  
                     p.{nameof(Pago.Fecha)}, 
                     p.{nameof(Pago.Importe)}, 
+                    p.{nameof(Pago.Tipo)} AS tipoPago, 
                     p.{nameof(Pago.Estado)}, 
                     IFNULL({nameof(Pago.Detalle)}, 'Sin Detalle') AS det, 
                     c.{nameof(Contrato.FechaInicio)}, 
@@ -216,6 +265,7 @@ public class PagoRepository : BaseRepository, IPagoRepository
                             Id = reader.GetInt32(nameof(Pago.Id)),
                             Fecha = reader.GetDateTime(nameof(Pago.Fecha)),
                             Importe = reader.GetDecimal(nameof(Pago.Importe)),
+                            Tipo = reader.GetString("tipoPago"),
                             Detalle = reader.GetString("det"),
                             Estado = reader.GetBoolean(nameof(Pago.Estado)),
                             Contrato = new Contrato
@@ -252,6 +302,7 @@ public class PagoRepository : BaseRepository, IPagoRepository
                     p.{nameof(Pago.IdUsuarioAnulador)},   
                     p.{nameof(Pago.Fecha)}, 
                     p.{nameof(Pago.Importe)}, 
+                    p.{nameof(Pago.Tipo)} AS tipoPago, 
                     p.{nameof(Pago.Estado)}, 
                     IFNULL({nameof(Pago.Detalle)}, 'Sin Detalle') AS det, 
                     c.{nameof(Contrato.FechaInicio)}, 
@@ -321,6 +372,7 @@ public class PagoRepository : BaseRepository, IPagoRepository
                             IdUsuarioAnulador = reader[nameof(Pago.IdUsuarioAnulador)] == DBNull.Value ? 0 : reader.GetInt32(nameof(Pago.IdUsuarioAnulador)),
                             Fecha = reader.GetDateTime(nameof(Pago.Fecha)),
                             Importe = reader.GetDecimal(nameof(Pago.Importe)),
+                            Tipo = reader.GetString("tipoPago"),
                             Detalle = reader.GetString("det"),
                             Estado = reader.GetBoolean(nameof(Pago.Estado)),
                             Contrato = new Contrato

@@ -7,7 +7,8 @@ import {
   setValidInputStyle,
   validarFechaDeInputDate,
   validarPrecio,
-  validarDescripcionTipoInmueble
+  validarDescripcionTipoInmueble,
+  validarFormSelect
 } from "./validaciones.js";
 
 
@@ -38,7 +39,8 @@ function validarFormulario(values) {
   const mapaValidador = new Map([
     ["Fecha", validarFechaDeInputDate],
     ["Importe", validarPrecio],
-    ["Detalle", validarDescripcionTipoInmueble]
+    ["Detalle", validarDescripcionTipoInmueble],
+    ["Tipo", validarFormSelect]
   ]);
 
   const esValido = Object.keys(values)
@@ -60,6 +62,7 @@ function getFormValues() {
     Fecha: getFormInputValue("Fecha"),
     Importe: getFormInputValue("Importe"),
     Detalle: getFormInputValue("Detalle"),
+    Tipo: getFormInputValue("Tipo"),
     Id: getFormInputValue("Id"),
     IdContrato: getFormInputValue("IdContrato")
   };

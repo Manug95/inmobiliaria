@@ -123,7 +123,7 @@ public class ContratoController : Controller
         }
         if (id > 0)
         {
-            contrato = repo.ObtenerContrato(id);//ponerle los datos del contrato para la modificacion
+            contrato = repo.ObtenerContrato(id);
             ViewBag.IdInmueble = contrato?.IdInmueble;
         }
         else
@@ -140,6 +140,7 @@ public class ContratoController : Controller
     }
 
     [HttpPost]
+    [Authorize]
     public IActionResult Terminar([FromBody] TerminarContratoViewModel vm)
     {
         if (ModelState.IsValid)
@@ -154,8 +155,6 @@ public class ContratoController : Controller
         }
         else
         {
-            Console.WriteLine(vm.Id);
-            Console.WriteLine(vm.FechaTerminado);
             return Json(new { error = "Datos incorrectos" });
         }
     }
@@ -174,27 +173,27 @@ public class ContratoController : Controller
     private MultaViewModel CalcularMulta(int idContrato)
     {
         Contrato? contrato = repo.ObtenerContrato(idContrato);
-        decimal deuda = 0;
+        decimal deudaDeMesesNoPagados = 0;
 
-        // Paso 1: calcular la duración total
         TimeSpan duracionTotalContrato = contrato!.FechaFin!.Value - contrato!.FechaInicio!.Value;
 
-        // Paso 2: calcular la fecha de mitad
         DateTime fechaMitad = contrato.FechaInicio.Value + TimeSpan.FromTicks(duracionTotalContrato.Ticks / 2);
 
-        // Paso 3: comparar
         decimal multa = contrato.FechaTerminado!.Value < fechaMitad ? contrato!.MontoMensual!.Value * 2 : contrato!.MontoMensual!.Value;
+        decimal multaPaga = repoPago.ObtenerSumaMultaAlquiler(contrato.Id);
 
-        int cantPagos = repoPago.ContarPagos(contrato.Id);
+        // int cantPagos = repoPago.ContarPagos(contrato.Id);
+        int cantPagos = repoPago.ContarPagosDeAlquileres(contrato.Id);
         int cantMesesAlquilado = (int)Math.Floor((contrato.FechaTerminado.Value - contrato.FechaInicio.Value).TotalDays / 30);
         int cantMesesDelContrato = (int)Math.Floor((contrato.FechaFin.Value - contrato.FechaInicio.Value).TotalDays / 30);
         if (cantPagos < cantMesesAlquilado)
-            deuda = contrato.MontoMensual.Value * (cantMesesAlquilado - cantPagos);
+            deudaDeMesesNoPagados = contrato.MontoMensual.Value * (cantMesesAlquilado - cantPagos);
 
         return new MultaViewModel
         {
             Multa = multa,
-            Deuda = deuda,
+            MultaPaga = multaPaga,
+            DeudaDeMesesNoPagados = deudaDeMesesNoPagados,
             CantMesesDelContrato = cantMesesDelContrato,
             CantMesesAlquilado = cantMesesAlquilado,
             CantMesesPagados = cantPagos,

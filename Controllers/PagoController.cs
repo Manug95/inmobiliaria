@@ -61,6 +61,11 @@ public class PagoController : Controller
             }
             else
             {
+                // if (pago.Importe > repo.ObtenerSumaMultaAlquiler(pago.IdContrato))
+                // {
+                //     TempData["MensajeError"] = "El importe ingresado es mayor a la multa";
+                //     return RedirectToAction(nameof(FormularioPago), new {idCon=pago.IdContrato, multa=pago.Importe});
+                // }
                 string idUsuario = User.Claims.FirstOrDefault(c => c.Type == "id")?.Value!;
                 pago.IdUsuarioCobrador = int.Parse(idUsuario);
                 repo.InsertarPago(pago);
@@ -92,7 +97,7 @@ public class PagoController : Controller
     }
 
     [Authorize]
-    public IActionResult FormularioPago(int id = 0, int idCon = 0)
+    public IActionResult FormularioPago(decimal? multa, int id = 0, int idCon = 0)
     {
         // Pago? pago;
 
@@ -104,7 +109,12 @@ public class PagoController : Controller
             ViewBag.contrato = repoContrato.ObtenerContrato(idCon);
         }
 
-        // pago.IdContrato = idCon;
+        if (multa.HasValue)
+        {
+            ViewBag.multa = multa.Value;
+        }
+
+        ViewBag.mensajeError = TempData["MensajeError"];
 
         return View(new Pago());
     }

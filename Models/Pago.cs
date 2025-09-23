@@ -32,5 +32,7 @@ public class Pago
     [DataType(DataType.MultilineText)]
     public string? Detalle { get; set; }
 
+    public string? Tipo { get; set; }
+
     public bool Estado { get; set; }
 }

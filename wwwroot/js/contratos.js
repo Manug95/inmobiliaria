@@ -1,4 +1,4 @@
-import { createElement, getElementById, mostrarMensaje , mostrarPregunta} from "./frontUtils.js";
+import { agregarClases, createElement, getElementById, mostrarMensaje , mostrarPregunta, removerClases} from "./frontUtils.js";
 import { setInvalidInputStyle, setValidationErrorMessage, setValidInputStyle, resetValidationErrorMessage } from "./validaciones.js";
 
 document.addEventListener("DOMContentLoaded", e => {
@@ -10,10 +10,9 @@ document.addEventListener("DOMContentLoaded", e => {
   formTerminarContrato.addEventListener("submit", async e => {
     e.preventDefault();
 
-    const fecha = getElementById("fecha_term_form").value; //validar la fecha
+    const fecha = getElementById("fecha_term_form").value;
     // const [anio, _mes, _dia] = fecha.split("-");
-
-    if (fecha != undefined && fecha.split("-")[0]?.length != 4) {
+    if (fecha.length > 0 && fecha.split("-")[0]?.length != 4) {
       setInvalidInputStyle("fecha_term_form");
       setValidationErrorMessage("tpe_fecha_term_form", "No es una fecha válida");
       return;
@@ -44,7 +43,7 @@ document.addEventListener("DOMContentLoaded", e => {
 
       modalTerminarContrato.hide();
       if (res.error) mostrarMensaje(false, res.error);
-      agregarDatosAlModalMulta(res);
+      agregarDatosAlModalMulta(res, contrato.Id);
       modalMulta.show();
       getElementById(getElementById("idFila").value)
       .parentElement
@@ -92,7 +91,7 @@ document.addEventListener("DOMContentLoaded", e => {
       if (DETALLES.findIndex(d => d.id === +idFila) < 0) {
         const respuesta = await fetch(`/Contrato/Buscar/${idFila}`);
         const contrato = await respuesta.json();
-        DETALLES.push(contrato);console.log(contrato);
+        DETALLES.push(contrato);
         agregarDatosAlModalDetalle(contrato);
       } else {
         agregarDatosAlModalDetalle(DETALLES.find(d => +d.id === +idFila));
@@ -133,9 +132,9 @@ document.addEventListener("DOMContentLoaded", e => {
       const detalleMulta = await respuesta.json();
       if (detalleMulta.error) { mostrarMensaje(false, detalleMulta.error); return; }
       DETALLES_MULTA.push(detalleMulta);
-      agregarDatosAlModalMulta(detalleMulta);
+      agregarDatosAlModalMulta(detalleMulta, idFila);
     } else {
-      agregarDatosAlModalMulta(DETALLES_MULTA.find(d => d.idContrato === +idFila));
+      agregarDatosAlModalMulta(DETALLES_MULTA.find(d => d.idContrato === +idFila), idFila);
     }
 
     const myModal = new bootstrap.Modal(getElementById('modal-multa'), {});
@@ -160,13 +159,25 @@ function agregarDatosAlModalDetalle(contrato) {
   getElementById("terminador").textContent = contrato.idUsuarioTerminador ? `Cod: ${contrato.usuarioTerminador.id} - ${contrato.usuarioTerminador.apellido}, ${contrato.usuarioTerminador.nombre}` : "";
 }
 
-function agregarDatosAlModalMulta(datos) {
+function agregarDatosAlModalMulta(datos, idContrato) {
   getElementById("mensaje_multa_mesesContrato").textContent = `${datos.cantMesesDelContrato} mes/es`;
   getElementById("mensaje_multa_meses").textContent = `${datos.cantMesesAlquilado} mes/es`;
   getElementById("mensaje_multa_monto").textContent = `$${datos.multa}`;
   getElementById("mensaje_multa_mesesPagos").textContent = `${datos.cantMesesPagados}`;
-  getElementById("mensaje_multa_deuda").textContent = `$${datos.deuda}`;
-  getElementById("mensaje_multa_total").textContent = `$${datos.deuda + datos.multa}`;
+  getElementById("mensaje_multa_deuda").textContent = `$${datos.deudaDeMesesNoPagados}`;
+  getElementById("mensaje_multa_montoPagado").textContent = `$${datos.multaPaga}`;
+  const total = datos.deudaDeMesesNoPagados + datos.multa - datos.multaPaga;
+  getElementById("mensaje_multa_total").textContent = `$${total}`;
+  const urlFormularioPagoMulta = `/Pago/FormularioPago?idCon=${idContrato}&multa=${total}`;
+  const enlacePagarMulta = getElementById("enlacePagarMulta");
+  if (+total > 0) {
+    removerClases(enlacePagarMulta, "d-none");
+    agregarClases(enlacePagarMulta, "d-inline-block");
+    enlacePagarMulta.href = urlFormularioPagoMulta;
+  } else {
+    removerClases(enlacePagarMulta, "d-inline-block");
+    agregarClases(enlacePagarMulta, "d-none");
+  }
 }
 
 function aFechaLocal(fecha) {

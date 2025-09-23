@@ -53,7 +53,7 @@
                             </a>
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item text-dark" asp-area="" asp-controller="Pago" asp-action="Index">Lista Pagos</a></li>
-                                <li><a class="dropdown-item text-dark" asp-area="" asp-controller="Pago" asp-action="FormularioPago">Crear Pago</a></li>
+                                @* <li><a class="dropdown-item text-dark" asp-area="" asp-controller="Pago" asp-action="FormularioPago">Crear Pago</a></li> *@
                             </ul>
                         </li>
                         @if (User.IsInRole(Rol.ADMIN.ToString())) {
