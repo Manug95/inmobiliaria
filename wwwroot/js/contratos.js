@@ -6,6 +6,8 @@ document.addEventListener("DOMContentLoaded", e => {
   const DETALLES_MULTA = [];
   let modalTerminarContrato;
 
+  mostrarMensaje(false, null);
+
   const formTerminarContrato = getElementById("form-terminar_contrato");
   formTerminarContrato.addEventListener("submit", async e => {
     e.preventDefault();
@@ -59,7 +61,7 @@ document.addEventListener("DOMContentLoaded", e => {
 
   });
 
-  document.querySelectorAll("td .bi-file-earmark-x").forEach(i => {
+  document.querySelectorAll("td .bi-file-earmark-x")?.forEach(i => {
     i.addEventListener("click", e => {
       const idFila = e.target.id.split("-")[1];
       getElementById("idCon").value = `${idFila}`;
@@ -80,7 +82,7 @@ document.addEventListener("DOMContentLoaded", e => {
     });
   });
 
-  document.querySelectorAll("td .bi-card-list").forEach(i => {
+  document.querySelectorAll("td .bi-card-list")?.forEach(i => {
     i.addEventListener("click", verDetalleMulta);
   });
   

@@ -27,7 +27,7 @@ public class PagoController : Controller
         ViewBag.cantPag = Math.Ceiling((decimal)cantidadPagos / limit);
         ViewBag.offsetSiguiente = offset + 1;
         ViewBag.offsetAnterior = offset - 1;
-
+        ViewBag.idCon = idCon;
         ViewBag.pagos = pagos;
 
         ViewBag.mensajeError = TempData["MensajeError"];

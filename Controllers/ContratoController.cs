@@ -41,6 +41,29 @@ public class ContratoController : Controller
         return View(new Contrato());
     }
 
+    [Authorize]
+    public IActionResult PorFechas(string desde, string hasta, int offset = 1, int limit = 10)
+    {
+        IList<Contrato> contratos = [];
+        int cantidadContratos = 0;
+        if (!string.IsNullOrWhiteSpace(desde) && !string.IsNullOrWhiteSpace(hasta))
+        {
+            contratos = repo.ListarContratos(offset, limit, null, desde, hasta);
+            cantidadContratos = repo.ContarContratos(null, desde, hasta);
+        }
+
+        ViewBag.cantPag = Math.Ceiling((decimal)cantidadContratos / limit);
+        ViewBag.offsetSiguiente = offset + 1;
+        ViewBag.offsetAnterior = offset - 1;
+        ViewBag.contratos = contratos;
+        ViewBag.desde = desde;
+        ViewBag.hasta = hasta;
+
+        ViewBag.mensajeError = contratos.Count == 0 && !string.IsNullOrWhiteSpace(desde) && !string.IsNullOrWhiteSpace(hasta) ? "No se encontraron resultados" : "";
+
+        return View("ContratosPorFechaTabla", new Contrato());
+    }
+
     // public IActionResult Listar(string? nomApe, int? offset = 1, int? limit = 10)
     // {
     //     IList<Contrato> contratos = repo.ListarContratos(offset, limit);

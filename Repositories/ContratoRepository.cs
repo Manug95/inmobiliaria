@@ -45,7 +45,7 @@ public class ContratoRepository : BaseRepository, IContratoRepository
         return modificado;
     }
 
-    public int ContarContratos(int? idInm = null)
+    public int ContarContratos(int? idInm = null, string? desde = null, string? hasta = null)
     {
         int cantidadContratos = 0;
 
@@ -59,10 +59,20 @@ public class ContratoRepository : BaseRepository, IContratoRepository
 
             if (idInm.HasValue)
                 sql += $" AND {nameof(Contrato.IdInmueble)} = @idInm";
+            
+            if (!string.IsNullOrWhiteSpace(desde) && !string.IsNullOrWhiteSpace(hasta))
+                sql += @$" AND ((c.{nameof(Contrato.FechaInicio)} BETWEEN @desde AND @hasta) 
+                            OR (c.{nameof(Contrato.FechaFin)} BETWEEN @desde AND @hasta))
+                            AND c.{nameof(Contrato.FechaTerminado)} IS NULL";
 
             using (var command = new MySqlCommand(sql + ";", connection))
             {
                 if (idInm.HasValue) command.Parameters.AddWithValue($"idInm", idInm.Value);
+                if (!string.IsNullOrWhiteSpace(desde) && !string.IsNullOrWhiteSpace(hasta))
+                {
+                    command.Parameters.AddWithValue("desde", desde);
+                    command.Parameters.AddWithValue("hasta", hasta);
+                }
 
                 connection.Open();
 
@@ -163,7 +173,7 @@ public class ContratoRepository : BaseRepository, IContratoRepository
         return id;
     }
 
-    public IList<Contrato> ListarContratos(int? offset = null, int? limit = null, int? idInm = null)
+    public IList<Contrato> ListarContratos(int? offset = null, int? limit = null, int? idInm = null, string? desde = null, string? hasta = null)
     {
         var contratos = new List<Contrato>();
 
@@ -206,12 +216,23 @@ public class ContratoRepository : BaseRepository, IContratoRepository
             if (idInm.HasValue)
                 sql += $" AND c.{nameof(Contrato.IdInmueble)} = @idInm";
 
+            if (!string.IsNullOrWhiteSpace(desde) && !string.IsNullOrWhiteSpace(hasta))
+                sql += @$" AND ((c.{nameof(Contrato.FechaInicio)} BETWEEN @desde AND @hasta) 
+                            OR (c.{nameof(Contrato.FechaFin)} BETWEEN @desde AND @hasta))
+                            AND c.{nameof(Contrato.FechaTerminado)} IS NULL";
+
             if (offset.HasValue && limit.HasValue)
-                sql += $" LIMIT @limit OFFSET @offset";
+                    sql += $" LIMIT @limit OFFSET @offset";
 
             using (var command = new MySqlCommand(sql + ";", connection))
             {
                 if (idInm.HasValue) command.Parameters.AddWithValue($"idInm", idInm.Value);
+
+                if (!string.IsNullOrWhiteSpace(desde) && !string.IsNullOrWhiteSpace(hasta))
+                {
+                    command.Parameters.AddWithValue("desde", desde);
+                    command.Parameters.AddWithValue("hasta", hasta);
+                }
 
                 if (offset.HasValue && limit.HasValue)
                 {
