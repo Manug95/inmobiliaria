@@ -64,6 +64,29 @@ public class ContratoController : Controller
         return View("ContratosPorFechaTabla", new Contrato());
     }
 
+    [Authorize]
+    public IActionResult PorVencer(int dias = 0, int offset = 1, int limit = 10)
+    {
+        IList<Contrato> contratos = [];
+        int cantidadContratos = 0;
+        if (dias > 0)
+        {
+            string fecha = DateTime.Today.AddDays(dias).ToString("yyyy-MM-dd");
+            contratos = repo.ListarContratos(offset, limit, null, null, null, fecha);
+            cantidadContratos = repo.ContarContratos(null, null, null, fecha);
+        }Console.WriteLine(cantidadContratos);
+
+        ViewBag.cantPag = Math.Ceiling((decimal)cantidadContratos / limit);
+        ViewBag.offsetSiguiente = offset + 1;
+        ViewBag.offsetAnterior = offset - 1;
+        ViewBag.contratos = contratos;
+        ViewBag.dias = dias;
+
+        ViewBag.mensajeError = contratos.Count == 0 && dias > 0 ? "No se encontraron resultados" : "";
+
+        return View("ContratosPorVencer", new Contrato());
+    }
+
     // public IActionResult Listar(string? nomApe, int? offset = 1, int? limit = 10)
     // {
     //     IList<Contrato> contratos = repo.ListarContratos(offset, limit);

@@ -59,9 +59,10 @@
                                 @if (User.IsInRole(Rol.ADMIN.ToString())) {
                                     <i id="del-@item.Id" class="bi bi-trash fs-3 text-danger icon-hover @(!item.Estado ? "invisible" : "")" style="cursor: pointer;" data-bs-toggle="tooltip" data-bs-title="Anular"></i>
                                 }
-                                @if (User.IsInRole(Rol.ADMIN.ToString())) {
+                                @* @if (User.IsInRole(Rol.ADMIN.ToString())) {
                                     <i id="det-@item.Id" class="bi bi-file-earmark-text fs-3 text-info icon-hover" style="cursor: pointer;" data-bs-toggle="tooltip" data-bs-title="Ver Detalle"></i>
-                                }
+                                } *@
+                                <i id="det-@item.Id" class="bi bi-file-earmark-text fs-3 text-info icon-hover" style="cursor: pointer;" data-bs-toggle="tooltip" data-bs-title="Ver Detalle"></i>
                             </div>
                         </td>
                     </tr>

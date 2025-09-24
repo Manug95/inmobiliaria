@@ -45,7 +45,7 @@ public class ContratoRepository : BaseRepository, IContratoRepository
         return modificado;
     }
 
-    public int ContarContratos(int? idInm = null, string? desde = null, string? hasta = null)
+    public int ContarContratos(int? idInm = null, string? desde = null, string? hasta = null, string? fechaAVencer = null)
     {
         int cantidadContratos = 0;
 
@@ -65,6 +65,9 @@ public class ContratoRepository : BaseRepository, IContratoRepository
                             OR (c.{nameof(Contrato.FechaFin)} BETWEEN @desde AND @hasta))
                             AND c.{nameof(Contrato.FechaTerminado)} IS NULL";
 
+            if (!string.IsNullOrWhiteSpace(fechaAVencer))
+                sql += $" AND {nameof(Contrato.FechaFin)} BETWEEN @hoy AND @fecha AND {nameof(Contrato.FechaTerminado)} IS NULL";
+
             using (var command = new MySqlCommand(sql + ";", connection))
             {
                 if (idInm.HasValue) command.Parameters.AddWithValue($"idInm", idInm.Value);
@@ -72,6 +75,11 @@ public class ContratoRepository : BaseRepository, IContratoRepository
                 {
                     command.Parameters.AddWithValue("desde", desde);
                     command.Parameters.AddWithValue("hasta", hasta);
+                }
+                if (!string.IsNullOrWhiteSpace(fechaAVencer))
+                {
+                    command.Parameters.AddWithValue("hoy", DateTime.Today.ToString("yyyy-MM-dd"));
+                    command.Parameters.AddWithValue("fecha", fechaAVencer);
                 }
 
                 connection.Open();
@@ -173,7 +181,7 @@ public class ContratoRepository : BaseRepository, IContratoRepository
         return id;
     }
 
-    public IList<Contrato> ListarContratos(int? offset = null, int? limit = null, int? idInm = null, string? desde = null, string? hasta = null)
+    public IList<Contrato> ListarContratos(int? offset = null, int? limit = null, int? idInm = null, string? desde = null, string? hasta = null, string? fechaAVencer = null)
     {
         var contratos = new List<Contrato>();
 
@@ -221,6 +229,9 @@ public class ContratoRepository : BaseRepository, IContratoRepository
                             OR (c.{nameof(Contrato.FechaFin)} BETWEEN @desde AND @hasta))
                             AND c.{nameof(Contrato.FechaTerminado)} IS NULL";
 
+            if (!string.IsNullOrWhiteSpace(fechaAVencer))
+                sql += $" AND c.{nameof(Contrato.FechaFin)} BETWEEN @hoy AND @fecha AND c.{nameof(Contrato.FechaTerminado)} IS NULL";
+
             if (offset.HasValue && limit.HasValue)
                     sql += $" LIMIT @limit OFFSET @offset";
 
@@ -232,6 +243,12 @@ public class ContratoRepository : BaseRepository, IContratoRepository
                 {
                     command.Parameters.AddWithValue("desde", desde);
                     command.Parameters.AddWithValue("hasta", hasta);
+                }
+
+                if (!string.IsNullOrWhiteSpace(fechaAVencer))
+                {
+                    command.Parameters.AddWithValue("hoy", DateTime.Today.ToString("yyyy-MM-dd"));
+                    command.Parameters.AddWithValue("fecha", fechaAVencer);
                 }
 
                 if (offset.HasValue && limit.HasValue)
