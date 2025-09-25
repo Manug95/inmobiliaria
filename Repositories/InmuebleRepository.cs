@@ -447,10 +447,15 @@ public class InmuebleRepository : BaseRepository, IInmuebleRepository
                     AND i.{nameof(Inmueble.Id)} NOT IN (
                         SELECT {nameof(Contrato.IdInmueble)} 
                         FROM contratos 
-                        WHERE @desde BETWEEN {nameof(Contrato.FechaInicio)} AND {nameof(Contrato.FechaFin)} 
-                            OR @hasta BETWEEN {nameof(Contrato.FechaInicio)} AND {nameof(Contrato.FechaFin)}
+                        WHERE {nameof(Contrato.FechaInicio)} BETWEEN @desde AND @hasta 
+                            OR {nameof(Contrato.FechaFin)} BETWEEN @desde AND @hasta 
+                            OR @desde BETWEEN {nameof(Contrato.FechaInicio)} AND {nameof(Contrato.FechaFin)} 
+                            OR @hasta BETWEEN {nameof(Contrato.FechaInicio)} AND {nameof(Contrato.FechaFin)} 
                     )" 
             ;
+
+            // @desde BETWEEN {nameof(Contrato.FechaInicio)} AND {nameof(Contrato.FechaFin)} 
+            //                 OR @hasta BETWEEN {nameof(Contrato.FechaInicio)} AND {nameof(Contrato.FechaFin)}
 
             if (uso != null)
                 sql += $" AND i.{nameof(Inmueble.Uso)} = @uso";

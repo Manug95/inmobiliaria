@@ -434,15 +434,24 @@ public class ContratoRepository : BaseRepository, IContratoRepository
         return contrato;
     }
 
-    public bool EstaDisponible(string desde, string hasta, int idInmueble)
+    public bool EstaDisponible(string desde, string hasta, int idInmueble, int idContrato)
     {
         bool disponible;
+        int rowCount = 0;
+
+        // string sql = @$"
+        // SELECT {nameof(Contrato.Id)} 
+        // FROM contratos 
+        // WHERE 
+        //     {nameof(Contrato.IdInmueble)} = @idInmueble 
+        //     AND (@desde BETWEEN {nameof(Contrato.FechaInicio)} AND {nameof(Contrato.FechaFin)} 
+        //     OR @hasta BETWEEN {nameof(Contrato.FechaInicio)} AND {nameof(Contrato.FechaFin)});"
+        // ;
 
         string sql = @$"
-            SELECT {nameof(Contrato.Id)} 
+            SELECT COUNT({nameof(Contrato.Id)}) 
             FROM contratos 
-            WHERE 
-                {nameof(Contrato.IdInmueble)} = @idInmueble 
+            WHERE {nameof(Contrato.IdInmueble)} = @idInmueble 
                 AND (@desde BETWEEN {nameof(Contrato.FechaInicio)} AND {nameof(Contrato.FechaFin)} 
                 OR @hasta BETWEEN {nameof(Contrato.FechaInicio)} AND {nameof(Contrato.FechaFin)});"
         ;
@@ -457,10 +466,15 @@ public class ContratoRepository : BaseRepository, IContratoRepository
 
                 connection.Open();
 
-                using (var reader = command.ExecuteReader())
-                {
-                    disponible = !reader.HasRows;
-                }
+                // using (var reader = command.ExecuteReader())
+                // {
+                    // while (reader.Read())
+                    // {
+                    //     rowCount++;
+                    // }
+                    rowCount = Convert.ToInt32(command.ExecuteScalar());
+                    disponible = (idContrato == 0 && rowCount == 0) || (idContrato > 0 && rowCount == 1);
+                // }
             }
         }
 

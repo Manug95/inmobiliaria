@@ -74,6 +74,9 @@
                                 } else {
                                     <i id="end-@item.Id" class="bi bi-file-earmark-x fs-3 text-danger icon-hover" data-bs-toggle="tooltip" data-bs-title="Terminar Contrato"></i>
                                 }
+                                <a class="icon-enlace" asp-action="Renovar" asp-controller="Contrato" asp-route-id="@item.Id" data-bs-toggle="tooltip" data-bs-title="Renovar Contrato">
+                                    <i class="bi bi-file-earmark-text fs-3 text-success"></i>
+                                </a>
                             </div>
                         </td>
                     </tr>

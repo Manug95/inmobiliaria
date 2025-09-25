@@ -105,25 +105,25 @@ public class ContratoController : Controller
     {
         if (ModelState.IsValid)
         {
+            DateTime desde = (DateTime)contrato.FechaInicio!;
+            DateTime hasta = (DateTime)contrato.FechaFin!;
+            if (!repo.EstaDisponible(desde.ToString("yyyy-MM-dd"), hasta.ToString("yyyy-MM-dd"), (int)contrato.IdInmueble!, contrato.Id))
+            {
+                TempData["MensajeError"] = "El Inmueble ya está en un contrato entre las fechas indicadas";
+                return RedirectToAction(nameof(FormularioContrato), new { desde = desde.ToString("yyyy-MM-dd"), hasta = hasta.ToString("yyyy-MM-dd"), idInq = contrato.IdInquilino, idInm = contrato.IdInmueble });
+            }
+
             if (contrato.Id > 0)
             {
                 repo.ActualizarContrato(contrato);
             }
             else
             {
-                DateTime desde = (DateTime)contrato.FechaInicio!;
-                DateTime hasta = (DateTime)contrato.FechaFin!;
-                if (repo.EstaDisponible(desde.ToString("yyyy-MM-dd"), hasta.ToString("yyyy-MM-dd"), (int)contrato.IdInmueble!)) {
-                    string idUsuario = User.Claims.FirstOrDefault(c => c.Type == "id")?.Value!;
-                    contrato.IdUsuarioContratador = int.Parse(idUsuario);
-                    repo.InsertarContrato(contrato);
-                }
-                else
-                {
-                    TempData["MensajeError"] = "El Inmueble ya está en un contrato entre las fechas indicadas";
-                    return RedirectToAction(nameof(FormularioContrato), new { desde = desde.ToString("yyyy-MM-dd"), hasta = hasta.ToString("yyyy-MM-dd"), idInq = contrato.IdInquilino, idInm = contrato.IdInmueble });
-                }
+                string idUsuario = User.Claims.FirstOrDefault(c => c.Type == "id")?.Value!;
+                contrato.IdUsuarioContratador = int.Parse(idUsuario);
+                repo.InsertarContrato(contrato);
             }
+
             return RedirectToAction(nameof(Index));
         }
         else
@@ -183,6 +183,25 @@ public class ContratoController : Controller
         ViewBag.hasta = hasta;
         ViewBag.mensajeError = TempData["MensajeError"];
         return View(contrato);
+    }
+
+    public IActionResult Renovar(int id)
+    {
+        Contrato? contrato = repo.ObtenerContrato(id);
+        Contrato contratoNuevo = new Contrato
+        {
+            Id = 0,
+            IdInmueble = contrato!.IdInmueble,
+            IdInquilino = contrato.IdInquilino,
+            FechaInicio = contrato.FechaFin,
+            MontoMensual = contrato.MontoMensual
+        };
+        ViewBag.IdInquilino = contrato.IdInquilino;
+        ViewBag.IdInmueble = contrato!.IdInmueble;
+        //tengo que limpiar el ModelState porque
+        //el input con asp-for="Id" me lo renderizaba con el valor del parametro id del Action
+        ModelState.Clear();
+        return View(nameof(FormularioContrato), contratoNuevo);
     }
 
     [HttpPost]

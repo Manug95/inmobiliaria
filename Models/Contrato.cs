@@ -16,12 +16,16 @@ public class Contrato
     public int IdUsuarioTerminador { get; set; }
     public Usuario? UsuarioTerminador { get; set; }
     [DataType(DataType.Currency)]
+    [Display(Name = "Monto Mensual")]
     public decimal? MontoMensual { get; set; }
     [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
+    [Display(Name = "F. Inicio")]
     public DateTime? FechaInicio { get; set; }
     [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
+    [Display(Name = "F. Fin")]
     public DateTime? FechaFin { get; set; }
     [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
+    [Display(Name = "F. Terminado")]
     public DateTime? FechaTerminado { get; set; }
     public bool Borrado { get; set; }
 

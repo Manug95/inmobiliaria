@@ -11,5 +11,6 @@ namespace InmobiliariaGutierrezManuel.Interfaces
         public bool EliminarContrato(int id);
         public int ContarContratos(int? idInm = null, string? desde = null, string? hasta = null, string? fechaAVencer = null);
         public bool TerminarContrato(int id, string fecha, int idUsuario);
+        public bool EstaDisponible(string desde, string hasta, int idInmueble, int idContrato);
     }
 }
