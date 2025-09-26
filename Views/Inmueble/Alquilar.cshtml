@@ -157,15 +157,15 @@
             <nav>
                 <ul id="paginador" class="pagination justify-content-center my-2">
                     <li id="flecha-pag-izq" class="page-item @(ViewBag.offsetAnterior == 0 ? "disabled" : "")">
-                        <a asp-action="Index" asp-route-limit="10" asp-route-offset="@ViewBag.offsetAnterior" asp-route-disp="@ViewBag.disponible" class="page-link"><span>&laquo;</span></a>
+                        <a asp-action="Alquilar" asp-route-limit="10" asp-route-offset="@ViewBag.offsetAnterior" asp-route-disp="@ViewBag.disponible" class="page-link"><span>&laquo;</span></a>
                     </li>
                     @for (int i = 1; i <= ViewBag.cantPag; i++) {
                         <li class="page-item">
-                            <a asp-action="Index" asp-route-limit="10" asp-route-offset="@i" asp-route-disp="@ViewBag.disponible" class="page-link @(i > ViewBag.offsetAnterior && i < ViewBag.offsetSiguiente ? "active" : "")">@i</a>
+                            <a asp-action="Alquilar" asp-route-Uso="@(ViewBag.uso??"")" asp-route-limit="10" asp-route-offset="@i" asp-route-disp="@ViewBag.disponible" class="page-link @(i > ViewBag.offsetAnterior && i < ViewBag.offsetSiguiente ? "active" : "")">@i</a>
                         </li>
                     }
                     <li id="flecha-pag-der" class="page-item @(ViewBag.offsetSiguiente > ViewBag.cantPag ? "disabled" : "")">
-                        <a asp-action="Index" asp-route-limit="10" asp-route-offset="@ViewBag.offsetSiguiente" asp-route-disp="@ViewBag.disponible" class="page-link"><span>&raquo;</span></a>
+                        <a asp-action="Alquilar" asp-route-limit="10" asp-route-offset="@ViewBag.offsetSiguiente" asp-route-disp="@ViewBag.disponible" class="page-link"><span>&raquo;</span></a>
                     </li>
                 </ul>
             </nav>

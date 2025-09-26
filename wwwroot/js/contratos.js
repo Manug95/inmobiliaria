@@ -89,7 +89,7 @@ document.addEventListener("DOMContentLoaded", e => {
       const idFila = e.target.id.split("-")[1];
       try {
         const respuesta = await fetch(`/Contrato/Buscar/${idFila}`);
-        const contrato = await respuesta.json();
+        const contrato = await respuesta.json();console.log(contrato);
         mostrarModalDetalle(contrato);
       } catch (error) {
         mostrarMensaje(false, "No se pudieron cargar los datos");
@@ -149,17 +149,19 @@ function mostrarModalDetalle(contrato) {
     getElementById("nro").textContent = contrato.id;
     getElementById("propietario").textContent = `${contrato.inmueble.duenio.apellido}, ${contrato.inmueble.duenio.nombre}`;
     getElementById("direccion").textContent = `${contrato.inmueble.calle} ${contrato.inmueble.nroCalle}`;
+    getElementById("detalle_tipo").textContent = contrato.inmueble.tipo.tipo;
+    getElementById("detalle_uso").textContent = contrato.inmueble.uso;
     getElementById("inquilino").textContent = `${contrato.inquilino.apellido}, ${contrato.inquilino.nombre}`;
     getElementById("fIni").textContent = aFechaLocal(contrato.fechaInicio.split("T")[0]);
     getElementById("fFin").textContent = aFechaLocal(contrato.fechaFin.split("T")[0]);
     getElementById("monto").textContent = contrato.montoMensual;
-    getElementById("fTerm").textContent = aFechaLocal(contrato.fechaTerminado?.split("T")[0]);
+    getElementById("fTerm").textContent = contrato.fechaTerminado ? aFechaLocal(contrato.fechaTerminado?.split("T")[0]) : " - ";
     const spanContratador = getElementById("contratador");
     const spanTerminador = getElementById("terminador");
     if (spanContratador !== null)
       spanContratador.textContent = `Cod: ${contrato.usuarioContratador.id} - ${contrato.usuarioContratador.apellido}, ${contrato.usuarioContratador.nombre}`;
     if (spanTerminador !== null)
-      spanTerminador.textContent = contrato.idUsuarioTerminador ? `Cod: ${contrato.usuarioTerminador.id} - ${contrato.usuarioTerminador.apellido}, ${contrato.usuarioTerminador.nombre}` : "";
+      spanTerminador.textContent = contrato.idUsuarioTerminador ? `Cod: ${contrato.usuarioTerminador.id} - ${contrato.usuarioTerminador.apellido}, ${contrato.usuarioTerminador.nombre}` : " - ";
   } else {
     removerClases(bodyMensaje, "d-none");
     agregarClases(bodyMensaje, "d-block");

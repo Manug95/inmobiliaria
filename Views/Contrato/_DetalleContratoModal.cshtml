@@ -1,6 +1,6 @@
 @using InmobiliariaGutierrezManuel.Models;
 
-<div id="modal_detalle_contrato" class="modal fade modal-sm" tabindex="-1" aria-describedby="titulo-modal">
+<div id="modal_detalle_contrato" class="modal fade modal-md" tabindex="-1" aria-describedby="titulo-modal">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -11,59 +11,71 @@
                 <div class="container-md align-middle">
                     <div class="d-flex justify-content-center align-items-center vh-50 w-100">
                         
-                        <div class="card" style="width: 18rem;">
+                        <div class="card w-100">
                             <div class="card-header">
                                 Detalle del Contrato n° <span id="nro"></span>
                             </div>
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item">
-                                    <span class="fw-bold">Propietario: &nbsp;</span>
-                                    </br>
-                                    <span id="propietario"></span>
-                                </li>
-                                <li class="list-group-item">
-                                    <span class="fw-bold">Inquilino: &nbsp;</span>
-                                    </br>
-                                    <span id="inquilino"></span>
-                                </li>
-                                <li class="list-group-item">
-                                    <span class="fw-bold">Dirección Inmueble: &nbsp;</span>
-                                    </br>
-                                    <span id="direccion"></span>
-                                </li>
-                                <li class="list-group-item">
-                                    <span class="fw-bold">Fecha de Inicio: &nbsp;</span>
-                                    </br>
-                                    <span id="fIni"></span>
-                                </li>
-                                <li class="list-group-item">
-                                    <span class="fw-bold">Fecha de Finalización: &nbsp;</span>
-                                    </br>
-                                    <span id="fFin"></span>
-                                </li>
-                                <li class="list-group-item">
-                                    <span class="fw-bold">Mensualización: &nbsp;</span>
-                                    </br>
-                                    <span id="monto"></span>
-                                </li>
-                                <li class="list-group-item">
-                                    <span class="fw-bold">Fecha Terminado: &nbsp;</span>
-                                    </br>
-                                    <span id="fTerm"></span>
-                                </li>
-                                @if (User.IsInRole(Rol.ADMIN.ToString())) {
+                            <div class="card-body">
+                                <ul class="list-group list-group-flush">
                                     <li class="list-group-item">
-                                        <span class="fw-bold">Contratado Por: &nbsp;</span>
-                                        <br>
-                                        <span id="contratador"></span>
+                                        <span class="fw-bold">Propietario: &nbsp;</span>
+                                        @* </br> *@
+                                        <span id="propietario"></span>
                                     </li>
                                     <li class="list-group-item">
-                                        <span class="fw-bold">Terminado Por: &nbsp;</span>
-                                        <br>
-                                        <span id="terminador"></span>
+                                        <span class="fw-bold">Inquilino: &nbsp;</span>
+                                        @* </br> *@
+                                        <span id="inquilino"></span>
                                     </li>
-                                }
-                            </ul>
+                                    <li class="list-group-item">
+                                        <span class="fw-bold">Dirección Inmueble: &nbsp;</span>
+                                        @* </br> *@
+                                        <span id="direccion"></span>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <span class="fw-bold">Tipo Inmueble: &nbsp;</span>
+                                        @* </br> *@
+                                        <span id="detalle_tipo"></span>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <span class="fw-bold">Uso del Inmueble: &nbsp;</span>
+                                        @* </br> *@
+                                        <span id="detalle_uso"></span>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <span class="fw-bold">Fecha de Inicio: &nbsp;</span>
+                                        @* </br> *@
+                                        <span id="fIni"></span>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <span class="fw-bold">Fecha de Finalización: &nbsp;</span>
+                                        @* </br> *@
+                                        <span id="fFin"></span>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <span class="fw-bold">Mensualización: &nbsp;</span>
+                                        @* </br> *@
+                                        <span id="monto"></span>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <span class="fw-bold">Fecha Terminado: &nbsp;</span>
+                                        @* </br> *@
+                                        <span id="fTerm"></span>
+                                    </li>
+                                    @if (User.IsInRole(Rol.ADMIN.ToString())) {
+                                        <li class="list-group-item">
+                                            <span class="fw-bold">Contratado Por: &nbsp;</span>
+                                            @* <br> *@
+                                            <span id="contratador"></span>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <span class="fw-bold">Terminado Por: &nbsp;</span>
+                                            @* <br> *@
+                                            <span id="terminador"></span>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
                         </div>
 
                     </div>

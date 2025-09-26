@@ -74,7 +74,7 @@ function mostrarModalDetalle(pago) {
   getElementById("importePago_detalle").textContent = pago.importe;
   getElementById("tipoPago_detalle").textContent = pago.tipo;
   getElementById("detPago_detalle").textContent = pago.detalle;
-  getElementById("estadoPago_detalle").textContent = !pago.estado ? "ANULADO" : "";
+  getElementById("estadoPago_detalle").textContent = !pago.estado ? "ANULADO" : "VÁLIDO";
   getElementById("propietario_detalle").textContent = `${pago.contrato.inmueble.duenio.apellido}, ${pago.contrato.inmueble.duenio.nombre}`;
   getElementById("inquilino_detalle").textContent = `${pago.contrato.inquilino.apellido}, ${pago.contrato.inquilino.nombre}`;
   getElementById("tipo_inmueble_detalle").textContent = pago.contrato.inmueble.tipo.tipo;
@@ -88,13 +88,13 @@ function mostrarModalDetalle(pago) {
   getElementById("fIni_detalle").textContent = aFechaLocal(pago.contrato.fechaInicio?.split("T")[0]);
   getElementById("fFin_detalle").textContent = aFechaLocal(pago.contrato.fechaFin?.split("T")[0]);
   getElementById("monto_detalle").textContent = pago.contrato.montoMensual;
-  getElementById("fTerm_detalle").textContent = aFechaLocal(pago.contrato.fechaTerminado?.split("T")[0]);
+  getElementById("fTerm_detalle").textContent = pago.contrato.fechaTerminado ? aFechaLocal(pago.contrato.fechaTerminado?.split("T")[0]) : " - ";
   const spanCobrador = getElementById("detPago_cobrado");
   const spanAnulador = getElementById("detPago_anulado");
   if (spanCobrador !== null)
     spanCobrador.textContent = `Cod: ${pago.idUsuarioCobrador} - ${pago.usuarioCobrador.apellido}, ${pago.usuarioCobrador.nombre}`;
   if (spanAnulador !== null)
-    spanAnulador.textContent = pago.idUsuarioAnulador ? `Cod: ${pago.idUsuarioAnulador} - ${pago.usuarioAnulador.apellido}, ${pago.usuarioAnulador.nombre}` : "";
+    spanAnulador.textContent = pago.idUsuarioAnulador ? `Cod: ${pago.idUsuarioAnulador} - ${pago.usuarioAnulador.apellido}, ${pago.usuarioAnulador.nombre}` : " - ";
 
   const myModal = new bootstrap.Modal(getElementById('modal_detalle_pago'), {});
   myModal.show();

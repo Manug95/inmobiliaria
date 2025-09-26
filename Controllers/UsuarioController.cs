@@ -219,20 +219,23 @@ public class UsuarioController : Controller
         GuardarAvatarDelUsuario(usuario);
         usuarioDB.Avatar = usuario.Avatar;
         repo.ActualizarUsuario(usuarioDB);
-        //actualizo la claim del email del usuario
-        var identity = User.Identity as ClaimsIdentity;
-        if (identity != null)
+        //actualizo la claim del avatar del usuario si el usuario actualiza el propio
+        if (User.Claims.FirstOrDefault(c => c.Type == "id")?.Value == usuario.Id.ToString())
         {
-            var claimAvatar = identity.FindFirst(ClaimTypes.Uri);
-            if (claimAvatar != null)
+            var identity = User.Identity as ClaimsIdentity;
+            if (identity != null)
             {
-                identity.RemoveClaim(claimAvatar);
-                var newClaim = new Claim(ClaimTypes.Uri, usuarioDB.Avatar!);
-                identity.AddClaim(newClaim);
+                var claimAvatar = identity.FindFirst(ClaimTypes.Uri);
+                if (claimAvatar != null)
+                {
+                    identity.RemoveClaim(claimAvatar);
+                    var newClaim = new Claim(ClaimTypes.Uri, usuarioDB.Avatar!);
+                    identity.AddClaim(newClaim);
+                }
+                await HttpContext.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    new ClaimsPrincipal(identity));
             }
-            await HttpContext.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme,
-                new ClaimsPrincipal(identity));
         }
 
         if (User.IsInRole(Rol.ADMIN.ToString())) return RedirectToAction(nameof(Index));

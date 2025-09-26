@@ -36,9 +36,13 @@ CREATE TABLE `contratos` (
   PRIMARY KEY (`id`),
   KEY `idInmueble` (`idInmueble`),
   KEY `idInquilino` (`idInquilino`),
+  KEY `idUsuarioContratador` (`idUsuarioContratador`),
+  KEY `idUsuarioTerminador` (`idUsuarioTerminador`),
   CONSTRAINT `contratos_ibfk_1` FOREIGN KEY (`idInmueble`) REFERENCES `inmuebles` (`id`),
-  CONSTRAINT `contratos_ibfk_2` FOREIGN KEY (`idInquilino`) REFERENCES `inquilinos` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  CONSTRAINT `contratos_ibfk_2` FOREIGN KEY (`idInquilino`) REFERENCES `inquilinos` (`id`),
+  CONSTRAINT `contratos_ibfk_3` FOREIGN KEY (`idUsuarioContratador`) REFERENCES `usuarios` (`id`),
+  CONSTRAINT `contratos_ibfk_4` FOREIGN KEY (`idUsuarioTerminador`) REFERENCES `usuarios` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -47,7 +51,7 @@ CREATE TABLE `contratos` (
 
 LOCK TABLES `contratos` WRITE;
 /*!40000 ALTER TABLE `contratos` DISABLE KEYS */;
-INSERT INTO `contratos` VALUES (1,2,1,NULL,NULL,150.00,'2025-09-15','2025-09-18',NULL,0),(2,2,10,NULL,NULL,500.00,'2025-10-13','2025-11-13',NULL,0),(11,7,12,NULL,NULL,125.00,'2025-09-12','2025-10-11',NULL,0),(13,7,10,NULL,NULL,125.00,'2025-10-12','2025-11-12',NULL,0),(14,7,2,NULL,NULL,125.00,'2025-11-17','2025-12-17',NULL,0),(15,9,3,NULL,NULL,125.00,'2025-10-11','2025-11-11',NULL,0),(16,27,7,NULL,NULL,170.00,'2025-09-15','2025-10-15',NULL,0);
+INSERT INTO `contratos` VALUES (1,2,1,2,NULL,500.00,'2025-09-01','2025-11-01',NULL,0),(2,3,2,2,NULL,130.00,'2025-09-25','2026-01-25',NULL,0),(3,7,3,2,NULL,123.00,'2025-09-20','2026-03-30',NULL,0),(4,8,5,2,NULL,650.00,'2025-06-15','2026-06-15',NULL,0),(5,31,6,2,3,123.00,'2025-03-01','2026-07-06','2025-09-25',0),(6,1,7,2,3,125.00,'2025-08-01','2025-11-08','2025-09-01',0),(7,9,8,2,NULL,123.00,'2025-07-10','2026-07-10',NULL,0),(8,6,9,2,NULL,400.00,'2025-05-01','2025-11-01',NULL,0),(9,25,10,2,NULL,100.00,'2025-07-24','2025-09-24',NULL,0);
 /*!40000 ALTER TABLE `contratos` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -114,8 +118,45 @@ CREATE TABLE `inquilinos` (
 
 LOCK TABLES `inquilinos` WRITE;
 /*!40000 ALTER TABLE `inquilinos` DISABLE KEYS */;
-INSERT INTO `inquilinos` VALUES (1,'Larrea','Fausto Antón','22222221','2222-111111','anton_rally@mail.com',1),(2,'Alunda','Agustín','22222222','2222-111112','agustin_alunda@mail.com',1),(3,'García','Brian','22222223','2222-111113','xBrian@mail.com',1),(4,'Correa','Juan Manuel','22222224','2222-111114','juan_correa@mail.com',0),(5,'Manesse','Matías','22222225','2222-111115','matias_manesse@mail.com',1),(6,'Piva','Valentina','22222226','2222-111116','valentina_piva@mail.com',1),(7,'Gutierrez','Marcos','22222227','2222-111117','marcos_gutierrez@mail.com',1),(8,'Piva','Candela','22222228','2222-111118','cande_piva@mail.com',1),(9,'Labaronie','Martina','22222229','2222-111119','martina_labaronie@mail.com',1),(10,'Mari','Matías','22222210','2222-111120','matias_mari@mail.com',1),(11,'Gutierrez','Agustina','22222211','2222-111121','agus_gutierrez@mail.com',1),(12,'Bernasconi','Nicolás','22222212','2222-111122','nico_bernasconi@mail.com',1),(13,'Toledo','Branko','22222213','2222-111123','toledin@mail.com',1),(14,'Serrani','Rodrigo','22222214','2222-111124','serra@mail.com',1),(15,'Gutierrez','Lucía','22222215','2222-111125','lucy@mail.com',1),(16,'Iuri','Enzo','22222216','2222-111126','enzo_iuri@mail.com',1),(17,'Labaronie','Trinidad','22222217','2222-111127','trini_labaronie@mail.com',1),(18,'Tripode','Tomás','22222218','2222-111128','tripa@mail.com',1),(19,'Gutierrez','Delfina','22222219','2222-111129','titi@mail.com',1),(20,'Della Croce','Mario','22222230','2222-111130','marito@mail.com',1),(21,'Longo','Ramiro','22222231','2222-111131','rama@mail.com',1),(22,'Palacios','Ignacio','22222232','2222-111132','nachito@mail.com',1);
+INSERT INTO `inquilinos` VALUES (1,'Larrea','Fausto Antón','22222221','2222-111111','anton_rally@mail.com',1),(2,'Alunda','Agustín','22222222','2222-111112','agustin_alunda@mail.com',1),(3,'García','Brian','22222223','2222-111113','xBrian@mail.com',1),(4,'Correa','Juan Manuel','22222224','2222-111114','juan_correa@mail.com',0),(5,'Manesse','Matías','22222225','2222-111115','matias_manesse@mail.com',1),(6,'Piva','Valentina','22222226','2222-111116','valentina_piva@mail.com',1),(7,'Gutierrez','Marcos','22222227','2222-111117','marcos_gutierrez@mail.com',1),(8,'Piva','Candela','12222228','2122-111118','cande_piva@mail.com',1),(9,'Labaronie','Martina','22222229','2222-111119','martina_labaronie@mail.com',1),(10,'Mari','Matías','22222210','2222-111120','matias_mari@mail.com',1),(11,'Gutierrez','Agustina','22222211','2222-111121','agus_gutierrez@mail.com',1),(12,'Bernasconi','Nicolás','22222212','2222-111122','nico_bernasconi@mail.com',1),(13,'Toledo','Branko','22222213','2222-111123','toledin@mail.com',1),(14,'Serrani','Rodrigo','22222214','2222-111124','serra@mail.com',1),(15,'Gutierrez','Lucía','22222215','2222-111125','lucy@mail.com',1),(16,'Iuri','Enzo','22222216','2222-111126','enzo_iuri@mail.com',1),(17,'Labaronie','Trinidad','22222217','2222-111127','trini_labaronie@mail.com',1),(18,'Tripode','Tomás','22222218','2222-111128','tripa@mail.com',1),(19,'Gutierrez','Delfina','22222219','2222-111129','titi@mail.com',1),(20,'Della Croce','Mario','22222230','2222-111130','marito@mail.com',1),(21,'Longo','Ramiro','22222231','2222-111131','rama@mail.com',1),(22,'Palacios','Ignacio','22222232','2222-111132','nachito@mail.com',1);
 /*!40000 ALTER TABLE `inquilinos` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `pagos`
+--
+
+DROP TABLE IF EXISTS `pagos`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `pagos` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `idContrato` int unsigned NOT NULL,
+  `idUsuarioCobrador` int unsigned DEFAULT NULL,
+  `idUsuarioAnulador` int unsigned DEFAULT NULL,
+  `fecha` date NOT NULL,
+  `importe` decimal(10,0) NOT NULL,
+  `detalle` varchar(255) DEFAULT NULL,
+  `estado` tinyint(1) NOT NULL DEFAULT '1',
+  `tipo` enum('MENSUALIZACION','MULTA') NOT NULL DEFAULT 'MENSUALIZACION',
+  PRIMARY KEY (`id`),
+  KEY `idContrato` (`idContrato`),
+  KEY `idUsuarioCobrador` (`idUsuarioCobrador`),
+  KEY `idUsuarioAnulador` (`idUsuarioAnulador`),
+  CONSTRAINT `pagos_ibfk_1` FOREIGN KEY (`idContrato`) REFERENCES `contratos` (`id`),
+  CONSTRAINT `pagos_ibfk_2` FOREIGN KEY (`idUsuarioCobrador`) REFERENCES `usuarios` (`id`),
+  CONSTRAINT `pagos_ibfk_3` FOREIGN KEY (`idUsuarioAnulador`) REFERENCES `usuarios` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `pagos`
+--
+
+LOCK TABLES `pagos` WRITE;
+/*!40000 ALTER TABLE `pagos` DISABLE KEYS */;
+INSERT INTO `pagos` VALUES (1,4,3,NULL,'2025-06-15',650,'pago mes junio',1,'MENSUALIZACION'),(2,4,3,NULL,'2025-07-03',650,'pago mes julio',1,'MENSUALIZACION'),(3,4,3,1,'2025-08-05',650,'1 tenía que haber anulado o no?',0,'MENSUALIZACION'),(4,4,3,NULL,'2025-09-02',650,'pago mes septiembre',1,'MENSUALIZACION'),(5,5,3,NULL,'2025-03-01',123,'primer pago',1,'MENSUALIZACION'),(6,5,3,1,'2025-04-04',123,NULL,0,'MENSUALIZACION'),(7,5,3,NULL,'2025-05-03',123,'prueba editar',1,'MENSUALIZACION'),(8,5,3,NULL,'2025-09-25',75,NULL,1,'MULTA'),(9,6,3,NULL,'2025-09-25',375,'pago total de multa',1,'MULTA'),(10,1,4,NULL,'2025-09-01',500,NULL,1,'MENSUALIZACION'),(11,2,4,NULL,'2025-09-25',130,NULL,1,'MENSUALIZACION'),(12,3,4,NULL,'2025-09-20',123,NULL,1,'MENSUALIZACION'),(13,8,4,NULL,'2025-05-01',400,NULL,1,'MENSUALIZACION'),(14,8,4,NULL,'2025-06-04',400,NULL,1,'MENSUALIZACION'),(15,8,4,NULL,'2025-07-09',400,NULL,1,'MENSUALIZACION'),(16,8,4,NULL,'2025-08-07',400,NULL,1,'MENSUALIZACION'),(17,8,4,NULL,'2025-09-03',400,NULL,1,'MENSUALIZACION');
+/*!40000 ALTER TABLE `pagos` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -143,7 +184,7 @@ CREATE TABLE `propietarios` (
 
 LOCK TABLES `propietarios` WRITE;
 /*!40000 ALTER TABLE `propietarios` DISABLE KEYS */;
-INSERT INTO `propietarios` VALUES (1,'Perez','Juan','11111111','1111-121212','juan_perez@mail.com',1),(2,'Torres','Roberto','11111112','1111-131313','roberto_torres@mail.com',1),(3,'Martínez','Ana','11111113','1111-141414','ana_martinez@mail.com',1),(4,'Salmeron','José','11111114','1111-151515','jose_salmeron@mail.com',1),(5,'Alonso','Marcela','11111115','1111-161616','marcela_alonso@mail.com',1),(6,'Gutierrez','Ernesto Darío','11111116','1111-171717','dario_gutierrez@mail.com',1),(7,'López','Raúl','11111117','1111-181818','raul_lopez@mail.com',1),(8,'Morichetti','María Luisa','11111118','1111-191919','marisa_morichetti@mail.com',1),(9,'Gutierrez','Nerea','11111119','1111-101919','nerea_gutierrez@mail.com',1),(10,'Rato','Miriam','11111110','1111-101010','miriam_rato@mail.com',1),(11,'apeProp11','nomProp11','11111199','1111-111010','nomProp11@mail.com',1),(12,'apeProp12','nomProp12','11111112','1111-111012','nomProp12@mail.com',1),(13,'apeProp13','nomProp13','11111121','1111-131313','nomProp13@mail.com',1),(14,'apeProp14','nomProp14','11111141','1111-131314','nomProp14@mail.com',1),(15,'apeProp15','nomProp15','11111151','1111-131315','nomProp15@mail.com',1),(16,'apeProp16','nomProp16','11111161','1111-131316','nomProp16@mail.com',1),(17,'apeProp17','nomProp17','11111171','1111-131317','nomProp17@mail.com',1),(18,'apeProp18','nomProp18','11111181','1111-131318','nomProp18@mail.com',1),(19,'apeProp19','nomProp19','11111191','1111-131319','nomProp19@mail.com',1),(20,'apeProp20','nomProp20','11111120','1111-131320','nomProp20@mail.com',1),(21,'apeProp21','nomProp21','11111121','1111-131321','nomProp21@mail.com',1),(22,'apeProp22','nomProp22','11111122','1111-111122','nomProp22@mail.com',1),(23,'apeProp23','nomProp23','11111123','1111-111123','nomProp23@mail.com',1),(24,'apeProp24','nomProp24','11111124','1111-111124','nomProp24@mail.com',1),(25,'apeProp25','nomProp25','11111125','1111-111125','nomProp25@mail.com',1),(26,'apeProp26','nomProp26','11111126','1111-111126','nomProp26@mail.com',1),(27,'apeProp27','nomProp27','11111127','1111-111127','nomProp27@mail.com',1),(28,'apeProp28','nomProp28','11111128','1111-111128','nomProp28@mail.com',1),(29,'apeProp29','nomProp29','11111129','1111-111129','nomProp29@mail.com',1),(30,'apeProp30','nomProp30','11111130','1111-111130','nomProp30@mail.com',1),(31,'apeProp31','nomProp31','11111131','1111-111131','nomProp31@mail.com',1),(32,'apeProp32','nomProp32','11111132','1111-111132','nomProp32@mail.com',1),(33,'apeProp33','nomProp33','11111133','1111-111133','nomProp33@mail.com',1),(34,'apeProp34','nomProp34','11111134','1111-111134','nomProp34@mail.com',1);
+INSERT INTO `propietarios` VALUES (1,'Perez','Juan','11111111','1111-121212','juan_perez@mail.com',1),(2,'Torres','Roberto','11111112','1111-131313','roberto_torres@mail.com',1),(3,'Martínez','Ana','11111113','1111-141414','ana_martinez@mail.com',1),(4,'Salmeron','José','11111114','1111-151515','jose_salmeron@mail.com',1),(5,'Alonso','Marcela','11111115','1111-161616','marcela_alonso@mail.com',1),(6,'Gutierrez','Ernesto Darío','11211116','1311-171717','dario_gutierrez@mail.com',1),(7,'López','Raúl','11111117','1111-181818','raul_lopez@mail.com',1),(8,'Morichetti','María Luisa','11111118','1111-191919','marisa_morichetti@mail.com',1),(9,'Gutierrez','Nerea','11111119','1111-101919','nerea_gutierrez@mail.com',1),(10,'Rato','Miriam','11111110','1111-101010','miriam_rato@mail.com',1),(11,'apeProp11','nomProp11','11111199','1111-111010','nomProp11@mail.com',1),(12,'apeProp12','nomProp12','11111112','1111-111012','nomProp12@mail.com',1),(13,'apeProp13','nomProp13','11111121','1111-131313','nomProp13@mail.com',1),(14,'apeProp14','nomProp14','11111141','1111-131314','nomProp14@mail.com',1),(15,'apeProp15','nomProp15','11111151','1111-131315','nomProp15@mail.com',1),(16,'apeProp16','nomProp16','11111161','1111-131316','nomProp16@mail.com',1),(17,'apeProp17','nomProp17','11111171','1111-131317','nomProp17@mail.com',1),(18,'apeProp18','nomProp18','11111181','1111-131318','nomProp18@mail.com',1),(19,'apeProp19','nomProp19','11111191','1111-131319','nomProp19@mail.com',1),(20,'apeProp20','nomProp20','11111120','1111-131320','nomProp20@mail.com',1),(21,'apeProp21','nomProp21','11111121','1111-131321','nomProp21@mail.com',1),(22,'apeProp22','nomProp22','11111122','1111-111122','nomProp22@mail.com',1),(23,'apeProp23','nomProp23','11111123','1111-111123','nomProp23@mail.com',1),(24,'apeProp24','nomProp24','11111124','1111-111124','nomProp24@mail.com',1),(25,'apeProp25','nomProp25','11111125','1111-111125','nomProp25@mail.com',1),(26,'apeProp26','nomProp26','11111126','1111-111126','nomProp26@mail.com',1),(27,'apeProp27','nomProp27','11111127','1111-111127','nomProp27@mail.com',1),(28,'apeProp28','nomProp28','11111128','1111-111128','nomProp28@mail.com',1),(29,'apeProp29','nomProp29','11111129','1111-111129','nomProp29@mail.com',1),(30,'apeProp30','nomProp30','11111130','1111-111130','nomProp30@mail.com',1),(31,'apeProp31','nomProp31','11111131','1111-111131','nomProp31@mail.com',1),(32,'apeProp32','nomProp32','11111132','1111-111132','nomProp32@mail.com',0),(33,'apeProp33','nomProp33','11111133','1111-111133','nomProp33@mail.com',1),(34,'apeProp34','nomProp34','11111134','1111-111134','nomProp34@mail.com',1);
 /*!40000 ALTER TABLE `propietarios` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -169,8 +210,38 @@ CREATE TABLE `tipos_inmueble` (
 
 LOCK TABLES `tipos_inmueble` WRITE;
 /*!40000 ALTER TABLE `tipos_inmueble` DISABLE KEYS */;
-INSERT INTO `tipos_inmueble` VALUES (1,'LOCAL',NULL),(2,'DEPÓSITO',NULL),(3,'CASA',NULL),(4,'DEPARTAMENTO',NULL);
+INSERT INTO `tipos_inmueble` VALUES (1,'LOCAL','me hacen cambiarte ?'),(2,'DEPÓSITO',NULL),(3,'CASA',NULL),(4,'DEPARTAMENTO',NULL);
 /*!40000 ALTER TABLE `tipos_inmueble` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `usuarios`
+--
+
+DROP TABLE IF EXISTS `usuarios`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `usuarios` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `email` varchar(100) NOT NULL,
+  `pass` varchar(60) NOT NULL,
+  `rol` enum('ADMIN','EMPLEADO') NOT NULL DEFAULT 'EMPLEADO',
+  `avatar` varchar(255) DEFAULT NULL,
+  `nombre` varchar(100) DEFAULT NULL,
+  `apellido` varchar(100) DEFAULT NULL,
+  `activo` tinyint(1) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `usuarios`
+--
+
+LOCK TABLES `usuarios` WRITE;
+/*!40000 ALTER TABLE `usuarios` DISABLE KEYS */;
+INSERT INTO `usuarios` VALUES (1,'manuel@mail.com','5cPdoAYcEWknZJd5+8/2Yiwcz8G8tKpHrq8dLpCc/zU=','ADMIN','/Uploads\\avatar_1.png','Manuel','Gutierrez',1),(2,'a@a.com','5cPdoAYcEWknZJd5+8/2Yiwcz8G8tKpHrq8dLpCc/zU=','EMPLEADO','/Uploads\\avatar_2.png','empleado','uno',1),(3,'b@b.com','5cPdoAYcEWknZJd5+8/2Yiwcz8G8tKpHrq8dLpCc/zU=','EMPLEADO','/Uploads\\avatar_3.png','empleado','dos',1),(4,'c@c.com','5cPdoAYcEWknZJd5+8/2Yiwcz8G8tKpHrq8dLpCc/zU=','EMPLEADO','','empleado','tres',1);
+/*!40000 ALTER TABLE `usuarios` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -182,4 +253,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-09-12 20:59:12
+-- Dump completed on 2025-09-26 14:50:25

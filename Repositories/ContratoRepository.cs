@@ -334,6 +334,7 @@ public class ContratoRepository : BaseRepository, IContratoRepository
                     inm.{nameof(Inmueble.IdPropietario)}, 
                     inm.{nameof(Inmueble.Calle)}, 
                     inm.{nameof(Inmueble.NroCalle)}, 
+                    inm.{nameof(Inmueble.Uso)}, 
                     inm.{nameof(Inmueble.IdTipoInmueble)}, 
                     ti.{nameof(Inmueble.Tipo)}, 
                     p.{nameof(Propietario.Nombre)} AS nombreProp, 
@@ -392,6 +393,7 @@ public class ContratoRepository : BaseRepository, IContratoRepository
                                 IdTipoInmueble = reader.GetInt32(nameof(Inmueble.IdTipoInmueble)),
                                 Calle = reader.GetString(nameof(Inmueble.Calle)),
                                 NroCalle = reader.GetUInt32(nameof(Inmueble.NroCalle)),
+                                Uso = reader.GetString(nameof(Inmueble.Uso)),
                                 Tipo = new TipoInmueble
                                 {
                                     Id = reader.GetInt32(nameof(Inmueble.IdTipoInmueble)),

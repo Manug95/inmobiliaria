@@ -22,7 +22,7 @@ public class PagoController : Controller
     public IActionResult Index(int? idCon, int offset = 1, int limit = 10)
     {
         IList<Pago> pagos = repo.ListarPagos(offset, limit, idCon);
-        int cantidadPagos = repo.ContarPagos();
+        int cantidadPagos = repo.ContarPagos(idCon);
 
         ViewBag.cantPag = Math.Ceiling((decimal)cantidadPagos / limit);
         ViewBag.offsetSiguiente = offset + 1;

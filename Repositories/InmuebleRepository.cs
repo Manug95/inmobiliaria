@@ -445,7 +445,7 @@ public class InmuebleRepository : BaseRepository, IInmuebleRepository
                 WHERE i.{nameof(Inmueble.Borrado)} = 0 
                     AND i.{nameof(Inmueble.Disponible)} = 1 
                     AND i.{nameof(Inmueble.Id)} NOT IN (
-                        SELECT {nameof(Contrato.IdInmueble)} 
+                        SELECT DISTINCT {nameof(Contrato.IdInmueble)} 
                         FROM contratos 
                         WHERE {nameof(Contrato.FechaInicio)} BETWEEN @desde AND @hasta 
                             OR {nameof(Contrato.FechaFin)} BETWEEN @desde AND @hasta 
