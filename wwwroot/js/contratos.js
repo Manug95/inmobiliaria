@@ -2,14 +2,12 @@ import { agregarClases, createElement, getElementById, mostrarMensaje , mostrarP
 import { setInvalidInputStyle, setValidationErrorMessage, setValidInputStyle, resetValidationErrorMessage } from "./validaciones.js";
 
 document.addEventListener("DOMContentLoaded", e => {
-  const DETALLES = [];
-  const DETALLES_MULTA = [];
   let modalTerminarContrato;
 
   mostrarMensaje(false, null);
 
   const formTerminarContrato = getElementById("form-terminar_contrato");
-  formTerminarContrato.addEventListener("submit", async e => {
+  formTerminarContrato?.addEventListener("submit", async e => {
     e.preventDefault();
 
     const fecha = getElementById("fecha_term_form").value;
@@ -24,7 +22,7 @@ document.addEventListener("DOMContentLoaded", e => {
     resetValidationErrorMessage("tpe_fecha_term_form");
 
     const contrato = {
-      FechaTerminado: fecha,
+      FechaTerminado: fecha.length > 0 ? fecha : null,
       Id: +getElementById("idCon").value
     };
 
@@ -44,7 +42,7 @@ document.addEventListener("DOMContentLoaded", e => {
       const res = await respuesta.json();
 
       modalTerminarContrato.hide();
-      if (res.error) mostrarMensaje(false, res.error);
+      if (res.error) { mostrarMensaje(false, res.error); return; }
       agregarDatosAlModalMulta(res, contrato.Id);
       modalMulta.show();
       getElementById(getElementById("idFila").value)
@@ -89,18 +87,13 @@ document.addEventListener("DOMContentLoaded", e => {
   document.querySelectorAll("td .bi-file-earmark-text")?.forEach(i => {
     i.addEventListener("click", async e => {
       const idFila = e.target.id.split("-")[1];
-
-      if (DETALLES.findIndex(d => d.id === +idFila) < 0) {
+      try {
         const respuesta = await fetch(`/Contrato/Buscar/${idFila}`);
         const contrato = await respuesta.json();
-        DETALLES.push(contrato);
-        agregarDatosAlModalDetalle(contrato);
-      } else {
-        agregarDatosAlModalDetalle(DETALLES.find(d => +d.id === +idFila));
+        mostrarModalDetalle(contrato);
+      } catch (error) {
+        mostrarMensaje(false, "No se pudieron cargar los datos");
       }
-
-      const myModal = new bootstrap.Modal(getElementById('modal_detalle_contrato'), {});
-      myModal.show();
     });
   });
 
@@ -129,15 +122,13 @@ document.addEventListener("DOMContentLoaded", e => {
   async function verDetalleMulta(e) {
     const idFila = e.target.id.split("-")[1];
 
-    if (DETALLES_MULTA.findIndex(d => d.idContrato === +idFila) < 0) {
-      const respuesta = await fetch(`/Contrato/DetalleMulta/${idFila}`);
-      const detalleMulta = await respuesta.json();
-      if (detalleMulta.error) { mostrarMensaje(false, detalleMulta.error); return; }
-      DETALLES_MULTA.push(detalleMulta);
-      agregarDatosAlModalMulta(detalleMulta, idFila);
-    } else {
-      agregarDatosAlModalMulta(DETALLES_MULTA.find(d => d.idContrato === +idFila), idFila);
+    const respuesta = await fetch(`/Contrato/DetalleMulta/${idFila}`);
+    const detalleMulta = await respuesta.json();
+    if (detalleMulta.error) { 
+      mostrarMensaje(false, detalleMulta.error); 
+      return; 
     }
+    agregarDatosAlModalMulta(detalleMulta, idFila);
 
     const myModal = new bootstrap.Modal(getElementById('modal-multa'), {});
     myModal.show();
@@ -148,17 +139,34 @@ document.addEventListener("DOMContentLoaded", e => {
   
 });
 
-function agregarDatosAlModalDetalle(contrato) {
-  getElementById("nro").textContent = contrato.id;
-  getElementById("propietario").textContent = `${contrato.inmueble.duenio.apellido}, ${contrato.inmueble.duenio.nombre}`;
-  getElementById("direccion").textContent = `${contrato.inmueble.calle} ${contrato.inmueble.nroCalle}`;
-  getElementById("inquilino").textContent = `${contrato.inquilino.apellido}, ${contrato.inquilino.nombre}`;
-  getElementById("fIni").textContent = aFechaLocal(contrato.fechaInicio.split("T")[0]);
-  getElementById("fFin").textContent = aFechaLocal(contrato.fechaFin.split("T")[0]);
-  getElementById("monto").textContent = contrato.montoMensual;
-  getElementById("fTerm").textContent = aFechaLocal(contrato.fechaTerminado?.split("T")[0]);
-  getElementById("contratador").textContent = `Cod: ${contrato.usuarioContratador.id} - ${contrato.usuarioContratador.apellido}, ${contrato.usuarioContratador.nombre}`;
-  getElementById("terminador").textContent = contrato.idUsuarioTerminador ? `Cod: ${contrato.usuarioTerminador.id} - ${contrato.usuarioTerminador.apellido}, ${contrato.usuarioTerminador.nombre}` : "";
+function mostrarModalDetalle(contrato) {
+  const bodyDetalle = getElementById("body-detalle");
+  const bodyMensaje = getElementById("body-mensaje");
+  if (contrato !== null) {
+    removerClases(bodyDetalle, "d-none");
+    agregarClases(bodyDetalle, "d-block");
+    agregarClases(bodyMensaje, "d-none");
+    getElementById("nro").textContent = contrato.id;
+    getElementById("propietario").textContent = `${contrato.inmueble.duenio.apellido}, ${contrato.inmueble.duenio.nombre}`;
+    getElementById("direccion").textContent = `${contrato.inmueble.calle} ${contrato.inmueble.nroCalle}`;
+    getElementById("inquilino").textContent = `${contrato.inquilino.apellido}, ${contrato.inquilino.nombre}`;
+    getElementById("fIni").textContent = aFechaLocal(contrato.fechaInicio.split("T")[0]);
+    getElementById("fFin").textContent = aFechaLocal(contrato.fechaFin.split("T")[0]);
+    getElementById("monto").textContent = contrato.montoMensual;
+    getElementById("fTerm").textContent = aFechaLocal(contrato.fechaTerminado?.split("T")[0]);
+    const spanContratador = getElementById("contratador");
+    const spanTerminador = getElementById("terminador");
+    if (spanContratador !== null)
+      spanContratador.textContent = `Cod: ${contrato.usuarioContratador.id} - ${contrato.usuarioContratador.apellido}, ${contrato.usuarioContratador.nombre}`;
+    if (spanTerminador !== null)
+      spanTerminador.textContent = contrato.idUsuarioTerminador ? `Cod: ${contrato.usuarioTerminador.id} - ${contrato.usuarioTerminador.apellido}, ${contrato.usuarioTerminador.nombre}` : "";
+  } else {
+    removerClases(bodyMensaje, "d-none");
+    agregarClases(bodyMensaje, "d-block");
+    agregarClases(bodyDetalle, "d-none");
+  }
+  const myModal = new bootstrap.Modal(getElementById('modal_detalle_contrato'), {});
+  myModal.show();
 }
 
 function agregarDatosAlModalMulta(datos, idContrato) {
@@ -167,12 +175,13 @@ function agregarDatosAlModalMulta(datos, idContrato) {
   getElementById("mensaje_multa_monto").textContent = `$${datos.multa}`;
   getElementById("mensaje_multa_mesesPagos").textContent = `${datos.cantMesesPagados}`;
   getElementById("mensaje_multa_deuda").textContent = `$${datos.deudaDeMesesNoPagados}`;
+  getElementById("mensaje_multa_total").textContent = `$${datos.deudaDeMesesNoPagados + datos.multa}`;
   getElementById("mensaje_multa_montoPagado").textContent = `$${datos.multaPaga}`;
-  const total = datos.deudaDeMesesNoPagados + datos.multa - datos.multaPaga;
-  getElementById("mensaje_multa_total").textContent = `$${total}`;
-  const urlFormularioPagoMulta = `/Pago/FormularioPago?idCon=${idContrato}&multa=${total}`;
+  const aPagar = datos.deudaDeMesesNoPagados + datos.multa - datos.multaPaga;
+  getElementById("mensaje_multa_aPagar").textContent = `$${aPagar}`;
+  const urlFormularioPagoMulta = `/Pago/FormularioPago?idCon=${idContrato}&multa=${aPagar}`;
   const enlacePagarMulta = getElementById("enlacePagarMulta");
-  if (+total > 0) {
+  if (+aPagar > 0) {
     removerClases(enlacePagarMulta, "d-none");
     agregarClases(enlacePagarMulta, "d-inline-block");
     enlacePagarMulta.href = urlFormularioPagoMulta;

@@ -11,21 +11,38 @@
     <div class="row">
         <form asp-action="ActualizarDatos" id="form-datos-personales" class="p-3 w-75 mx-auto border rounded-4 shadow-sm needs-validation mt-2 mb-3 bg-light-subtle">
             <legend>Editar Datos Personales</legend>
-            <div class="row mt-3 mb-md-4 border rounded-4  pb-3">
-                <div class="col-12 col-md-6 mt-5 mt-md-1 mb-md-0">
+            <div class="row mt-3 mb-md-4 border rounded-4 pb-3">
+                @{
+                    string clases = "col-12 mt-5 mt-md-1 mb-md-0";
+                    if (User.IsInRole(Rol.ADMIN.ToString())) clases += " col-md-4";
+                    else clases += " col-md-6";
+                }
+                <div class="@clases">
                     <div class="position-relative">
                         <label asp-for="Nombre" class="form-label fw-bold">Nombre</label>
                         <input type="text" asp-for="Nombre" class="form-control" id="Nombre">
                         <div id="tpe_Nombre" class="invalid-tooltip"></div>
                     </div>
                 </div>
-                <div class="col-12 col-md-6 mt-5 mt-md-1 mb-md-0">
+                <div class="@clases">
                     <div class="position-relative">
                         <label asp-for="Apellido" class="form-label fw-bold">Apellido</label>
                         <input type="text" asp-for="Apellido" class="form-control" id="Apellido">
                         <div id="tpe_Apellido" class="invalid-tooltip"></div>
                     </div>
                 </div>
+                @if (User.IsInRole(Rol.ADMIN.ToString())) {
+                    <div class="@clases">
+                        <div class="position-relative">
+                            <label asp-for="Rol" class="form-label fw-bold">Rol</label>
+                            <select class="form-select" asp-for="Rol" id="Rol">
+                                <option value="@Rol.ADMIN" selected="@(Model.Rol==Rol.ADMIN.ToString())">@Rol.ADMIN</option>
+                                <option value="@Rol.EMPLEADO" selected="@(Model.Rol==Rol.EMPLEADO.ToString())">@Rol.EMPLEADO</option>
+                            </select>
+                            <div id="tpe_Rol" class="invalid-tooltip"></div>
+                        </div>
+                    </div>
+                }
             </div>
 
             <input type="hidden" asp-for="Id"/>
@@ -39,38 +56,27 @@
     </div>
 
     <div class="row">
-        <form asp-action="ActualizarUsuario" id="form-datos-usuario" class="p-3 w-75 mx-auto border rounded-4 shadow-sm needs-validation mt-2 mb-3 bg-light-subtle">
-            <legend>Editar Datos de Sesión</legend>
+        <form asp-action="CambiarContrasenia" id="form-datos-usuario" class="p-3 w-75 mx-auto border rounded-4 shadow-sm needs-validation mt-2 mb-3 bg-light-subtle">
+            <legend>Cambiar Contraseña</legend>
             <div class="row mb-md-4 border rounded-4  pb-3">
                 <div class="col-12 col-md-6 mt-5 mt-md-1 mb-md-0">
                     <div class="position-relative">
-                        <label asp-for="Email" class="form-label fw-bold">Email</label>
-                        <input type="email" asp-for="Email" class="form-control" id="Email">
-                        <div id="tpe_Email" class="invalid-tooltip"></div>
+                        <label or="nueva" class="form-label fw-bold">Contraseña Nueva</label>
+                        <input type="password" name="PasswordNuevo" class="form-control" id="nueva">
+                        <div id="tpe_nueva" class="invalid-tooltip"></div>
                     </div>
                 </div>
-                <div class="col-12 col-md-6 mt-5 mt-md-1 mb-md-0">
-                    <div class="position-relative">
-                        <label asp-for="Password" class="form-label fw-bold">Contraseña</label>
-                        <input type="password" asp-for="Password" class="form-control" id="Password">
-                        <div id="tpe_Password" class="invalid-tooltip"></div>
-                    </div>
-                </div>
-                @if (User.IsInRole(Rol.ADMIN.ToString())) {
+                @if (!User.IsInRole(Rol.ADMIN.ToString()) || (User.IsInRole(Rol.ADMIN.ToString()) && User.Claims.FirstOrDefault(c => c.Type == "id")?.Value == Model.Id.ToString())) {
                     <div class="col-12 col-md-6 mt-5 mt-md-1 mb-md-0">
                         <div class="position-relative">
-                            <label asp-for="Rol" class="form-label fw-bold">Rol</label>
-                            <select class="form-select" asp-for="Rol" id="Rol">
-                                <option value="@Rol.ADMIN" selected="@(Model.Rol==Rol.ADMIN.ToString())">@Rol.ADMIN</option>
-                                <option value="@Rol.EMPLEADO" selected="@(Model.Rol==Rol.EMPLEADO.ToString())">@Rol.EMPLEADO</option>
-                            </select>
-                            <div id="tpe_Rol" class="invalid-tooltip"></div>
+                            <label for="vieja" class="form-label fw-bold">Contraseña Vieja</label>
+                            <input type="password" name="PasswordViejo" class="form-control" id="vieja">
+                            <div id="tpe_vieja" class="invalid-tooltip"></div>
                         </div>
                     </div>
                 }
             </div>
             <input type="hidden" asp-for="Id"/>
-            <input type="hidden" asp-for="Rol"/>
             <div class="row mb-2 mt-5 mt-md-4 justify-content-center">
                 <div class="col-2 d-flex justify-content-center">
                     <input type="submit" value="Guardar" class="btn btn-primary d-block mx-auto">
@@ -107,10 +113,6 @@
             </div>
         </form>
     </div>
-
-    @* <div class="d-flex justify-content-start">
-        <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
-    </div> *@
 </div>
 
 @if(!string.IsNullOrWhiteSpace(ViewBag.mensajeError)) {

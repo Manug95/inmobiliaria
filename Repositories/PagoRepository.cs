@@ -16,8 +16,6 @@ public class PagoRepository : BaseRepository, IPagoRepository
                 UPDATE pagos 
                 SET 
                 {nameof(Pago.IdContrato)} = @{nameof(Pago.IdContrato)}, 
-                {nameof(Pago.IdUsuarioCobrador)} = @{nameof(Pago.IdUsuarioCobrador)}, 
-                {nameof(Pago.IdUsuarioAnulador)} = @{nameof(Pago.IdUsuarioAnulador)}, 
                 {nameof(Pago.Fecha)} = @{nameof(Pago.Fecha)}, 
                 {nameof(Pago.Importe)} = @{nameof(Pago.Importe)}, 
                 {nameof(Pago.Detalle)} = @{nameof(Pago.Detalle)} 
@@ -27,8 +25,6 @@ public class PagoRepository : BaseRepository, IPagoRepository
             using (var command = new MySqlCommand(sql, connection))
             {
                 command.Parameters.AddWithValue($"{nameof(Pago.IdContrato)}", pago.IdContrato);
-                command.Parameters.AddWithValue($"{nameof(Pago.IdUsuarioCobrador)}", pago.IdUsuarioCobrador);
-                command.Parameters.AddWithValue($"{nameof(Pago.IdUsuarioAnulador)}", pago.IdUsuarioAnulador);
                 command.Parameters.AddWithValue($"{nameof(Pago.Fecha)}", pago.Fecha);
                 command.Parameters.AddWithValue($"{nameof(Pago.Importe)}", pago.Importe);
                 command.Parameters.AddWithValue($"{nameof(Pago.Detalle)}", pago.Detalle);
@@ -83,7 +79,8 @@ public class PagoRepository : BaseRepository, IPagoRepository
                 SELECT COUNT({nameof(Pago.Id)}) AS cantidad 
                 FROM pagos 
                 WHERE {nameof(Pago.IdContrato)} = @{nameof(Pago.IdContrato)} 
-                    AND {nameof(Pago.Tipo)} = 'MENSUALIZACION';"
+                    AND {nameof(Pago.Tipo)} = 'MENSUALIZACION' 
+                    AND {nameof(Pago.Estado)} = 1;"
             ;
 
             using (var command = new MySqlCommand(sql, connection))
@@ -106,7 +103,8 @@ public class PagoRepository : BaseRepository, IPagoRepository
                 SELECT IFNULL(SUM({nameof(Pago.Importe)}), 0) AS suma 
                 FROM pagos 
                 WHERE {nameof(Pago.IdContrato)} = @{nameof(Pago.IdContrato)} 
-                    AND {nameof(Pago.Tipo)} = 'MULTA';"
+                    AND {nameof(Pago.Tipo)} = 'MULTA'
+                    AND {nameof(Pago.Estado)} = 1;"
             ;
 
             using (var command = new MySqlCommand(sql, connection))

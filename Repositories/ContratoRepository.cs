@@ -61,9 +61,11 @@ public class ContratoRepository : BaseRepository, IContratoRepository
                 sql += $" AND {nameof(Contrato.IdInmueble)} = @idInm";
             
             if (!string.IsNullOrWhiteSpace(desde) && !string.IsNullOrWhiteSpace(hasta))
-                sql += @$" AND ((c.{nameof(Contrato.FechaInicio)} BETWEEN @desde AND @hasta) 
-                            OR (c.{nameof(Contrato.FechaFin)} BETWEEN @desde AND @hasta))
-                            AND c.{nameof(Contrato.FechaTerminado)} IS NULL";
+                sql += @$" AND ({nameof(Contrato.FechaInicio)} BETWEEN @desde AND @hasta 
+                            OR {nameof(Contrato.FechaFin)} BETWEEN @desde AND @hasta
+                            OR @desde BETWEEN {nameof(Contrato.FechaInicio)} AND {nameof(Contrato.FechaFin)} 
+                            OR @hasta BETWEEN {nameof(Contrato.FechaInicio)} AND {nameof(Contrato.FechaFin)}) 
+                            AND {nameof(Contrato.FechaTerminado)} IS NULL";
 
             if (!string.IsNullOrWhiteSpace(fechaAVencer))
                 sql += $" AND {nameof(Contrato.FechaFin)} BETWEEN @hoy AND @fecha AND {nameof(Contrato.FechaTerminado)} IS NULL";
@@ -226,7 +228,9 @@ public class ContratoRepository : BaseRepository, IContratoRepository
 
             if (!string.IsNullOrWhiteSpace(desde) && !string.IsNullOrWhiteSpace(hasta))
                 sql += @$" AND ((c.{nameof(Contrato.FechaInicio)} BETWEEN @desde AND @hasta) 
-                            OR (c.{nameof(Contrato.FechaFin)} BETWEEN @desde AND @hasta))
+                            OR (c.{nameof(Contrato.FechaFin)} BETWEEN @desde AND @hasta)) 
+                            OR @desde BETWEEN c.{nameof(Contrato.FechaInicio)} AND c.{nameof(Contrato.FechaFin)} 
+                            OR @hasta BETWEEN c.{nameof(Contrato.FechaInicio)} AND c.{nameof(Contrato.FechaFin)} 
                             AND c.{nameof(Contrato.FechaTerminado)} IS NULL";
 
             if (!string.IsNullOrWhiteSpace(fechaAVencer))

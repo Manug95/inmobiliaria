@@ -36,10 +36,11 @@ public class InquilinoController : Controller
         return View(ivm);
     }
 
+    [Authorize]
     public IActionResult Listar(string? nomApe, string? orderBy, string? order, int? offset = 1, int? limit = 10)
     {
         IList<Inquilino> inquilinos = repo.ListarInquilinos(nomApe, orderBy, order, offset, limit);
-        return Json(new { datos = inquilinos } );
+        return Json(new { datos = inquilinos });
     }
 
     // public IActionResult Buscar(int id = 0, string? dni = null)

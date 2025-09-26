@@ -10,8 +10,6 @@ import {
 
 
 document.addEventListener("DOMContentLoaded", () => {
-  const DETALLES = [];
-
   mostrarMensaje(false, null);
 
   const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
@@ -30,18 +28,9 @@ document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll("td .bi-file-earmark-text")?.forEach(i => {
     i.addEventListener("click", async e => {
       const idFila = e.target.id.split("-")[1];
-
-      if (DETALLES.findIndex(d => d.id === +idFila) < 0) {
-        const respuesta = await fetch(`/Pago/Buscar/${idFila}`);
-        const datos = await respuesta.json();
-        DETALLES.push(datos.pago);
-        agregarDatosAlModal(datos.pago);
-      } else {
-        agregarDatosAlModal(DETALLES.find(d => d.id === +idFila));
-      }
-
-      const myModal = new bootstrap.Modal(getElementById('modal_detalle_pago'), {});
-      myModal.show();
+      const respuesta = await fetch(`/Pago/Buscar/${idFila}`);
+      const datos = await respuesta.json();
+      mostrarModalDetalle(datos.pago);
     });
   });
 
@@ -75,7 +64,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
 });
 
-function agregarDatosAlModal(pago) {
+/**
+ * abre el modal del detalle de la entidad
+ * @param {*} pago objeto con los datos de la entidad
+ */
+function mostrarModalDetalle(pago) {
   getElementById("nro").textContent = pago.id;
   getElementById("fPago_detalle").textContent = aFechaLocal(pago.fecha?.split("T")[0]);
   getElementById("importePago_detalle").textContent = pago.importe;
@@ -96,8 +89,15 @@ function agregarDatosAlModal(pago) {
   getElementById("fFin_detalle").textContent = aFechaLocal(pago.contrato.fechaFin?.split("T")[0]);
   getElementById("monto_detalle").textContent = pago.contrato.montoMensual;
   getElementById("fTerm_detalle").textContent = aFechaLocal(pago.contrato.fechaTerminado?.split("T")[0]);
-  getElementById("detPago_cobrado").textContent = `Cod: ${pago.idUsuarioCobrador} - ${pago.usuarioCobrador.apellido}, ${pago.usuarioCobrador.nombre}`;
-  getElementById("detPago_anulado").textContent = pago.idUsuarioAnulador ? `Cod: ${pago.idUsuarioAnulador} - ${pago.usuarioAnulador.Apellido}, ${pago.usuarioAnulador.nombre}` : "";
+  const spanCobrador = getElementById("detPago_cobrado");
+  const spanAnulador = getElementById("detPago_anulado");
+  if (spanCobrador !== null)
+    spanCobrador.textContent = `Cod: ${pago.idUsuarioCobrador} - ${pago.usuarioCobrador.apellido}, ${pago.usuarioCobrador.nombre}`;
+  if (spanAnulador !== null)
+    spanAnulador.textContent = pago.idUsuarioAnulador ? `Cod: ${pago.idUsuarioAnulador} - ${pago.usuarioAnulador.apellido}, ${pago.usuarioAnulador.nombre}` : "";
+
+  const myModal = new bootstrap.Modal(getElementById('modal_detalle_pago'), {});
+  myModal.show();
 }
 
 function aFechaLocal(fecha) {
@@ -113,7 +113,7 @@ function getRawValues(raw) {
   return {
     fecha: datos.item(1).innerText.trim(),
     importe: datos.item(2).innerText.trim(),
-    detalle: datos.item(4).innerText.trim(),
+    detalle: datos.item(5).innerText.trim(),
     id: raw.id
   };
 }

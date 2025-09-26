@@ -99,15 +99,16 @@
                                         </ul>
                                     </li>
                                 </ul>
-
-                                <p class="card-text">
-                                    <span class="fw-bold">Cobrado Por: &nbsp;</span>
-                                    <span id="detPago_cobrado"></span>
-                                </p>
-                                <p class="card-text">
-                                    <span class="fw-bold">Anulado Por: &nbsp;</span>
-                                    <span id="detPago_anulado"></span>
-                                </p>
+                                @if (User.IsInRole(Rol.ADMIN.ToString())) {
+                                    <p class="card-text">
+                                        <span class="fw-bold">Cobrado Por: &nbsp;</span>
+                                        <span id="detPago_cobrado"></span>
+                                    </p>
+                                    <p class="card-text">
+                                        <span class="fw-bold">Anulado Por: &nbsp;</span>
+                                        <span id="detPago_anulado"></span>
+                                    </p>
+                                }
                             </div>
                         </div>
                     </div>

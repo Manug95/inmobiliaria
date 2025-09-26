@@ -74,7 +74,7 @@ public class ContratoController : Controller
             string fecha = DateTime.Today.AddDays(dias).ToString("yyyy-MM-dd");
             contratos = repo.ListarContratos(offset, limit, null, null, null, fecha);
             cantidadContratos = repo.ContarContratos(null, null, null, fecha);
-        }Console.WriteLine(cantidadContratos);
+        }
 
         ViewBag.cantPag = Math.Ceiling((decimal)cantidadContratos / limit);
         ViewBag.offsetSiguiente = offset + 1;
@@ -93,6 +93,7 @@ public class ContratoController : Controller
     //     return Json(new { datos = contratos } );
     // }
 
+    [Authorize]
     public IActionResult Buscar(int id)
     {
         Contrato? contrato = repo.ObtenerContrato(id);
@@ -185,6 +186,7 @@ public class ContratoController : Controller
         return View(contrato);
     }
 
+    [Authorize]
     public IActionResult Renovar(int id)
     {
         Contrato? contrato = repo.ObtenerContrato(id);
@@ -224,6 +226,7 @@ public class ContratoController : Controller
         }
     }
 
+    [Authorize]
     public IActionResult DetalleMulta(int id)
     {
         return Json(CalcularMulta(id));
@@ -247,9 +250,8 @@ public class ContratoController : Controller
         decimal multa = contrato.FechaTerminado!.Value < fechaMitad ? contrato!.MontoMensual!.Value * 2 : contrato!.MontoMensual!.Value;
         decimal multaPaga = repoPago.ObtenerSumaMultaAlquiler(contrato.Id);
 
-        // int cantPagos = repoPago.ContarPagos(contrato.Id);
         int cantPagos = repoPago.ContarPagosDeAlquileres(contrato.Id);
-        int cantMesesAlquilado = (int)Math.Floor((contrato.FechaTerminado.Value - contrato.FechaInicio.Value).TotalDays / 30);
+        int cantMesesAlquilado = (int)Math.Ceiling((contrato.FechaTerminado.Value - contrato.FechaInicio.Value).TotalDays / 30);
         int cantMesesDelContrato = (int)Math.Floor((contrato.FechaFin.Value - contrato.FechaInicio.Value).TotalDays / 30);
         if (cantPagos < cantMesesAlquilado)
             deudaDeMesesNoPagados = contrato.MontoMensual.Value * (cantMesesAlquilado - cantPagos);

@@ -8,6 +8,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using InmobiliariaGutierrezManuel.Models.ViewModels;
 
 namespace InmobiliariaGutierrezManuel.Controllers;
 
@@ -138,21 +139,6 @@ public class UsuarioController : Controller
             repo.InsertarUsuario(usuario);
             if (usuario.AvatarFile != null && usuario.Id > 0)
             {
-                // string wwwPath = this.env.WebRootPath;
-                // string path = Path.Combine(wwwPath, "Uploads");
-                // if (!Directory.Exists(path))
-                // {
-                //     Directory.CreateDirectory(path);
-                // }
-
-                // string fileName = "avatar_" + usuario.Id + Path.GetExtension(usuario.AvatarFile.FileName);
-                // string pathCompleto = Path.Combine(path, fileName);
-                // usuario.Avatar = Path.Combine("/Uploads", fileName);
-
-                // using (FileStream stream = new FileStream(pathCompleto, FileMode.Create))
-                // {
-                //     usuario.AvatarFile.CopyTo(stream);
-                // }
                 GuardarAvatarDelUsuario(usuario);
                 repo.ActualizarUsuario(usuario);
             }
@@ -172,21 +158,25 @@ public class UsuarioController : Controller
         Usuario? usuarioDB = repo.ObtenerUsuario(usuario.Id);
         usuarioDB!.Nombre = usuario.Nombre;
         usuarioDB!.Apellido = usuario.Apellido;
+        usuarioDB!.Rol = usuario.Rol;
         repo.ActualizarUsuario(usuarioDB);
         //actualizo la claim que tiene el nombre y el apelldio del usuario
-        var identity = User.Identity as ClaimsIdentity;
-        if (identity != null)
+        if (User.Claims.FirstOrDefault(c => c.Type == "id")?.Value == usuario.Id.ToString())
         {
-            var claimNombreApellido = identity.FindFirst(ClaimTypes.Name);
-            if (claimNombreApellido != null)
+            var identity = User.Identity as ClaimsIdentity;
+            if (identity != null)
             {
-                identity.RemoveClaim(claimNombreApellido);
-                var newClaim = new Claim(ClaimTypes.Name, usuarioDB.Nombre + " " + usuarioDB.Apellido);
-                identity.AddClaim(newClaim);
+                var claimNombreApellido = identity.FindFirst(ClaimTypes.Name);
+                if (claimNombreApellido != null)
+                {
+                    identity.RemoveClaim(claimNombreApellido);
+                    var newClaim = new Claim(ClaimTypes.Name, usuarioDB.Nombre + " " + usuarioDB.Apellido);
+                    identity.AddClaim(newClaim);
+                }
+                await HttpContext.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    new ClaimsPrincipal(identity));
             }
-            await HttpContext.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme,
-                new ClaimsPrincipal(identity));
         }
 
         if (User.IsInRole(Rol.ADMIN.ToString())) return RedirectToAction(nameof(Index));
@@ -195,38 +185,28 @@ public class UsuarioController : Controller
 
     [HttpPost]
     [Authorize]
-    public async Task<IActionResult> ActualizarUsuario(Usuario usuario)
+    public async Task<IActionResult> CambiarContrasenia(CambiarContraseniaViewModel vm)
     {
-        Usuario? usuarioDB = repo.ObtenerUsuario(usuario.Id);
-        if (!string.IsNullOrWhiteSpace(usuario.Password))
-            usuarioDB!.Password = HashearPassword(usuario.Password!);
-        if (!string.IsNullOrWhiteSpace(usuario.Email))
-        {
-            //actualizo la claim del email del usuario
-            if (usuario.Email != usuarioDB!.Email)
-            {
-                var identity = User.Identity as ClaimsIdentity;
-                if (identity != null)
-                {
-                    var claimEmail = identity.FindFirst(ClaimTypes.Email);
-                    if (claimEmail != null)
-                    {
-                        identity.RemoveClaim(claimEmail);
-                        var newClaim = new Claim(ClaimTypes.Email, usuario.Email);
-                        identity.AddClaim(newClaim);
-                    }
-                    await HttpContext.SignInAsync(
-                        CookieAuthenticationDefaults.AuthenticationScheme,
-                        new ClaimsPrincipal(identity));
-                }
-            }
-            usuarioDB!.Email = usuario.Email;
+        Usuario? usuarioDB = repo.ObtenerUsuario(vm.Id);
 
+        if (vm.PasswordNuevo != null)
+        {
+            if (vm.PasswordViejo != null && usuarioDB!.Password != HashearPassword(vm.PasswordViejo))
+            {
+                TempData["MensajeError"] = "La contraseña vieja es incorrecta";
+                return RedirectToAction(nameof(FormularioEditarUsuario), new { id = vm.Id });
+            }
+            usuarioDB!.Password = HashearPassword(vm.PasswordNuevo!);
         }
-        usuarioDB!.Rol = usuario.Rol;
+
         repo.ActualizarUsuario(usuarioDB!);
 
-        if (User.IsInRole(Rol.ADMIN.ToString())) return RedirectToAction(nameof(Index));
+        if (User.Claims.FirstOrDefault(c => c.Type == "id")?.Value == vm.Id.ToString() || !User.IsInRole(Rol.ADMIN.ToString()))
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+        if (User.IsInRole(Rol.ADMIN.ToString()))
+            return RedirectToAction(nameof(Index));
+
         return RedirectToAction(nameof(Index), "Home");
     }
 

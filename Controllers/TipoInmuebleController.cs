@@ -69,7 +69,7 @@ public class TipoInmuebleController : Controller
 
     }
 
-    [Authorize]
+    [Authorize(Policy = "ADMIN")]
     public IActionResult Eliminar(int id)
     {
         repo.EliminarTipoInmueble(id);

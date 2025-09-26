@@ -87,9 +87,7 @@
                                     @if (User.IsInRole(Rol.ADMIN.ToString())) {
                                         <i id="del-@item.Id" class="bi bi-trash fs-3 text-danger icon-hover" style="cursor: pointer;" data-bs-toggle="tooltip" data-bs-title="Eliminar"></i>
                                     }
-                                    @if (User.IsInRole(Rol.ADMIN.ToString())) {
-                                        <i id="det-@item.Id" class="bi bi-file-earmark-text fs-3 text-info icon-hover" data-bs-toggle="tooltip" data-bs-title="Ver Detalle"></i>
-                                    }
+                                    <i id="det-@item.Id" class="bi bi-file-earmark-text fs-3 text-info icon-hover" data-bs-toggle="tooltip" data-bs-title="Ver Detalle"></i>
                                     <a class="icon-enlace @(item.FechaTerminado.HasValue ? "invisible" : "")" asp-action="FormularioPago" asp-controller="Pago" asp-route-idCon="@item.Id" data-bs-toggle="tooltip" data-bs-title="Registrar Pago">
                                         <i class="bi bi-currency-dollar fs-3 text-success"></i>
                                     </a>
@@ -101,6 +99,9 @@
                                     } else {
                                         <i id="end-@item.Id" class="bi bi-file-earmark-x fs-3 text-danger icon-hover" data-bs-toggle="tooltip" data-bs-title="Terminar Contrato"></i>
                                     }
+                                    <a class="icon-enlace" asp-action="Renovar" asp-controller="Contrato" asp-route-id="@item.Id" data-bs-toggle="tooltip" data-bs-title="Renovar Contrato">
+                                        <i class="bi bi-file-earmark-plus fs-3 text-success"></i>
+                                    </a>
                                 </div>
                             </td>
                         </tr>

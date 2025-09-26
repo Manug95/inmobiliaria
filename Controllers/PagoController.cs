@@ -35,12 +35,14 @@ public class PagoController : Controller
         return View(new Pago());
     }
 
+    [Authorize]
     public IActionResult Listar(int offset = 1, int limit = 10)
     {
         IList<Pago> pagos = repo.ListarPagos(offset, limit);
-        return Json(new { datos = pagos } );
+        return Json(new { datos = pagos });
     }
 
+    [Authorize]
     public IActionResult Buscar(int id)
     {
         Pago? pago = repo.ObtenerPago(id);
@@ -74,16 +76,16 @@ public class PagoController : Controller
         }
         else
         {
-            string errorMsg = "<ul>";
+            string errorMsg = "";
             foreach (var estado in ModelState)
             {
                 var campo = estado.Key;
                 foreach (var error in estado.Value.Errors)
                 {
-                    errorMsg += $"<li class=\"text-danger fs-5\"><strong>{error.ErrorMessage}</strong></li>";
+                    errorMsg += $" - {error.ErrorMessage}";
                 }
             }
-            TempData["MensajeError"] = errorMsg + "</ul>";
+            TempData["MensajeError"] = errorMsg;
 
             return RedirectToAction(nameof(Index));
         }
@@ -99,11 +101,6 @@ public class PagoController : Controller
     [Authorize]
     public IActionResult FormularioPago(decimal? multa, int id = 0, int idCon = 0)
     {
-        // Pago? pago;
-
-        // if (id > 0) pago = repo.ObtenerPago(id);
-        // else pago = new Pago{ IdContrato = idCon };
-
         if (idCon > 0)
         {
             ViewBag.contrato = repoContrato.ObtenerContrato(idCon);

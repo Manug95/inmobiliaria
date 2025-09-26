@@ -7,7 +7,7 @@
                 <div id="titulo-modal" class="modal-title fs-5">Detalle Contrato</div>
                 <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body justify-content-center align-items-center">
+            <div id="body-detalle" class="modal-body justify-content-center align-items-center">
                 <div class="container-md align-middle">
                     <div class="d-flex justify-content-center align-items-center vh-50 w-100">
                         
@@ -51,21 +51,26 @@
                                     </br>
                                     <span id="fTerm"></span>
                                 </li>
-                                <li class="list-group-item">
-                                    <span class="fw-bold">Contratado Por:: &nbsp;</span>
-                                    </br>
-                                    <span id="contratador"></span>
-                                </li>
-                                <li class="list-group-item">
-                                    <span class="fw-bold">Terminado Por: &nbsp;</span>
-                                    </br>
-                                    <span id="terminador"></span>
-                                </li>
+                                @if (User.IsInRole(Rol.ADMIN.ToString())) {
+                                    <li class="list-group-item">
+                                        <span class="fw-bold">Contratado Por: &nbsp;</span>
+                                        <br>
+                                        <span id="contratador"></span>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <span class="fw-bold">Terminado Por: &nbsp;</span>
+                                        <br>
+                                        <span id="terminador"></span>
+                                    </li>
+                                }
                             </ul>
                         </div>
 
                     </div>
                 </div>
+            </div>
+            <div id="body-mensaje" class="modal-body justify-content-center align-items-center d-none">
+                <p id="mensaje" class="text-center text-danger fw-bold fs-5">No se encontraron los datos</p>
             </div>
         </div>
     </div>
